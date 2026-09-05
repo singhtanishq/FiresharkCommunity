@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment & secrets
+.env
+.env.*.php
+.env.backup
+*.pem
+
+# Frontend builds
+dist/
+build/
+
+# Runtime artifacts
+backend/storage/*.key
+backend/storage/app/public/media/*
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*.php
+
+# Compiled frontend (regenerate with: cd frontend && npm run build)
+backend/public/build/
+backend/public/storage
+
+# Uploaded media in development
+backend/storage/app/private/
+backend/storage/app/avatars/
+
+# Logs & OS noise
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp

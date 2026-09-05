@@ -1,0 +1,36 @@
+# Local development services only — production runs on Hostinger shared
+# hosting with its own MySQL and does NOT require Docker.
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: fireshark-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fireshark_community
+      MYSQL_USER: fireshark
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root-secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - fireshark-mysql-data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Optional database UI: http://localhost:8080
+  adminer:
+    image: adminer:latest
+    container_name: fireshark-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  fireshark-mysql-data:
