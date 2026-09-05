@@ -165,7 +165,7 @@ For production, the React application is compiled into a production build and se
 ## Repository Structure
 
 ```text
-fireshark-community/
+FiresharkCommunity/
 │
 ├── backend/                    # Laravel application
 │   ├── app/
