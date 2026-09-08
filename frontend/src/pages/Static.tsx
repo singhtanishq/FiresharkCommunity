@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Shark } from 'lucide-react'
 
 export function CommunityGuidelines() {
   return (
@@ -13,8 +14,7 @@ export function CommunityGuidelines() {
         <div className="panel__header"><h2>What belongs here</h2></div>
         <div className="panel__body">
           <ul>
-            <li>Practical technical questions on cybersecurity, ethical hacking, penetration testing, networking, cloud security, SOC &amp; blue team work, forensics and more.</li>
-            <li>Certification preparation and career guidance.</li>
+            <li>Practical technical questions on cybersecurity, ethical hacking, penetration testing, networking, cloud security, SOC & blue team work, forensics and more.</            <li>Certification preparation and career guidance.</li>
             <li>Hands-on lab and project troubleshooting.</li>
             <li>Clear answers backed by experience, references or working commands.</li>
           </ul>
@@ -40,11 +40,8 @@ export function CommunityGuidelines() {
           <ul>
             <li>Publishing passwords, API keys, tokens, private keys or other credentials.</li>
             <li>Personal data: phone numbers, addresses, government IDs, confidential company information.</li>
-            <li>Requests for unauthorised access, credential theft, malware distribution or any illegal activity.</li>
-            <li>Doxxing, harassment, phishing promotion or malicious links.</li>
-            <li>Spam, advertising and excessive self-promotion.</li>
-            <li>Account recovery, payment disputes and order problems — use <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer">FireShark Support</a> instead.</li>
-          </ul>
+            <li>Requests for unauthorised access, credential theft, malware distribution or any illegal activity.</            <li>Doxxing, harassment, phishing promotion or malicious links.</            <li>Spam, advertising and excessive self-promotion.</li>
+            <li>Account recovery, payment disputes and order problems — use <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer">FireShark Support</a> instead.</          </ul>
           <p className="muted">
             Legitimate offensive-security education (labs, CTFs, authorised engagements) is welcome — scope your
             discussions to environments you are authorised to test.
@@ -56,8 +53,7 @@ export function CommunityGuidelines() {
         <div className="panel__header"><h2>Voting, reputation and badges</h2></div>
         <div className="panel__body">
           <ul>
-            <li>Upvote answers that genuinely help; downvote only when something is incorrect or unsafe, ideally with a comment explaining why.</li>
-            <li>Vote based on usefulness, not agreement.</li>
+            <li>Upvote answers that genuinely help; downvote only when something is incorrect or unsafe, ideally with a comment explaining why.</            <li>Vote based on usefulness, not agreement.</li>
             <li>Reputation reflects community usefulness — ask, answer and get accepted to earn it.</li>
             <li>Badges recognise milestones like first questions, accepted answers and sustained contribution.</li>
             <li>The monthly leaderboard resets on the 1st; history is preserved.</li>
@@ -66,11 +62,10 @@ export function CommunityGuidelines() {
       </section>
 
       <section className="panel mb-2">
-        <div className="panel__header"><h2>Moderation &amp; reporting</h2></div>
+        <div className="panel__header"><h2>Moderation & reporting</h2></div>
         <div className="panel__body">
           <ul>
-            <li>Use the Report link on any question, answer or comment that breaks the rules.</li>
-            <li>Moderators may hide, close or remove content and take action on accounts.</li>
+            <li>Use the Report link on any question, answer or comment that breaks the rules.</            <li>Moderators may hide, close or remove content and take action on accounts.</li>
             <li>Closed questions remain visible so knowledge is not lost.</li>
             <li>Significant moderation actions are logged.</li>
           </ul>
@@ -136,7 +131,7 @@ export function NotFound() {
   return (
     <div className="panel" style={{ maxWidth: 480, margin: '3rem auto' }}>
       <div className="panel__body" style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: '2.4rem' }} aria-hidden="true">🦈</div>
+        <Shark size={48} strokeWidth={1.5} aria-hidden="true" />
         <h1>404</h1>
         <p className="muted">The page you are looking for doesn't exist or has been moved.</p>
         <Link to="/" className="btn btn--primary">Back to the community</Link>
