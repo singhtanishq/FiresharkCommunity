@@ -5,6 +5,7 @@ import type { Question, Tag } from '../types'
 import { QuestionCard } from '../components/content/QuestionCard'
 import { Pagination } from '../components/ui/Pagination'
 import { EmptyState, Spinner } from '../components/ui/States'
+import { Tag, Tag as TagIcon } from 'lucide-react'
 
 export function Tags() {
   const [data, setData] = useState<{ data: Tag[]; meta: { current_page: number; last_page: number; per_page: number; total: number } } | null>(null)
@@ -39,7 +40,7 @@ export function Tags() {
       {! data
         ? <Spinner />
         : data.data.length === 0
-          ? <EmptyState icon="🏷️" title="No tags found." />
+          ? <EmptyState icon={<Tag size={32} strokeWidth={1.5} />} title="No tags found." />
           : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '0.85rem' }}>
               {data.data.map((tag) => (
@@ -50,6 +51,7 @@ export function Tags() {
               ))}
             </div>
           )}
+      </div>
 
       {data && <Pagination meta={data.meta} baseUrl={q ? `/tags?q=${encodeURIComponent(q)}` : '/tags'} />}
     </div>
@@ -71,7 +73,7 @@ export function TagDetail() {
       .catch(() => setNotFound(true))
   }, [slug, page, sort])
 
-  if (notFound) return <EmptyState icon="🏷️" title="Tag not found." />
+  if (notFound) return <EmptyState icon={<Tag size={32} strokeWidth={1.5} />} title="Tag not found." />
   if (! data) return <Spinner />
 
   return (
@@ -92,7 +94,7 @@ export function TagDetail() {
 
       <div className="question-list">
         {data.questions.data.length === 0
-          ? <div className="panel"><EmptyState icon="💬" title="No questions with this tag yet." /></div>
+          ? <div className="panel"><EmptyState icon={<MessageSquare size={32} strokeWidth={1.5} />} title="No questions with this tag yet." /></div>
           : data.questions.data.map((question) => <QuestionCard key={question.id} question={question} />)}
       </div>
 

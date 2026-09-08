@@ -6,6 +6,7 @@ import { QuestionCard } from '../components/content/QuestionCard'
 import { Pagination } from '../components/ui/Pagination'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { CategoryIcon } from './Categories'
+import { MessageSquare, FolderOpen } from 'lucide-react'
 
 const SORTS = [
   ['latest', 'Latest'],
@@ -37,7 +38,7 @@ export function CategoryDetail() {
 
   if (loading && ! data) return <Spinner />
   if (! data) {
-    return <EmptyState icon="📁" title="Category not found." action={<Link to="/categories" className="btn btn--primary">All categories</Link>} />
+    return <EmptyState icon={<FolderOpen size={32} strokeWidth={1.5} />} title="Category not found." action={<Link to="/categories" className="btn btn--primary">All categories</Link>} />
   }
 
   const { category, stats, related_tags, questions } = data
@@ -87,7 +88,7 @@ export function CategoryDetail() {
           ? (
             <div className="panel">
               <EmptyState
-                icon="💬"
+                icon={<MessageSquare size={32} strokeWidth={1.5} />}
                 title="No questions in this category yet. Be the first to ask."
                 action={<Link to="/ask" className="btn btn--fire">Ask a question</Link>}
               />

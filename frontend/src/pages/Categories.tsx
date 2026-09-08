@@ -4,15 +4,31 @@ import { categoriesApi } from '../api/endpoints'
 import type { Category } from '../types'
 import { formatNumber } from '../lib/format'
 import { Spinner, EmptyState } from '../components/ui/States'
+import { FolderOpen, Shield, Terminal, Crosshair, Bug, Network, Cloud, Radar, Target, Globe, Api, Search, AlertTriangle, Wrench, Award, Briefcase, FlaskConical, FolderOpen } from 'lucide-react'
 
-const ICONS: Record<string, string> = {
-  shield: '🛡️', terminal: '⌨️', crosshair: '🎯', bug: '🐛', network: '🌐',
-  cloud: '☁️', radar: '📡', target: '🎯', globe: '🕸️', api: '🔌',
-  search: '🔍', alert: '🚨', tool: '🛠️', certificate: '🎓', briefcase: '💼', flask: '🧪',
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  shield: <Shield size={16} strokeWidth={2} />,
+  terminal: <Terminal size={16} strokeWidth={2} />,
+  crosshair: <Crosshair size={16} strokeWidth={2} />,
+  bug: <Bug size={16} strokeWidth={2} />,
+  network: <Network size={16} strokeWidth={2} />,
+  cloud: <Cloud size={16} strokeWidth={2} />,
+  radar: <Radar size={16} strokeWidth={2} />,
+  target: <Target size={16} strokeWidth={2} />,
+  globe: <Globe size={16} strokeWidth={2} />,
+  api: <Api size={16} strokeWidth={2} />,
+  search: <Search size={16} strokeWidth={2} />,
+  alert: <AlertTriangle size={16} strokeWidth={2} />,
+  tool: <Wrench size={16} strokeWidth={2} />,
+  certificate: <Award size={16} strokeWidth={2} />,
+  briefcase: <Briefcase size={16} strokeWidth={2} />,
+  flask: <FlaskConical size={16} strokeWidth={2} />,
 }
 
 export function CategoryIcon({ icon, size = '1.3rem' }: { icon: string | null; size?: string }) {
-  return <span aria-hidden="true" style={{ fontSize: size }}>{ICONS[icon ?? ''] ?? '📁'}</span>
+  const Icon = CATEGORY_ICONS[icon ?? '']
+  if (!Icon) return <span aria-hidden="true" style={{ fontSize: size }}>📁</span>
+  return <Icon size={parseInt(size) || 16} strokeWidth={2} />
 }
 
 export function Categories() {
@@ -33,7 +49,7 @@ export function Categories() {
       <p className="muted mb-2">Browse questions by topic.</p>
 
       {categories.length === 0
-        ? <EmptyState icon="📁" title="No categories yet." />
+        ? <EmptyState icon={<FolderOpen size={32} strokeWidth={1.5} />} title="No categories yet." />
         : (
           <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>
             {categories.map((category) => (
@@ -47,6 +63,7 @@ export function Categories() {
             ))}
           </div>
         )}
+      </div>
     </div>
   )
 }
