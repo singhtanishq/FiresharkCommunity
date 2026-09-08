@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import logoWhite from '../../assets/logo_white.png'
+import logo from '../../assets/fireshark_community.png'
 import { useAuth } from '../../context/AuthContext'
 import { notificationsApi } from '../../api/endpoints'
 import { Avatar } from '../ui/Avatar'
+import { Search, Menu, X, Bell, User, ChevronDown, Bookmark, Settings, LogOut } from 'lucide-react'
 
 export function Header() {
   const { user, logout, unreadCount, setUnreadCount } = useAuth()
@@ -23,14 +24,14 @@ export function Header() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && ! menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
   useEffect(() => {
-    if (! user) return
+    if (!user) return
     let active = true
     const load = () => {
       notificationsApi.unreadCount()
@@ -45,7 +46,7 @@ export function Header() {
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const term = q.trim()
-    if (! term) return
+    if (!term) return
     navigate(`/search?q=${encodeURIComponent(term)}`)
     setNavOpen(false)
   }
@@ -56,11 +57,12 @@ export function Header() {
     <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''}`}>
       <div className="site-header__top">
         <Link to="/" className="brand" aria-label="FireShark Community home" onClick={closeMenu}>
-          <span className="brand__mark"><img src={logoWhite} alt="FireShark" /></span>
-          <span className="brand__text">Community</span>
+          <img src={logo} alt="FireShark Community" className="brand__logo" />
         </Link>
 
-        <button className="nav-burger" onClick={() => setNavOpen(!navOpen)} aria-expanded={navOpen} aria-label="Toggle navigation">☰</button>
+        <button className="nav-burger" onClick={() => setNavOpen(!navOpen)} aria-expanded={navOpen} aria-label="Toggle navigation">
+          {navOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
+        </button>
 
         <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main">
           <NavLink to="/" end onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Home</NavLink>
@@ -68,11 +70,10 @@ export function Header() {
           <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Categories</NavLink>
           <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Tags</NavLink>
           <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Leaderboard</NavLink>
-          <NavLink to="/community-guidelines" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Guidelines</NavLink>
         </nav>
 
         <form className="header-search" role="search" onSubmit={submitSearch}>
-          <span className="header-search__icon" aria-hidden="true">⌕</span>
+          <Search className="header-search__icon" aria-hidden="true" size={20} strokeWidth={2} />
           <input
             className="header-search__input"
             type="search"
@@ -97,28 +98,43 @@ export function Header() {
                 >
                   <Avatar name={user.name} path={user.avatar_path} size="sm" />
                   <span style={{ marginLeft: 6 }}>{user.name.split(' ')[0]}</span>
+                  <ChevronDown size={16} strokeWidth={2.5} />
                   {unreadCount > 0 && (
                     <span style={{ background: 'var(--fire-500)', color: '#fff', borderRadius: 999, fontSize: 11, padding: '0 6px', fontWeight: 700, marginLeft: 6 }}>
                       {unreadCount}
                     </span>
                   )}
                 </button>
+
                 {menuOpen && (
                   <div className="dropdown__menu" style={{ background: '#fff', color: 'var(--ink-900)' }}>
-                    <Link to={`/users/${user.username}`} onClick={closeMenu}>My profile</Link>
-                    <Link to="/bookmarks" onClick={closeMenu}>Bookmarks</Link>
+                    <Link to={`/users/${user.username}`} onClick={closeMenu}>
+                      <User size={16} strokeWidth={2} style={{ marginRight: 8 }} /> My profile
+                    </Link>
+                    <Link to="/bookmarks" onClick={closeMenu}>
+                      <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Bookmarks
+                    </Link>
                     <Link to="/notifications" onClick={closeMenu}>
+                      <Bell size={16} strokeWidth={2} style={{ marginRight: 8 }} />
                       Notifications {unreadCount > 0 && `(${unreadCount})`}
                     </Link>
-                    <Link to="/settings" onClick={closeMenu}>Settings</Link>
+                    <Link to="/settings" onClick={closeMenu}>
+                      <Settings size={16} strokeWidth={2} style={{ marginRight: 8 }} />
+                      Settings
+                    </Link>
                     {(user.role === 'admin' || user.role === 'moderator') && (
                       <>
                         <hr />
-                        <Link to="/admin" onClick={closeMenu}>Admin dashboard</Link>
+                        <Link to="/admin" onClick={closeMenu}>
+                          <Settings size={16} strokeWidth={2} style={{ marginRight: 8 }} />
+                          Admin dashboard
+                        </Link>
                       </>
                     )}
                     <hr />
-                    <button onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }}>Log out</button>
+                    <button onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }}>
+                      <LogOut size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Log out
+                    </button>
                   </div>
                 )}
               </div>
