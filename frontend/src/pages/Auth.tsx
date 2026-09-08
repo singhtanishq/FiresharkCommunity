@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import logoWhite from '../assets/logo_white.png'
+import logoWhite from '../assets/fireshark_community.png'
 import { authApi } from '../api/endpoints'
 import { apiError } from '../api/client'
 
