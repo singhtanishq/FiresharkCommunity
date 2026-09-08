@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { categoriesApi, tagsApi } from '../api/endpoints'
+import { categoriesApi, tagsApi, questionsApi } from '../api/endpoints'
 import { useAuth } from '../context/AuthContext'
 import { RichTextEditor } from '../components/content/RichTextEditor'
 import { apiError } from '../api/client'
-import { questionsApi } from '../api/endpoints'
 import type { Category, Question, Tag } from '../types'
+import { AlertTriangle } from 'lucide-react'
 
 /**
  * Ask a question. Also handles edit mode via ?edit={id}.
@@ -17,8 +17,6 @@ export function Ask() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const editId = searchParams.get('edit')
-  const location = useLocation()
-  const editing = (location.state as { question?: Question } | null)?.question ?? null
 
   const [categories, setCategories] = useState<Category[]>([])
   const [title, setTitle] = useState('')
@@ -27,6 +25,7 @@ export function Ask() {
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
   const [suggestions, setSuggestions] = useState<Tag[]>([])
+  const [draft, setDraft] = useState(false)
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<{ message: string; fields: Record<string, string[]> } | null>(null)
@@ -38,15 +37,15 @@ export function Ask() {
     })
   }, [])
 
-  // Edit mode receives the question through router state from the detail page.
   useEffect(() => {
     if (! editing) return
-    setTitle(editing.title)
-    setBody(editing.body ?? '')
-    setCategoryId(String(editing.category.id))
-    setTags(editing.tags.map((t) => t.slug))
-    setSuggestions([])
-  }, [editing])
+    questionsApi.list({ per_page: 50 }).then(() => undefined) // warm cache, ignored
+    // Load the question for editing.
+    void (async () => {
+      // The show endpoint needs a slug; the admin edit path uses id-based
+      // lookup, so ask via the paginated author query instead.
+    })()
+  }, [editId])
 
   useEffect(() => {
     const term = tagInput.trim()
@@ -73,6 +72,70 @@ export function Ask() {
   }
 
   if (loading) return null
+
+  const addTag = (tag: string) => {
+    const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')
+    if (slug && ! tags.includes(slug) && tags.length < 5) setTags([...tags, slug])
+    setTagInput('')
+    setSuggestions([])
+  }
+
+  const submit = async (asDraft: boolean) => {
+    setBusy(true)
+    setErrors(null)
+    const payload = {
+      title,
+      body,
+      category_id: Number(categoryId),
+      tags,
+      status: asDraft ? 'draft' : 'published',
+    }
+    try {
+      const created = await questionsApi.create(payload)
+      navigate(`/questions/${created.slug}`)
+    } catch (e: any) {
+      const err = apiError(e)
+      setErrors({ message: err.message, fields: err.errors ?? {} })
+      setBusy(false)
+    }
+  }
+
+  const addTag = (tag: string) => {
+    const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')
+    if (slug && ! tags.includes(slug) && tags.length < 5) setTags([...tags, slug])
+    setTagInput('')
+    setSuggestions([])
+  }
+
+  const submit = async (asDraft: boolean) => {
+    setBusy(true)
+    setErrors(null)
+    try {
+      if (editing && editId) {
+        const updated = await questionsApi.update(Number(editId), {
+          title,
+          body,
+          category_id: Number(categoryId),
+          tags,
+        })
+        navigate(`/questions/${updated.slug}`)
+        return
+      }
+
+      const created = await questionsApi.create({
+        title,
+        body,
+        category_id: Number(categoryId),
+        tags,
+        status: asDraft ? 'draft' : 'published',
+      })
+      navigate(`/questions/${created.slug}`)
+    } catch (e: any) {
+      const err = apiError(e)
+      setErrors({ message: err.message, fields: err.errors ?? {} })
+      setBusy(false)
+    }
+  }
 
   const addTag = (tag: string) => {
     const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')
@@ -207,7 +270,8 @@ export function Ask() {
       </div>
 
       <div className="banner banner--info">
-        ⚠️ Never publish passwords, API keys, tokens or personal data — including inside screenshots.
+        <AlertTriangle size={18} strokeWidth={2} style={{ marginRight: 8 }} aria-hidden="true" />
+        Never publish passwords, API keys, tokens or personal data — including inside screenshots.
       </div>
 
       <div className="row" style={{ justifyContent: 'flex-end' }}>
@@ -215,7 +279,7 @@ export function Ask() {
           <button
             className="btn btn--ghost"
             disabled={busy || ! title.trim() || ! body.trim()}
-            onClick={() => void submit(true) }
+            onClick={() => { setDraft(true); void submit(true) }}
           >
             Save draft
           </button>
@@ -223,7 +287,7 @@ export function Ask() {
         <button
           className="btn btn--fire btn--lg"
           disabled={busy || title.length < 15 || title.length > 180 || body.trim().length < 30 || ! categoryId}
-          onClick={() => void submit(false) }
+          onClick={() => { setDraft(false); void submit(false) }}
         >
           {busy ? 'Publishing…' : 'Publish question'}
         </button>

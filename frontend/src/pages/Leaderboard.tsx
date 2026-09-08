@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { leaderboardApi } from '../api/endpoints'
-import type { LeaderboardPerson } from '../types'
 import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
+import { Trophy } from 'lucide-react'
 
 type Board = 'contributors' | 'askers' | 'answerers'
 
@@ -107,7 +107,7 @@ export function Leaderboard() {
         {rows.length === 0
           ? (
             <EmptyState
-              icon="🏆"
+              icon={<Trophy size={32} strokeWidth={1.5} />}
               title="Leaderboard results will appear once the community starts contributing."
               action={<Link to="/questions/unanswered" className="btn btn--primary">Answer open questions</Link>}
             />
@@ -144,7 +144,7 @@ export function Leaderboard() {
               </tbody>
             </table>
           )}
-      </div>
+        </div>
 
       <p className="muted mt-2">
         The monthly leaderboard resets on the 1st of each month — previous months are archived. Rewards, when
