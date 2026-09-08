@@ -4,16 +4,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Email verification
+    | Reserved usernames
     |--------------------------------------------------------------------------
     |
-    | When enabled, users must verify their email address before asking,
-    | answering, voting or commenting. Set REQUIRE_EMAIL_VERIFICATION=false
-    | only if outgoing mail is not yet configured at launch.
+    | These can never be used for self-registration, regardless of role.
     |
     */
 
-    'require_email_verification' => env('REQUIRE_EMAIL_VERIFICATION', true),
+    'reserved_usernames' => [
+        'admin', 'administrator', 'root', 'support', 'staff', 'moderator',
+        'fireshark', 'fire-shark', 'system', 'official', 'help', 'about',
+    ],
 
     /*
     |--------------------------------------------------------------------------

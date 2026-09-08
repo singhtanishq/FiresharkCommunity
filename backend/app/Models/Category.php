@@ -18,6 +18,16 @@ class Category extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * Public URLs use the human-readable slug (e.g. /categories/networking),
+     * not the numeric primary key, so route model binding matches the right
+     * column on the show endpoint.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);

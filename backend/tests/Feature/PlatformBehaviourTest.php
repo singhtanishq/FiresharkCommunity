@@ -106,10 +106,10 @@ class PlatformBehaviourTest extends TestCase
         $user = User::factory()->create(['password' => 'Password123!']);
 
         for ($i = 0; $i < 10; $i++) {
-            $this->postJson('/api/v1/auth/login', ['email' => $user->email, 'password' => 'wrong']);
+            $this->withCredentials()->postJson('/api/v1/auth/login/start', ['email' => $user->email, 'password' => 'wrong']);
         }
 
-        $this->postJson('/api/v1/auth/login', ['email' => $user->email, 'password' => 'wrong'])
+        $this->withCredentials()->postJson('/api/v1/auth/login/start', ['email' => $user->email, 'password' => 'wrong'])
             ->assertStatus(429);
     }
 

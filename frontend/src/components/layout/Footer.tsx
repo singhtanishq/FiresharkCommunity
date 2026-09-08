@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import logoWhite from '../../assets/logo_white.png'
 
 export function Footer() {
   return (
@@ -6,8 +7,8 @@ export function Footer() {
       <div className="site-footer__inner">
         <div>
           <div className="brand" style={{ color: '#fff' }}>
-            <span className="brand__mark" aria-hidden="true">🦈</span>
-            <span className="brand__name"><b>FireShark</b> Community</span>
+            <span className="brand__mark"><img src={logoWhite} alt="FireShark" /></span>
+            <span className="brand__text">Community</span>
           </div>
           <p className="site-footer__brandline">
             Ask questions. Share knowledge. Build expertise. A community for cybersecurity professionals, learners
@@ -36,6 +37,9 @@ export function Footer() {
           <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer">Learn</a>
           <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer">fireshark.ai</a>
         </div>
+      </div>
+      <div className="site-footer__legal">
+        © {new Date().getFullYear()} FireShark. All rights reserved. Use of this site is subject to the community guidelines.
       </div>
     </footer>
   )

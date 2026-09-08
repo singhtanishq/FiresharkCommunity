@@ -12,6 +12,14 @@ class Tag extends Model
 
     protected $fillable = ['name', 'slug', 'description', 'created_by'];
 
+    /**
+     * Public URLs use the slug (e.g. /tags/nmap), not the primary key.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function questions(): BelongsToMany
     {
         return $this->belongsToMany(Question::class, 'question_tags');

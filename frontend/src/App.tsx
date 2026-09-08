@@ -20,8 +20,6 @@ const Leaderboard = lazy(() => import('./pages/Leaderboard').then((m) => ({ defa
 const Login = lazy(() => import('./pages/Auth').then((m) => ({ default: m.Login })))
 const Register = lazy(() => import('./pages/Auth').then((m) => ({ default: m.Register })))
 const ForgotPassword = lazy(() => import('./pages/Auth').then((m) => ({ default: m.ForgotPassword })))
-const ResetPassword = lazy(() => import('./pages/Auth').then((m) => ({ default: m.ResetPassword })))
-const VerifyEmail = lazy(() => import('./pages/Auth').then((m) => ({ default: m.VerifyEmail })))
 
 const Notifications = lazy(() => import('./pages/UserPages').then((m) => ({ default: m.Notifications })))
 const Bookmarks = lazy(() => import('./pages/UserPages').then((m) => ({ default: m.Bookmarks })))
@@ -60,8 +58,6 @@ export function App() {
         <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
         <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
         <Route path="/forgot-password" element={<Suspense fallback={<Spinner />}><ForgotPassword /></Suspense>} />
-        <Route path="/reset-password" element={<Suspense fallback={<Spinner />}><ResetPassword /></Suspense>} />
-        <Route path="/verify-email" element={<Suspense fallback={<Spinner />}><VerifyEmail /></Suspense>} />
 
         <Route path="/notifications" element={<Suspense fallback={<Spinner />}><Notifications /></Suspense>} />
         <Route path="/bookmarks" element={<Suspense fallback={<Spinner />}><Bookmarks /></Suspense>} />

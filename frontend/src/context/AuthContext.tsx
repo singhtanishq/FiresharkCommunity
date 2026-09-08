@@ -8,8 +8,6 @@ interface AuthContextValue {
   loading: boolean
   unreadCount: number
   refresh: () => Promise<void>
-  login: (email: string, password: string) => Promise<void>
-  register: (payload: { name: string; username: string; email: string; password: string }) => Promise<void>
   logout: () => Promise<void>
   setUnreadCount: (n: number) => void
 }
@@ -37,16 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void refresh()
   }, [refresh])
 
-  const login = useCallback(async (email: string, password: string) => {
-    await authApi.login({ email, password })
-    await refresh()
-  }, [refresh])
-
-  const register = useCallback(async (payload: { name: string; username: string; email: string; password: string }) => {
-    await authApi.register(payload)
-    await refresh()
-  }, [refresh])
-
   const logout = useCallback(async () => {
     try {
       await authApi.logout()
@@ -57,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, unreadCount, refresh, login, register, logout, setUnreadCount }}>
+    <AuthContext.Provider value={{ user, loading, unreadCount, refresh, logout, setUnreadCount }}>
       {children}
     </AuthContext.Provider>
   )

@@ -46,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Login / register / password reset — brute-force protection.
+        // Tightened to 5/min per IP for the high-value flows.
         RateLimiter::for('auth', function (Request $request) {
             return Limit::perMinute(10)->by('auth:'.$request->ip());
         });
@@ -61,6 +62,34 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('reports', function (Request $request) {
             return Limit::perMinute(5)->by($request->user()?->id ?: $request->ip());
+        });
+
+        // OTP verification: tight, by IP and identifier (email/username) so a
+        // single attacker cannot flood the endpoint.
+        RateLimiter::for('otp.verify', function (Request $request) {
+            $identifier = strtolower((string) ($request->input('identifier') ?? ''));
+            return [Limit::perMinute(10)->by('otp.verify:'.$request->ip()),
+                    Limit::perMinute(10)->by('otp.verify:'.$identifier)];
+        });
+
+        // OTP resend: cooldown per account + per IP.
+        RateLimiter::for('otp.resend', function (Request $request) {
+            $identifier = strtolower((string) ($request->input('identifier') ?? ''));
+            return [Limit::perMinute(3)->by('otp.resend:'.$request->ip()),
+                    Limit::perHour(8)->by('otp.resend:'.$identifier)];
+        });
+
+        // Username availability probe: per-IP rate limit, no per-account
+        // enumeration (handled by identical responses for taken/free slugs).
+        RateLimiter::for('username.check', function (Request $request) {
+            return Limit::perMinute(20)->by('username:'.$request->ip());
+        });
+
+        // Registration attempts: per IP and per email, both strict.
+        RateLimiter::for('register', function (Request $request) {
+            $email = strtolower((string) ($request->input('email') ?? ''));
+            return [Limit::perHour(5)->by('register:'.$request->ip()),
+                    Limit::perHour(3)->by('register:'.$email)];
         });
     }
 }

@@ -3,45 +3,35 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\OtpChallenge;
+use App\Models\PendingRegistration;
 use App\Models\User;
 use App\Support\ApiResponse;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
+/**
+ * Direct email-link verification has been replaced by the OTP-based
+ * signup flow. The original Laravel signed-link verify route is kept as
+ * a fallback so already-sent verification emails from previous installs
+ * still resolve, but new registrations always go through the OTP stage.
+ */
 class VerifyEmailController extends Controller
 {
     use ApiResponse;
 
-    /**
-     * Completes email verification from the signed link the SPA forwards
-     * after the user clicks it. Laravel's EmailVerificationRequest performs
-     * the signature, hash and expiry checks before this method runs.
-     */
-    public function __invoke(EmailVerificationRequest $request): \Illuminate\Http\JsonResponse
+    public function __invoke(Request $request, int $id, string $hash): JsonResponse
     {
-        $user = $request->user();
-
-        if ($user->hasVerifiedEmail()) {
-            return $this->success(null, 'Email already verified.');
+        $user = User::query()->find($id);
+        if (! $user || ! hash_equals(sha1($user->getEmailForVerification()), $hash)) {
+            return $this->error('Invalid or expired verification link.', 410);
         }
 
-        $request->fulfill();
-
-        event(new Verified($user));
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
 
         return $this->success(null, 'Your email address has been verified.');
-    }
-
-    public function resend(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
-    {
-        $user = $request->user();
-
-        if ($user->hasVerifiedEmail()) {
-            return $this->success(null, 'Email already verified.');
-        }
-
-        $user->sendEmailVerificationNotification();
-
-        return $this->success(null, 'Verification link sent. Check your inbox.');
     }
 }

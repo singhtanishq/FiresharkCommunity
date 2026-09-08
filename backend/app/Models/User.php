@@ -43,6 +43,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'last_activity_at' => 'datetime',
+            'last_failed_login_at' => 'datetime',
+            'locked_until' => 'datetime',
             'password' => 'hashed',
             'is_suspended' => 'boolean',
             'notification_preferences' => 'array',

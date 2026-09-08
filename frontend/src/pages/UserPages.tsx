@@ -219,8 +219,8 @@ export function Settings() {
           <button
             className="btn btn--ghost btn--sm"
             onClick={async () => {
-              const { authApi } = await import('../api/endpoints')
-              await authApi.sendVerification().catch(() => undefined)
+              const { api } = await import('../api/client')
+              await api.post('/auth/email/verification-notification').catch(() => undefined)
             }}
           >
             Resend

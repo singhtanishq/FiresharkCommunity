@@ -5,17 +5,69 @@ import type {
 
 // ---------------------------------------------------------------- Auth
 
+export interface OtpChallengeStart {
+  step: 'email' | 'otp'
+  identifier: string
+  token: string
+  expires_at: string
+  resend_after?: string
+  message: string
+}
+
+export interface OtpVerifyResult {
+  verified: boolean
+  identifier: string
+  reset_token?: string
+  expires_in?: number
+}
+
 export const authApi = {
-  register: (payload: { name: string; username: string; email: string; password: string }) =>
-    api.post<{ data: UserSummary }>('/auth/register', payload).then((r) => r.data),
-  login: (payload: { email: string; password: string }) =>
-    api.post<{ data: UserSummary }>('/auth/login', payload).then((r) => r.data),
+  checkUsername: (username: string) =>
+    api.get<{ data: { username: string; available: boolean; reason: string | null } }>('/auth/check-username', { params: { username } })
+      .then((r) => r.data.data),
+
+  startRegistration: (payload: { name: string; username: string; email: string; password: string }) =>
+    api.post<{ data: OtpChallengeStart }>('/auth/register/start', payload).then((r) => r.data.data),
+
+  verifySignupOtp: (payload: { identifier: string; code: string }, otpToken: string) =>
+    api.post<{ data: OtpVerifyResult }>('/auth/register/verify-otp', payload, { headers: { 'X-OTP-Token': otpToken } })
+      .then((r) => r.data.data),
+
+  resendSignupOtp: (identifier: string) =>
+    api.post<{ data: { token: string; expires_at: string; message: string } }>('/auth/register/otp/resend', { identifier })
+      .then((r) => r.data.data),
+
+  completeRegistration: (identifier: string) =>
+    api.post<{ data: UserSummary }>('/auth/register/complete', { identifier }).then((r) => r.data.data),
+
+  startLogin: (payload: { email: string; password: string }) =>
+    api.post<{ data: OtpChallengeStart }>('/auth/login/start', payload).then((r) => r.data.data),
+
+  verifyLoginOtp: (payload: { identifier: string; code: string }, otpToken: string) =>
+    api.post<{ data: UserSummary }>('/auth/login/verify-otp', payload, { headers: { 'X-OTP-Token': otpToken } })
+      .then((r) => r.data.data),
+
+  resendLoginOtp: (identifier: string) =>
+    api.post<{ data: { token: string; expires_at: string; message: string } }>('/auth/login/otp/resend', { identifier })
+      .then((r) => r.data.data),
+
+  forgotPassword: (email: string) =>
+    api.post<{ data: { message: string; token: string; expires_at: string } }>('/auth/forgot-password', { email })
+      .then((r) => r.data.data),
+
+  resendResetOtp: (email: string) =>
+    api.post<{ data: { message: string; token: string; expires_at: string } }>('/auth/forgot-password/resend', { email })
+      .then((r) => r.data.data),
+
+  verifyResetOtp: (payload: { email: string; code: string }, otpToken: string) =>
+    api.post<{ data: OtpVerifyResult }>('/auth/forgot-password/verify', payload, { headers: { 'X-OTP-Token': otpToken } })
+      .then((r) => r.data.data),
+
+  resetPassword: (payload: { email: string; reset_token: string; password: string; password_confirmation: string }) =>
+    api.post('/auth/reset-password', payload).then((r) => r.data),
+
   logout: () => api.post('/auth/logout').then((r) => r.data),
   me: () => api.get<{ data: CurrentUser }>('/auth/me').then((r) => r.data.data),
-  sendVerification: () => api.post('/auth/email/verification-notification').then((r) => r.data),
-  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }).then((r) => r.data),
-  resetPassword: (payload: { token: string; email: string; password: string; password_confirmation: string }) =>
-    api.post('/auth/reset-password', payload).then((r) => r.data),
 }
 
 // ------------------------------------------------------------- Questions

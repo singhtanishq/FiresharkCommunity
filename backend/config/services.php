@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'zeptomail' => [
+        'api_key' => env('ZEPTOMAIL_API_KEY', 'development_placeholder'),
+        'api_base' => env('ZEPTOMAIL_API_BASE', 'https://api.zeptomail.com/v1.1'),
+        'from_email' => env('ZEPTOMAIL_FROM_EMAIL', 'community@fireshark.in'),
+        'from_name' => env('ZEPTOMAIL_FROM_NAME', 'FireShark Community'),
+        'otp_template_key' => env('ZEPTOMAIL_OTP_TEMPLATE_KEY', 'fire-shark-otp-template'),
+        'reset_template_key' => env('ZEPTOMAIL_RESET_TEMPLATE_KEY', 'fire-shark-reset-template'),
+    ],
+
 ];
