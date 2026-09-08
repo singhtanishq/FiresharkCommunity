@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import logoWhite from '../../assets/logo_white.png'
+import logo from '../../assets/fireshark_community.png'
 
 export function Footer() {
   return (
@@ -7,8 +7,7 @@ export function Footer() {
       <div className="site-footer__inner">
         <div>
           <div className="brand" style={{ color: '#fff' }}>
-            <span className="brand__mark"><img src={logoWhite} alt="FireShark" /></span>
-            <span className="brand__text">Community</span>
+            <img src={logo} alt="FireShark Community" className="brand__logo" />
           </div>
           <p className="site-footer__brandline">
             Ask questions. Share knowledge. Build expertise. A community for cybersecurity professionals, learners

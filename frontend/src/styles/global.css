@@ -62,8 +62,8 @@
 
   --container:    1240px;
   --container-narrow: 880px;
-  --header-h:     64px;
-  --header-h-scrolled: 56px;
+  --header-h:     72px;
+  /* --header-h-scrolled: 56px; removed - no longer compact on scroll */
 
   --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -420,9 +420,7 @@ code, pre { font-family: var(--font-mono); font-size: 0.85em; }
   padding: 0 1.5rem;
   max-width: var(--container);
   margin: 0 auto;
-  transition: height var(--dur) var(--ease);
 }
-.site-header--scrolled .site-header__top { height: var(--header-h-scrolled); }
 
 .brand {
   display: flex;
@@ -435,9 +433,8 @@ code, pre { font-family: var(--font-mono); font-size: 0.85em; }
   white-space: nowrap;
 }
 .brand:hover { text-decoration: none; }
-.brand__mark { display: block; height: 28px; line-height: 0; }
-.brand__mark img { height: 28px; width: auto; }
-.site-header--scrolled .brand__mark img { height: 24px; }
+.brand__mark { display: block; height: 32px; line-height: 0; }
+.brand__mark img { height: 32px; width: auto; }
 .brand__text { color: #fff; }
 .brand__text b { color: #fff; font-weight: 800; }
 
