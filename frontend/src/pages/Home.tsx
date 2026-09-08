@@ -5,15 +5,36 @@ import type { Category, LeaderboardPerson, Question } from '../types'
 import { QuestionCard } from '../components/content/QuestionCard'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber, timeAgo } from '../lib/format'
+import { 
+  Shield, Terminal, Crosshair, Bug, Network, Cloud, 
+  Radar, Target, Globe, Api, Search, AlertTriangle, 
+  Wrench, Award, Briefcase, FlaskConical, MessageSquare,
+  Trophy, Users, ChevronDown, ChevronRight, Eye
+} from 'lucide-react'
 
-const CATEGORY_ICONS: Record<string, string> = {
-  shield: '🛡️', terminal: '⌨️', crosshair: '🎯', bug: '🐞', network: '🌐',
-  cloud: '☁️', radar: '📡', target: '🎯', globe: '🕸️', api: '🔌',
-  search: '🔍', alert: '🚨', tool: '🛠️', certificate: '🎓', briefcase: '💼', flask: '🧪',
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  shield: <Shield size={16} strokeWidth={2} />,
+  terminal: <Terminal size={16} strokeWidth={2} />,
+  crosshair: <Crosshair size={16} strokeWidth={2} />,
+  bug: <Bug size={16} strokeWidth={2} />,
+  network: <Network size={16} strokeWidth={2} />,
+  cloud: <Cloud size={16} strokeWidth={2} />,
+  radar: <Radar size={16} strokeWidth={2} />,
+  target: <Target size={16} strokeWidth={2} />,
+  globe: <Globe size={16} strokeWidth={2} />,
+  api: <Api size={16} strokeWidth={2} />,
+  search: <Search size={16} strokeWidth={2} />,
+  alert: <AlertTriangle size={16} strokeWidth={2} />,
+  tool: <Wrench size={16} strokeWidth={2} />,
+  certificate: <Award size={16} strokeWidth={2} />,
+  briefcase: <Briefcase size={16} strokeWidth={2} />,
+  flask: <FlaskConical size={16} strokeWidth={2} />,
 }
 
 function CategoryIcon({ icon, size = '1.6rem' }: { icon: string | null; size?: string }) {
-  return <span aria-hidden="true" style={{ fontSize: size }}>{CATEGORY_ICONS[icon ?? ''] ?? '📁'}</span>
+  const Icon = CATEGORY_ICONS[icon ?? '']
+  if (!Icon) return <span aria-hidden="true" style={{ fontSize: size }}>📁</span>
+  return <Icon size={parseInt(size) || 16} strokeWidth={2} />
 }
 
 function Stat({ value, label, accent }: { value: string | number; label: string; accent?: boolean }) {
@@ -60,7 +81,7 @@ export function Home() {
     <div>
       <section className="hero">
         <div className="hero__eyebrow">
-          <span>●</span> FireShark Community
+          <span className="dot-indicator" aria-hidden="true"></span> FireShark Community
         </div>
         <h1 className="hero__title">
           Ask questions. Share knowledge. <em>Build expertise.</em>
@@ -71,7 +92,7 @@ export function Home() {
           keeps growing.
         </p>
         <form className="hero__search" role="search" onSubmit={submit}>
-          <span style={{ paddingLeft: '0.9rem', color: 'rgba(255,255,255,0.55)' }} aria-hidden="true">⌕</span>
+          <Search className="hero__search-icon" aria-hidden="true" size={20} strokeWidth={2} />
           <input
             value={heroQ}
             onChange={(e) => setHeroQ(e.target.value)}
@@ -111,7 +132,7 @@ export function Home() {
               ? (
                 <div className="panel">
                   <EmptyState
-                    icon="💬"
+                    icon={<MessageSquare size={32} strokeWidth={1.5} />}
                     title="No questions here yet. Be the first to ask."
                     action={<Link to="/ask" className="btn btn--fire">Ask the first question</Link>}
                   />
@@ -145,32 +166,6 @@ export function Home() {
                   <span className="muted">{formatNumber(category.questions_count)}</span>
                 </Link>
               ))}
-            </div>
-          </div>
-
-          <div className="panel mt-2">
-            <div className="panel__header">
-              <h2>Top contributors this month</h2>
-              <Link to="/leaderboard" className="muted" style={{ fontSize: '0.84rem' }}>All →</Link>
-            </div>
-            <div className="panel__body" style={{ padding: 0 }}>
-              {top.length === 0
-                ? <div style={{ padding: '1rem 1.25rem' }} className="muted">No contributors yet — be the first to answer and earn reputation.</div>
-                : top.map((person, i) => (
-                  <div key={person.username} className="row row--between" style={{ padding: '0.65rem 1.25rem', borderBottom: '1px solid var(--border)' }}>
-                    <div className="row" style={{ gap: '0.6rem' }}>
-                      <span style={{
-                        width: 28, height: 28, borderRadius: '50%', background: 'var(--brand-blue-600)',
-                        color: '#fff', fontSize: 12, display: 'inline-grid', placeItems: 'center', fontWeight: 700,
-                      }}>#{i + 1}</span>
-                      <div>
-                        <Link to={`/users/${person.username}`} style={{ fontWeight: 600, color: 'inherit' }}>{person.name}</Link>
-                        <div className="muted" style={{ fontSize: '0.78rem' }}>{formatNumber(person.score ?? 0)} points</div>
-                      </div>
-                    </div>
-                    <span className="muted">{timeAgo(new Date().toISOString())}</span>
-                  </div>
-                ))}
             </div>
           </div>
         </aside>
