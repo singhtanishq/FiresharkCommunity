@@ -6,7 +6,10 @@ import { QuestionCard } from '../components/content/QuestionCard'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
 import { 
-  Search, MessageSquare, FolderOpen
+  Shield, Terminal, Crosshair, Bug, Network, Cloud, 
+  Radar, Target, Globe, Cpu, Search, AlertTriangle, 
+  Wrench, Award, Briefcase, FlaskConical, MessageSquare,
+  FolderOpen
 } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
