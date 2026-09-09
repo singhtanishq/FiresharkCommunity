@@ -85,7 +85,7 @@ export function UserProfile() {
             {profile.badges.map((badge: Badge) => (
               <div key={badge.id} className="badge-item">
                 <span className={`badge-item__icon tier-${badge.tier}`} aria-hidden="true">
-                  {badge.tier === 'gold' ? '🥇' : badge.tier === 'silver' ? '🥈' : '🥉'}
+                  {badge.tier === 'gold' ? <Award size={16} strokeWidth={2} className="gold" /> : badge.tier === 'silver' ? <Award size={16} strokeWidth={2} className="silver" /> : <Award size={16} strokeWidth={2} className="bronze" />}
                 </span>
                 <span>
                   <b>{badge.name}</b>
