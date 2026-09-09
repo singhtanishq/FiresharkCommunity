@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { tagsApi } from '../api/endpoints'
-import type { Question, Tag } from '../types'
+import type { Question, Tag as TagType } from '../types'
 import { QuestionCard } from '../components/content/QuestionCard'
 import { Pagination } from '../components/ui/Pagination'
 import { EmptyState, Spinner } from '../components/ui/States'
-import { Tag, Tag as TagIcon } from 'lucide-react'
+import { Tag, MessageSquare } from 'lucide-react'
 
 export function Tags() {
-  const [data, setData] = useState<{ data: Tag[]; meta: { current_page: number; last_page: number; per_page: number; total: number } } | null>(null)
+  const [data, setData] = useState<{ data: TagType[]; meta: { current_page: number; last_page: number; per_page: number; total: number } } | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [q, setQ] = useState(searchParams.get('q') ?? '')
   const page = Number(searchParams.get('page') ?? 1)
@@ -59,7 +59,7 @@ export function Tags() {
 export function TagDetail() {
   const { slug = '' } = useParams()
   const [searchParams] = useSearchParams()
-  const [data, setData] = useState<{ tag: Tag; questions: { data: Question[]; meta: { current_page: number; last_page: number; per_page: number; total: number } } } | null>(null)
+  const [data, setData] = useState<{ tag: TagType; questions: { data: Question[]; meta: { current_page: number; last_page: number; per_page: number; total: number } } } | null>(null)
   const [notFound, setNotFound] = useState(false)
 
   const page = Number(searchParams.get('page') ?? 1)

@@ -5,6 +5,7 @@ import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
 import { Trophy } from 'lucide-react'
+import type { LeaderboardPerson } from '../types'
 
 type Board = 'contributors' | 'askers' | 'answerers'
 

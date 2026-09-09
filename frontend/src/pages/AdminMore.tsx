@@ -4,12 +4,11 @@ import { AdminHeader } from './Admin'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
 import { 
-  FolderOpen, Tag, Shield, AlertTriangle, Wrench, Award, 
+  FolderOpen, Shield, AlertTriangle, Wrench, Award, 
   Briefcase, FlaskConical, Search, Users, Trophy, 
   Calendar, CheckCircle2, XCircle, Eye, EyeOff, Trash2, 
-  Edit, Shield as ShieldIcon, ChevronDown, AlertTriangle, 
-  Search as SearchIcon, UserPlus, UserMinus,
-  Key, Users as UsersIcon, FolderOpen as FolderOpenIcon, Award, BarChart
+  Edit, ChevronDown, UserPlus, UserMinus,
+  Key, BarChart
 } from 'lucide-react'
 
 // ---------------------------------------------------- categories & tags

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { categoriesApi, tagsApi, questionsApi } from '../api/endpoints'
 import { useAuth } from '../context/AuthContext'
 import { RichTextEditor } from '../components/content/RichTextEditor'
 import { apiError } from '../api/client'
-import type { Category, Question, Tag } from '../types'
+import type { Category, Tag } from '../types'
 import { AlertTriangle } from 'lucide-react'
 
 /**
@@ -30,6 +30,8 @@ export function Ask() {
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<{ message: string; fields: Record<string, string[]> } | null>(null)
 
+  const editing = Boolean(editId)
+
   useEffect(() => {
     categoriesApi.list().then((list) => {
       setCategories(list)
@@ -38,13 +40,8 @@ export function Ask() {
   }, [])
 
   useEffect(() => {
-    if (! editing) return
-    questionsApi.list({ per_page: 50 }).then(() => undefined) // warm cache, ignored
-    // Load the question for editing.
-    void (async () => {
-      // The show endpoint needs a slug; the admin edit path uses id-based
-      // lookup, so ask via the paginated author query instead.
-    })()
+    if (!editId) return
+    // TODO: Load question data for editing if needed
   }, [editId])
 
   useEffect(() => {
@@ -72,70 +69,6 @@ export function Ask() {
   }
 
   if (loading) return null
-
-  const addTag = (tag: string) => {
-    const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')
-    if (slug && ! tags.includes(slug) && tags.length < 5) setTags([...tags, slug])
-    setTagInput('')
-    setSuggestions([])
-  }
-
-  const submit = async (asDraft: boolean) => {
-    setBusy(true)
-    setErrors(null)
-    const payload = {
-      title,
-      body,
-      category_id: Number(categoryId),
-      tags,
-      status: asDraft ? 'draft' : 'published',
-    }
-    try {
-      const created = await questionsApi.create(payload)
-      navigate(`/questions/${created.slug}`)
-    } catch (e: any) {
-      const err = apiError(e)
-      setErrors({ message: err.message, fields: err.errors ?? {} })
-      setBusy(false)
-    }
-  }
-
-  const addTag = (tag: string) => {
-    const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')
-    if (slug && ! tags.includes(slug) && tags.length < 5) setTags([...tags, slug])
-    setTagInput('')
-    setSuggestions([])
-  }
-
-  const submit = async (asDraft: boolean) => {
-    setBusy(true)
-    setErrors(null)
-    try {
-      if (editing && editId) {
-        const updated = await questionsApi.update(Number(editId), {
-          title,
-          body,
-          category_id: Number(categoryId),
-          tags,
-        })
-        navigate(`/questions/${updated.slug}`)
-        return
-      }
-
-      const created = await questionsApi.create({
-        title,
-        body,
-        category_id: Number(categoryId),
-        tags,
-        status: asDraft ? 'draft' : 'published',
-      })
-      navigate(`/questions/${created.slug}`)
-    } catch (e: any) {
-      const err = apiError(e)
-      setErrors({ message: err.message, fields: err.errors ?? {} })
-      setBusy(false)
-    }
-  }
 
   const addTag = (tag: string) => {
     const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')

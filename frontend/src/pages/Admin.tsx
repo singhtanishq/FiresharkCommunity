@@ -50,7 +50,7 @@ export function AdminLayout() {
   )
 }
 
-function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
+export function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="page-toolbar">
       <h1>{title}</h1>
@@ -217,15 +217,12 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
   const [statusFilter, setStatusFilter] = useState('')
   const [q, setQ] = useState('')
   const [loading, setLoading] = useState(true)
-  const [meta, setMeta] = useState({ current_page: 1, last_page: 1 })
-  const page = 1
 
   const load = useCallback(() => {
     setLoading(true)
     api.get(`/admin/${kind}`, { params: { status: statusFilter || undefined, q: q || undefined } })
       .then((r) => {
         setItems(r.data.data)
-        setMeta({ current_page: r.data.meta.current_page, last_page: r.data.meta.last_page })
       })
       .finally(() => setLoading(false))
   }, [kind, statusFilter, q])

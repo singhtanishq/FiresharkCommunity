@@ -7,28 +7,29 @@ import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber, timeAgo } from '../lib/format'
 import { 
   Shield, Terminal, Crosshair, Bug, Network, Cloud, 
-  Radar, Target, Globe, Api, Search, AlertTriangle, 
+  Radar, Target, Globe, Cpu, Search, AlertTriangle, 
   Wrench, Award, Briefcase, FlaskConical, MessageSquare,
-  Trophy, Users, ChevronDown, ChevronRight, Eye
+  Trophy, Users, ChevronDown, ChevronRight, Eye,
+  FolderOpen
 } from 'lucide-react'
 
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  shield: <Shield size={16} strokeWidth={2} />,
-  terminal: <Terminal size={16} strokeWidth={2} />,
-  crosshair: <Crosshair size={16} strokeWidth={2} />,
-  bug: <Bug size={16} strokeWidth={2} />,
-  network: <Network size={16} strokeWidth={2} />,
-  cloud: <Cloud size={16} strokeWidth={2} />,
-  radar: <Radar size={16} strokeWidth={2} />,
-  target: <Target size={16} strokeWidth={2} />,
-  globe: <Globe size={16} strokeWidth={2} />,
-  api: <Api size={16} strokeWidth={2} />,
-  search: <Search size={16} strokeWidth={2} />,
-  alert: <AlertTriangle size={16} strokeWidth={2} />,
-  tool: <Wrench size={16} strokeWidth={2} />,
-  certificate: <Award size={16} strokeWidth={2} />,
-  briefcase: <Briefcase size={16} strokeWidth={2} />,
-  flask: <FlaskConical size={16} strokeWidth={2} />,
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
+  shield: Shield,
+  terminal: Terminal,
+  crosshair: Crosshair,
+  bug: Bug,
+  network: Network,
+  cloud: Cloud,
+  radar: Radar,
+  target: Target,
+  globe: Globe,
+  api: Cpu,
+  search: Search,
+  alert: AlertTriangle,
+  tool: Wrench,
+  certificate: Award,
+  briefcase: Briefcase,
+  flask: FlaskConical,
 }
 
 function CategoryIcon({ icon, size = '1.6rem' }: { icon: string | null; size?: string }) {

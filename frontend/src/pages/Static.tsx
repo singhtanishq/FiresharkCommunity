@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Shark } from 'lucide-react'
+import { Fish } from 'lucide-react'
 
 export function CommunityGuidelines() {
   return (
@@ -137,7 +137,7 @@ export function NotFound() {
   return (
     <div className="panel" style={{ maxWidth: 480, margin: '3rem auto' }}>
       <div className="panel__body" style={{ textAlign: 'center' }}>
-        <Shark size={48} strokeWidth={1.5} aria-hidden="true" />
+        <Fish size={48} strokeWidth={1.5} aria-hidden="true" />
         <h1>404</h1>
         <p className="muted">The page you are looking for doesn't exist or has been moved.</p>
         <Link to="/" className="btn btn--primary">Back to the community</Link>
