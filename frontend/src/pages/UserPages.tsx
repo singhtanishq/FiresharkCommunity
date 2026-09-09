@@ -53,7 +53,7 @@ export function Notifications() {
 
       <div className="panel">
         {data.data.length === 0
-          ? <EmptyState icon="🔔" title="You're all caught up." />
+          ? <EmptyState icon={<Bell size={32} strokeWidth={1.5} />} title="You're all caught up." />
           : data.data.map((notification) => (
             <button
               key={notification.id}
