@@ -4,13 +4,9 @@ import { questionsApi, categoriesApi, leaderboardApi } from '../api/endpoints'
 import type { Category, LeaderboardPerson, Question } from '../types'
 import { QuestionCard } from '../components/content/QuestionCard'
 import { EmptyState, Spinner } from '../components/ui/States'
-import { formatNumber, timeAgo } from '../lib/format'
+import { formatNumber } from '../lib/format'
 import { 
-  Shield, Terminal, Crosshair, Bug, Network, Cloud, 
-  Radar, Target, Globe, Cpu, Search, AlertTriangle, 
-  Wrench, Award, Briefcase, FlaskConical, MessageSquare,
-  Trophy, Users, ChevronDown, ChevronRight, Eye,
-  FolderOpen
+  Search, MessageSquare, FolderOpen
 } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
