@@ -84,7 +84,7 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
             ? (
               <div className="panel">
                 <EmptyState
-                  icon={unansweredOnly ? '🎉' : '💬'}
+                  icon={unansweredOnly ? <PartyPopper size={32} strokeWidth={1.5} /> : <MessageSquare size={32} strokeWidth={1.5} />
                   title={unansweredOnly ? 'No unanswered questions right now.' : 'No questions here yet. Be the first to ask.'}
                   action={<Link to="/ask" className="btn btn--fire">Ask a question</Link>}
                 />
