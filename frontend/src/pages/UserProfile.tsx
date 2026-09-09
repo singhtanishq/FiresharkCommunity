@@ -76,7 +76,6 @@ export function UserProfile() {
           </div>
         </div>
       </div>
-      </div>
 
       {(profile.badges?.length ?? 0) > 0 && (
         <div className="panel mt-2">
