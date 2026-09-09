@@ -33,7 +33,7 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 
 function CategoryIcon({ icon, size = '1.6rem' }: { icon: string | null; size?: string }) {
   const Icon = CATEGORY_ICONS[icon ?? '']
-  if (!Icon) return <span aria-hidden="true" style={{ fontSize: size }}>📁</span>
+  if (!Icon) return <span aria-hidden="true" style={{ fontSize: size }}><FolderOpen size={16} strokeWidth={1.5} /></span>
   return <Icon size={parseInt(size) || 16} strokeWidth={2} />
 }
 
