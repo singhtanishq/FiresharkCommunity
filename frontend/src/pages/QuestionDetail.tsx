@@ -12,7 +12,7 @@ import { ConfirmDialog } from '../components/ui/Modal'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { apiError } from '../api/client'
 import { closedReasonLabels, formatDate, timeAgo } from '../lib/format'
-import { Lock, Lightbulb, MessageSquare, Eye, ChevronDown, AlertTriangle, Search, UserPlus, UserMinus, Flag, Bookmark, BookOpen, Mail, AlertCircle, CheckCircle2, XCircle, Share2, ChevronRight, Copy } from 'lucide-react'
+import { Lock, Lightbulb, Search } from 'lucide-react'
 
 export function QuestionDetail() {
   const { slug = '' } = useParams()
