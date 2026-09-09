@@ -8,10 +8,10 @@ import { Pagination } from '../components/ui/Pagination'
 import { formatNumber, reportReasonLabels, timeAgo, verificationLabels } from '../lib/format'
 import { 
   LayoutDashboard, Flag, MessageSquare, FileText, Users, 
-  FolderOpen, Award, Settings, AlertCircle, CheckCircle, 
-  XCircle, Eye, EyeOff, Trash2, Edit, Shield, 
-  ChevronDown, AlertTriangle, Search, UserPlus, UserMinus,
-  Key, Users, FolderOpen as FolderOpenIcon, Award, BarChart
+  FolderOpen, Award, Settings, CheckCircle2, 
+  XCircle, EyeOff, Lock,
+  ChevronDown, Search, UserPlus, UserMinus,
+  Key, FolderOpen as FolderOpenIcon, BarChart
 } from 'lucide-react'
 
 // ------------------------------------------------------------------ shell
