@@ -211,7 +211,7 @@ export function Ask() {
           <button
             className="btn btn--ghost"
             disabled={busy || ! title.trim() || ! body.trim()}
-            onClick={() => { setDraft(true); void submit(true) }}
+            onClick={() => void submit(true)}
           >
             Save draft
           </button>
@@ -219,7 +219,7 @@ export function Ask() {
         <button
           className="btn btn--fire btn--lg"
           disabled={busy || title.length < 15 || title.length > 180 || body.trim().length < 30 || ! categoryId}
-          onClick={() => { setDraft(false); void submit(false) }}
+          onClick={() => void submit(false)}
         >
           {busy ? 'Publishing…' : 'Publish question'}
         </button>
