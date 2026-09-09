@@ -97,8 +97,8 @@ export function AdminDashboard() {
             {activity.questions.map((q: any) => (
               <div key={q.id} className="row--between row" style={{ padding: '0.5rem 1.1rem', borderBottom: '1px solid var(--border)' }}>
                 <span style={{ fontSize: '0.88rem' }}>
-                  {q.status === 'hidden' && <span style={{ color: 'var(--muted)' }}>🙈 </span>}
-                  {q.status === 'closed' && <span style={{ color: 'var(--red-600)' }}>🔒 </span>}
+                  {q.status === 'hidden' && <span style={{ color: 'var(--muted)' }}><EyeOff size={14} strokeWidth={2} /> </span>}
+                  {q.status === 'closed' && <span style={{ color: 'var(--red-600)' }}><Lock size={14} strokeWidth={2} /> </span>}
                   {q.title}
                 </span>
                 <span className="muted" style={{ fontSize: '0.78rem' }}>{timeAgo(q.created_at)}</span>
@@ -113,7 +113,7 @@ export function AdminDashboard() {
             {activity.reports.length === 0 && <p className="muted" style={{ padding: '1rem 1.1rem' }}>No reports yet.</p>}
             {activity.reports.map((report: any) => (
               <div key={report.id} className="row--between row" style={{ padding: '0.5rem 1.1rem', borderBottom: '1px solid var(--border)' }}>
-                <span style={{ fontSize: '0.88rem' }}>🚩 {reportReasonLabels[report.reason] ?? report.reason} <span className="muted">({report.status})</span></span>
+                <span style={{ fontSize: '0.88rem' }}><Flag size={14} strokeWidth={2} /> {reportReasonLabels[report.reason] ?? report.reason} <span className="muted">({report.status})</span></span>
                 <span className="muted" style={{ fontSize: '0.78rem' }}>{timeAgo(report.created_at)}</span>
               </div>
             ))}
@@ -170,7 +170,7 @@ export function AdminReports() {
       {loading
         ? <Spinner />
         : reports.length === 0
-          ? <EmptyState icon="✅" title="No reports in this view. The community is behaving." />
+          ? <EmptyState icon={<CheckCircle2 size={32} strokeWidth={1.5} />} title="No reports in this view. The community is behaving." />
           : (
             <div className="panel">
               <div className="panel__body" style={{ padding: 0 }}>
@@ -260,7 +260,7 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
       {loading
         ? <Spinner />
         : items.length === 0
-          ? <EmptyState icon="🗂️" title="Nothing here." />
+          ? <EmptyState icon={<FolderOpen size={32} strokeWidth={1.5} />} title="Nothing here." />
           : (
             <div className="panel" style={{ overflowX: 'auto' }}>
               <table className="data-table">
