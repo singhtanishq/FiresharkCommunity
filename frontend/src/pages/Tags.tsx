@@ -53,11 +53,10 @@ export function Tags() {
           )}
       </div>
 
-      {data && <Pagination meta={data.meta} baseUrl={q ? `/tags?q=${encodeURIComponent(q)}` : '/tags'} /> }
+      {data && <Pagination meta={data.meta} baseUrl={q ? `/tags?q=${encodeURIComponent(q)}` : '/tags'} />}
     </div>
   );
 }
-
 
 export function TagDetail() {
   const { slug = '' } = useParams()
