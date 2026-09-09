@@ -3,6 +3,14 @@ import { api, apiError } from '../api/client'
 import { AdminHeader } from './Admin'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
+import { 
+  FolderOpen, Tag, Shield, AlertTriangle, Wrench, Award, 
+  Briefcase, FlaskConical, Search, Users, Trophy, 
+  Calendar, CheckCircle2, XCircle, Eye, EyeOff, Trash2, 
+  Edit, Shield as ShieldIcon, ChevronDown, AlertTriangle, 
+  Search as SearchIcon, UserPlus, UserMinus,
+  Key, Users as UsersIcon, FolderOpen as FolderOpenIcon, Award, BarChart
+} from 'lucide-react'
 
 // ---------------------------------------------------- categories & tags
 
@@ -325,7 +333,7 @@ export function AdminSettings() {
           {! leaderboard
             ? <Spinner />
             : leaderboard.periods.length === 0
-              ? <EmptyState icon="🏆" title="No finalized periods yet. Finalize the current month at month end." />
+              ? <EmptyState icon={<Trophy size={32} strokeWidth={1.5} />} title="No finalized periods yet. Finalize the current month at month end." />
               : (
                 <table className="data-table">
                   <thead><tr><th>Period</th><th>Status</th><th>Finalized</th></tr></thead>

@@ -6,18 +6,25 @@ import { EmptyState, Spinner } from '../components/ui/States'
 import { Avatar } from '../components/ui/Avatar'
 import { Pagination } from '../components/ui/Pagination'
 import { formatNumber, reportReasonLabels, timeAgo, verificationLabels } from '../lib/format'
+import { 
+  LayoutDashboard, Flag, MessageSquare, FileText, Users, 
+  FolderOpen, Award, Settings, AlertCircle, CheckCircle, 
+  XCircle, Eye, EyeOff, Trash2, Edit, Shield, 
+  ChevronDown, AlertTriangle, Search, UserPlus, UserMinus,
+  Key, Users, FolderOpen as FolderOpenIcon, Award, BarChart
+} from 'lucide-react'
 
 // ------------------------------------------------------------------ shell
 
 const ADMIN_NAV = [
-  ['/admin', '📊', 'Dashboard'],
-  ['/admin/reports', '🚩', 'Reports'],
-  ['/admin/questions', '💬', 'Questions'],
-  ['/admin/answers', '📝', 'Answers'],
-  ['/admin/users', '👥', 'Users'],
-  ['/admin/categories', '📁', 'Categories & tags'],
-  ['/admin/badges', '🏅', 'Badges & reputation'],
-  ['/admin/settings', '⚙️', 'Settings & leaderboard'],
+  ['/admin', <LayoutDashboard size={16} strokeWidth={2} />, 'Dashboard'],
+  ['/admin/reports', <Flag size={16} strokeWidth={2} />, 'Reports'],
+  ['/admin/questions', <MessageSquare size={16} strokeWidth={2} />, 'Questions'],
+  ['/admin/answers', <FileText size={16} strokeWidth={2} />, 'Answers'],
+  ['/admin/users', <Users size={16} strokeWidth={2} />, 'Users'],
+  ['/admin/categories', <FolderOpen size={16} strokeWidth={2} />, 'Categories & tags'],
+  ['/admin/badges', <Award size={16} strokeWidth={2} />, 'Badges & reputation'],
+  ['/admin/settings', <Settings size={16} strokeWidth={2} />, 'Settings & leaderboard'],
 ] as const
 
 export function AdminLayout() {
@@ -43,7 +50,7 @@ export function AdminLayout() {
   )
 }
 
-export function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
+function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="page-toolbar">
       <h1>{title}</h1>
@@ -90,8 +97,8 @@ export function AdminDashboard() {
             {activity.questions.map((q: any) => (
               <div key={q.id} className="row--between row" style={{ padding: '0.5rem 1.1rem', borderBottom: '1px solid var(--border)' }}>
                 <span style={{ fontSize: '0.88rem' }}>
-                  {q.status === 'hidden' && '🙈 '}
-                  {q.status === 'closed' && '🔒 '}
+                  {q.status === 'hidden' && <span style={{ color: 'var(--muted)' }}>🙈 </span>}
+                  {q.status === 'closed' && <span style={{ color: 'var(--red-600)' }}>🔒 </span>}
                   {q.title}
                 </span>
                 <span className="muted" style={{ fontSize: '0.78rem' }}>{timeAgo(q.created_at)}</span>
@@ -199,6 +206,7 @@ export function AdminReports() {
               </div>
             </div>
           )}
+      </AdminHeader>
     </div>
   )
 }
@@ -210,12 +218,15 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
   const [statusFilter, setStatusFilter] = useState('')
   const [q, setQ] = useState('')
   const [loading, setLoading] = useState(true)
+  const [meta, setMeta] = useState({ current_page: 1, last_page: 1 })
+  const page = 1
 
   const load = useCallback(() => {
     setLoading(true)
     api.get(`/admin/${kind}`, { params: { status: statusFilter || undefined, q: q || undefined } })
       .then((r) => {
         setItems(r.data.data)
+        setMeta({ current_page: r.data.meta.current_page, last_page: r.data.meta.last_page })
       })
       .finally(() => setLoading(false))
   }, [kind, statusFilter, q])
@@ -296,6 +307,7 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
               </table>
             </div>
           )}
+      </AdminHeader>
     </div>
   )
 }

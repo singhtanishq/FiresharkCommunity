@@ -6,6 +6,7 @@ import { QuestionCard } from '../components/content/QuestionCard'
 import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatDate, formatNumber, verificationLabels } from '../lib/format'
+import { User, Award, MessageSquare, Lightbulb, CheckCircle2 } from 'lucide-react'
 
 type Tab = 'questions' | 'answers'
 
@@ -38,7 +39,7 @@ export function UserProfile() {
   }, [username])
 
   if (notFound) {
-    return <EmptyState icon="👤" title="This user does not exist." />
+    return <EmptyState icon={<User size={32} strokeWidth={1.5} />} title="This user does not exist." />
   }
   if (loading || ! profile) return <Spinner />
 
@@ -74,6 +75,7 @@ export function UserProfile() {
             </span>
           </div>
         </div>
+      </div>
       </div>
 
       {(profile.badges?.length ?? 0) > 0 && (
@@ -111,7 +113,7 @@ export function UserProfile() {
 
         {tab === 'questions' && (
           questions.length === 0
-            ? <div className="panel"><EmptyState icon="💬" title="No questions asked yet." /></div>
+            ? <div className="panel"><EmptyState icon={<MessageSquare size={32} strokeWidth={1.5} />} title="No questions asked yet." /></div>
             : (
               <div className="question-list">
                 {questions.map((question) => <QuestionCard key={question.id} question={question} />)}
@@ -121,7 +123,7 @@ export function UserProfile() {
 
         {tab === 'answers' && (
           answers.length === 0
-            ? <div className="panel"><EmptyState icon="💡" title="No answers posted yet." /></div>
+            ? <div className="panel"><EmptyState icon={<Lightbulb size={32} strokeWidth={1.5} />} title="No answers posted yet." /></div>
             : (
               <div className="panel">
                 <div className="panel__body" style={{ padding: 0 }}>
