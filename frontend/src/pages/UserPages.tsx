@@ -215,7 +215,8 @@ export function Settings() {
 
       {! user.email_verified && (
         <div className="banner banner--info">
-          ✉️ Your email is not verified yet. Check your inbox for the verification link.
+          <Mail size={18} strokeWidth={2} style={{ marginRight: 8 }} aria-hidden="true" />
+          Your email is not verified yet. Check your inbox for the verification link.
           <button
             className="btn btn--ghost btn--sm"
             onClick={async () => {
