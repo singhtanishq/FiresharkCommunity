@@ -5,6 +5,7 @@ import type { Question } from '../types'
 import { QuestionCard } from '../components/content/QuestionCard'
 import { Pagination } from '../components/ui/Pagination'
 import { EmptyState, Spinner } from '../components/ui/States'
+import { PartyPopper, MessageSquare } from 'lucide-react'
 
 const SORTS = [
   ['latest', 'Latest'],
