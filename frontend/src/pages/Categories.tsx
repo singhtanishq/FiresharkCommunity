@@ -4,7 +4,7 @@ import { categoriesApi } from '../api/endpoints'
 import type { Category } from '../types'
 import { formatNumber } from '../lib/format'
 import { Spinner, EmptyState } from '../components/ui/States'
-import { FolderOpen, Shield, Terminal, Crosshair, Bug, Network, Cloud, Radar, Target, Globe, Api, Search, AlertTriangle, Wrench, Award, Briefcase, FlaskConical, FolderOpen } from 'lucide-react'
+import { FolderOpen, Shield, Terminal, Crosshair, Bug, Network, Cloud, Radar, Target, Globe, Api, Search, AlertTriangle, Wrench, Award, Briefcase, FlaskConical } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   shield: <Shield size={16} strokeWidth={2} />,

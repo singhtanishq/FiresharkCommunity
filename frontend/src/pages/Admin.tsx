@@ -206,7 +206,6 @@ export function AdminReports() {
               </div>
             </div>
           )}
-      </AdminHeader>
     </div>
   )
 }
@@ -307,7 +306,6 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
               </table>
             </div>
           )}
-      </AdminHeader>
     </div>
   )
 }
