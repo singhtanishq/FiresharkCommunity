@@ -14,7 +14,7 @@ export function CommunityGuidelines() {
         <div className="panel__header"><h2>What belongs here</h2></div>
         <div className="panel__body">
           <ul>
-            <li>Practical technical questions on cybersecurity, ethical hacking, penetration testing, networking, cloud security, SOC & blue team work, forensics and more.</            </li>
+            <li>Practical technical questions on cybersecurity, ethical hacking, penetration testing, networking, cloud security, SOC & blue team work, forensics and more.</li>
             <li>Certification preparation and career guidance.</li>
             <li>Hands-on lab and project troubleshooting.</li>
             <li>Clear answers backed by experience, references or working commands.</li>
@@ -41,9 +41,10 @@ export function CommunityGuidelines() {
           <ul>
             <li>Publishing passwords, API keys, tokens, private keys or other credentials.</li>
             <li>Personal data: phone numbers, addresses, government IDs, confidential company information.</li>
-            <li>Requests for unauthorised access, credential theft, malware distribution or any illegal activity.</            <li>Doxxing, harassment, phishing promotion or malicious links.</li>
+            <li>Requests for unauthorised access, credential theft, malware distribution or any illegal activity.</li>
+            <li>Doxxing, harassment, phishing promotion or malicious links.</li>
             <li>Spam, advertising and excessive self-promotion.</li>
-            <li>Account recovery, payment disputes and order problems \u2014 use <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer">FireShark Support</a> instead.
+            <li>Account recovery, payment disputes and order problems \u2014 use <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer">FireShark Support</a> instead.</li>
           </ul>
           <p className="muted">
             Legitimate offensive-security education (labs, CTFs, authorised engagements) is welcome \u2014 scope your
@@ -56,7 +57,8 @@ export function CommunityGuidelines() {
         <div className="panel__header"><h2>Voting, reputation and badges</h2></div>
         <div className="panel__body">
           <ul>
-            <li>Upvote answers that genuinely help; downvote only when something is incorrect or unsafe, ideally with a comment explaining why.</            <li>Vote based on usefulness, not agreement.</li>
+            <li>Upvote answers that genuinely help; downvote only when something is incorrect or unsafe, ideally with a comment explaining why.</li>
+            <li>Vote based on usefulness, not agreement.</li>
             <li>Reputation reflects community usefulness \u2014 ask, answer and get accepted to earn it.</li>
             <li>Badges recognise milestones like first questions, accepted answers and sustained contribution.</li>
             <li>The monthly leaderboard resets on the 1st; history is preserved.</li>
