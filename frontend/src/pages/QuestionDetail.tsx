@@ -12,6 +12,7 @@ import { ConfirmDialog } from '../components/ui/Modal'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { apiError } from '../api/client'
 import { closedReasonLabels, formatDate, timeAgo } from '../lib/format'
+import { Lock, Lightbulb, MessageSquare, Eye, ChevronDown, AlertTriangle, Search, UserPlus, UserMinus, Flag, Bookmark, BookOpen, Mail, AlertCircle, CheckCircle2, XCircle, Share2, ChevronRight, Copy } from 'lucide-react'
 
 export function QuestionDetail() {
   const { slug = '' } = useParams()
@@ -64,7 +65,7 @@ export function QuestionDetail() {
     return (
       <div className="panel">
         <EmptyState
-          icon="🔎"
+          icon={<Search size={32} strokeWidth={1.5} />}
           title="This question does not exist or is no longer available."
           action={<Link className="btn btn--primary" to="/questions">Browse questions</Link>}
         />
@@ -201,7 +202,8 @@ export function QuestionDetail() {
 
       {question.status === 'closed' && (
         <div className="banner banner--info">
-          🔒 This question is closed{question.closed_reason ? ` (${closedReasonLabels[question.closed_reason] ?? question.closed_reason})` : ''}. New answers cannot be added.
+          <Lock size={18} strokeWidth={2} style={{ marginRight: 8 }} aria-hidden="true" />
+          This question is closed{question.closed_reason ? ` (${closedReasonLabels[question.closed_reason] ?? question.closed_reason})` : ''}. New answers cannot be added.
         </div>
       )}
       {question.status === 'hidden' && (
@@ -305,7 +307,7 @@ export function QuestionDetail() {
         {answers.length === 0 && (
           <div className="panel">
             <EmptyState
-              icon="💡"
+              icon={<Lightbulb size={32} strokeWidth={1.5} />}
               title="No answers yet. Know the answer? Share your knowledge."
             />
           </div>
@@ -325,7 +327,8 @@ export function QuestionDetail() {
             <div className="post__body">
               {answer.accepted && (
                 <div className="accepted-flag mb-2" title="Accepted answer">
-                  ✓ Accepted Answer
+                  <CheckCircle2 size={16} strokeWidth={2} style={{ marginRight: 4 }} aria-hidden="true" />
+                  Accepted Answer
                   {isAuthor && (
                     <button className="link-btn" style={{ color: 'var(--muted)', fontWeight: 400 }} onClick={() => acceptAnswer(answer)}>
                       (unaccept)
