@@ -133,7 +133,7 @@ export function UserProfile() {
                         <Link to={`/questions/${answer.question?.slug}`} style={{ fontWeight: 600 }}>
                           {answer.question?.title}
                         </Link>
-                        {answer.question?.is_solved && <span className="solved-badge">✓</span>}
+                        {answer.question?.is_solved && <span className="solved-badge"><CheckCircle2 size={16} strokeWidth={2} aria-hidden="true" /></span>}
                       </div>
                       <div className="muted mt-1" style={{ fontSize: '0.85rem' }}>
                         {answer.body.replace(/[#*`>\n]/g, ' ').slice(0, 180)}…
