@@ -12,7 +12,7 @@ import { ConfirmDialog } from '../components/ui/Modal'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { apiError } from '../api/client'
 import { closedReasonLabels, formatDate, timeAgo } from '../lib/format'
-import { Lock, Lightbulb, Search } from 'lucide-react'
+import { Lock, Lightbulb, Search, CheckCircle2 } from 'lucide-react'
 
 export function QuestionDetail() {
   const { slug = '' } = useParams()
