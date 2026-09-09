@@ -25,7 +25,6 @@ export function Ask() {
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
   const [suggestions, setSuggestions] = useState<Tag[]>([])
-  const [draft, setDraft] = useState(false)
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<{ message: string; fields: Record<string, string[]> } | null>(null)

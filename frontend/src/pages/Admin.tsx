@@ -9,9 +9,8 @@ import { formatNumber, reportReasonLabels, timeAgo, verificationLabels } from '.
 import { 
   LayoutDashboard, Flag, MessageSquare, FileText, Users, 
   FolderOpen, Award, Settings, CheckCircle2, 
-  XCircle, EyeOff, Lock,
-  ChevronDown, Search, UserPlus, UserMinus,
-  Key, FolderOpen as FolderOpenIcon, BarChart
+  EyeOff, Lock,
+  UserPlus, UserMinus,
 } from 'lucide-react'
 
 // ------------------------------------------------------------------ shell

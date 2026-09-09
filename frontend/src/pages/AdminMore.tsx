@@ -3,13 +3,7 @@ import { api, apiError } from '../api/client'
 import { AdminHeader } from './Admin'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
-import { 
-  FolderOpen, Shield, AlertTriangle, Wrench, Award, 
-  Briefcase, FlaskConical, Search, Users, Trophy, 
-  Calendar, CheckCircle2, XCircle, Eye, EyeOff, Trash2, 
-  Edit, ChevronDown, UserPlus, UserMinus,
-  Key, BarChart
-} from 'lucide-react'
+import { Trophy } from 'lucide-react'
 
 // ---------------------------------------------------- categories & tags
 

@@ -8,6 +8,7 @@ import { Pagination } from '../components/ui/Pagination'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { timeAgo } from '../lib/format'
 import { apiError } from '../api/client'
+import { Bell, Bookmark, Mail } from 'lucide-react'
 
 export function Notifications() {
   const { user, setUnreadCount } = useAuth()

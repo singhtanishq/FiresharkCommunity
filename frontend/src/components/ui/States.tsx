@@ -1,4 +1,4 @@
-import { AlertTriangle, FolderOpen, AlertCircle } from 'lucide-react'
+import { AlertTriangle, FolderOpen } from 'lucide-react'
 
 export function EmptyState({ icon = <FolderOpen size={32} strokeWidth={1.5} />, title, action }: { icon?: React.ReactNode; title: string; action?: React.ReactNode }) {
   return (
