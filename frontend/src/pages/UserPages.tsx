@@ -115,7 +115,7 @@ export function Bookmarks() {
         ? (
           <div className="panel">
             <EmptyState
-              icon="🔖"
+              icon={<Bookmark size={32} strokeWidth={1.5} />}
               title="You haven't bookmarked anything yet."
               action={<Link to="/questions" className="btn btn--primary">Browse questions</Link>}
             />
