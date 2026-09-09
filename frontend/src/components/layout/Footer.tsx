@@ -7,7 +7,7 @@ export function Footer() {
       <div className="site-footer__inner">
         <div>
           <div className="brand" style={{ color: '#fff' }}>
-            <img src={logo} alt="FireShark Community" className="brand__logo" />
+            <span className="brand__mark"><img src={logo} alt="FireShark Community" /></span>
           </div>
           <p className="site-footer__brandline">
             Ask questions. Share knowledge. Build expertise. A community for cybersecurity professionals, learners

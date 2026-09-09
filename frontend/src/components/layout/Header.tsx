@@ -57,7 +57,7 @@ export function Header() {
     <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''}`}>
       <div className="site-header__top">
         <Link to="/" className="brand" aria-label="FireShark Community home" onClick={closeMenu}>
-          <img src={logo} alt="FireShark Community" className="brand__logo" />
+          <span className="brand__mark"><img src={logo} alt="FireShark Community" /></span>
         </Link>
 
         <button className="nav-burger" onClick={() => setNavOpen(!navOpen)} aria-expanded={navOpen} aria-label="Toggle navigation">
