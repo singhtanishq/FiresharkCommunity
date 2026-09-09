@@ -51,10 +51,8 @@ export function Tags() {
               ))}
             </div>
           )}
-      </div>
-
       {data && <Pagination meta={data.meta} baseUrl={q ? `/tags?q=${encodeURIComponent(q)}` : '/tags'} />}
-    </div>
+      </div>
   );
 }
 
