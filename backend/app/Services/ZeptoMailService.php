@@ -27,9 +27,19 @@ class ZeptoMailService
     {
     }
 
-    public function sendOtp(OtpChallenge $challenge, string $recipientEmail, string $recipientName = ''): bool
+    public function sendOtp(
+        OtpChallenge $challenge,
+        string $recipientEmail,
+        string $recipientName = '',
+        string $code = ''
+    ): bool
     {
-        $payload = $this->otpPayload($challenge, $recipientEmail, $recipientName);
+        $payload = $this->otpPayload(
+            $challenge,
+            $recipientEmail,
+            $recipientName,
+            $code
+        );
 
         return $this->dispatch($payload, $recipientEmail, $challenge->code_hash);
     }
@@ -53,7 +63,13 @@ class ZeptoMailService
         return $this->dispatch($payload, $email, $url);
     }
 
-    protected function otpPayload(OtpChallenge $challenge, string $email, string $name): array
+    protected function otpPayload(
+        OtpChallenge $challenge,
+        string $email,
+        string $name,
+        string $code
+    ): array
+
     {
         $minutes = max(1, (int) ceil($challenge->expires_at->diffInSeconds(now()) / 60));
 
@@ -64,11 +80,15 @@ class ZeptoMailService
             ]],
             'subject' => $this->otpSubject($challenge->purpose),
             'template_key' => $this->templateKey('otp'),
-            'merge_info' => $this->otpMergeInfo($challenge, $minutes),
+            'merge_info' => $this->otpMergeInfo($challenge, $minutes, $code),
         ];
     }
 
-    protected function otpMergeInfo(OtpChallenge $challenge, int $minutes): array
+    protected function otpMergeInfo(
+        OtpChallenge $challenge,
+        int $minutes,
+        string $code
+    ): array
     {
         return [
             'purpose_label' => match ($challenge->purpose) {
@@ -78,7 +98,7 @@ class ZeptoMailService
                 default => 'Your FireShark Community verification code',
             },
             'minutes' => $minutes,
-            'code' => '<dev-only>', // The plaintext code is logged in local dev, never sent to ZeptoMail as a merge field.
+            'code' => $code,
         ];
     }
 
