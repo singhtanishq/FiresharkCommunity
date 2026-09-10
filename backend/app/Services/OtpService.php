@@ -132,19 +132,37 @@ class OtpService
 
     protected function sendLogin(OtpChallenge $challenge, string $code, ?User $user): void
     {
-        $this->mailer->sendOtp($challenge, $challenge->identifier, $user?->name ?? '');
+        $this->mailer->sendOtp(
+            $challenge,
+            $challenge->identifier,
+            $user?->name ?? '',
+            $code
+        );
+
         $this->logCode($challenge, $code, $user?->name ?? '');
     }
 
     protected function sendSignup(OtpChallenge $challenge, string $code): void
     {
-        $this->mailer->sendOtp($challenge, $challenge->identifier, '');
+        $this->mailer->sendOtp(
+            $challenge,
+            $challenge->identifier,
+            '',
+            $code
+        );
+
         $this->logCode($challenge, $code, '');
     }
 
     protected function sendPasswordReset(OtpChallenge $challenge, string $code, ?User $user): void
     {
-        $this->mailer->sendOtp($challenge, $challenge->identifier, $user?->name ?? '');
+        $this->mailer->sendOtp(
+            $challenge,
+            $challenge->identifier,
+            $user?->name ?? '',
+            $code
+        );
+
         $this->logCode($challenge, $code, $user?->name ?? '');
     }
 
