@@ -146,18 +146,26 @@ class ZeptoMailService
         }
 
         try {
-            $response = Http::withToken($apiKey)
-                ->acceptJson()
-                ->asJson()
+            $response = Http::withHeaders([
+                'Authorization' => 'Zoho-enczapikey '.$apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])
                 ->post($apiBase.'/email/template', $payload);
 
             if (! $response->successful()) {
-                Log::warning('ZeptoMail returned a non-2xx response.', [
+                Log::error('ZeptoMail returned a non-2xx response.', [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
+            
                 return false;
             }
+            
+            Log::info('ZeptoMail email accepted.', [
+                'status' => $response->status(),
+                'response' => $response->json(),
+            ]);
 
             return true;
         } catch (ConnectionException $e) {
