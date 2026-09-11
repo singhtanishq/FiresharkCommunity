@@ -135,7 +135,11 @@ class ZeptoMailService
         $apiBase = rtrim((string) config('services.zeptomail.api_base', 'https://api.zeptomail.com/v1.1'), '/');
 
         // No real key in local development (or placeholder): log instead of dispatching.
-        if ($apiKey === '' || $apiKey === 'development_placeholder' || app()->environment('local')) {
+        if (
+            $apiKey === '' ||
+            $apiKey === 'development_placeholder' ||
+            (app()->environment('local') && ! env('ZEPTOMAIL_FORCE_SEND', false))
+        ) {
             Log::info('ZeptoMail call captured for local development.', [
                 'recipient' => $recipientHint,
                 'subject' => $payload['subject'] ?? null,
