@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // Local development: the SPA runs on :5173 and proxies API + storage to the
 // Laravel backend on :8000 so cookies are same-origin, exactly like the
 // single-origin production deployment.
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
 
   server: {
@@ -16,7 +16,7 @@ export default defineConfig({
     },
   },
 
-  base: '/',
+  base: command === 'serve' ? '/' : '/build/',
 
   build: {
     outDir: '../backend/public/build',
@@ -26,4 +26,4 @@ export default defineConfig({
       input: '/src/main.tsx',
     },
   },
-})
+}))
