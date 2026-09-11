@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react'
 // single-origin production deployment.
 export default defineConfig({
   plugins: [react()],
+
   server: {
     port: 5173,
     proxy: {
@@ -14,9 +15,10 @@ export default defineConfig({
       '/storage': { target: 'http://localhost:8000', changeOrigin: true },
     },
   },
+
+  base: '/build/',
+
   build: {
-    // Production: compiled assets + manifest go into the Laravel app; the
-    // SPA shell is rendered by Laravel with hashed asset URLs.
     outDir: '../backend/public/build',
     emptyOutDir: true,
     manifest: true,
