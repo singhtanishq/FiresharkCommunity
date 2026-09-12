@@ -63,16 +63,16 @@ export function Ask() {
   // ------------------------------------------------------------------
   if (!user) {
     return (
-      <div className="app-main" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', marginTop: '2rem' }}>
-        <div className="panel" style={{ maxWidth: 480, width: '100%', padding: '3rem 2rem', textAlign: 'center', animation: 'modal-rise var(--dur-slow) var(--ease)' }}>
+      <div className="app-main" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', marginTop: '2rem', padding: '0 1rem', boxSizing: 'border-box' }}>
+        <div className="panel" style={{ maxWidth: 480, width: '100%', padding: '2.5rem 1.5rem', textAlign: 'center', animation: 'modal-rise var(--dur-slow) var(--ease)', boxSizing: 'border-box' }}>
           <div style={{ 
             width: '64px', height: '64px', background: 'var(--brand-blue-50)', color: 'var(--brand-blue-600)', 
-            borderRadius: '50%', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' 
+            borderRadius: '50%', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem', flexShrink: 0 
           }}>
             <Lock size={32} strokeWidth={1.5} />
           </div>
-          <h2 style={{ fontSize: '1.45rem', marginBottom: '0.75rem' }}>Authentication Required</h2>
-          <p className="muted mb-3" style={{ lineHeight: 1.6 }}>
+          <h2 style={{ fontSize: '1.45rem', marginBottom: '0.75rem', wordBreak: 'break-word' }}>Authentication Required</h2>
+          <p className="muted mb-3" style={{ lineHeight: 1.6, wordBreak: 'break-word' }}>
             Join the FireShark Community to ask questions, share your expertise, and build your technical reputation.
           </p>
           <button className="btn btn--primary btn--lg btn--block" onClick={() => navigate('/login', { state: { from: '/ask' } })}>
@@ -125,16 +125,16 @@ export function Ask() {
   const titleLengthColor = title.length > 180 ? 'var(--danger)' : title.length > 0 && title.length < 15 ? 'var(--warning)' : 'var(--text-3)'
 
   return (
-    <div className="app-main--narrow" style={{ margin: '2rem auto 4rem', maxWidth: 840, padding: '0 1rem' }}>
+    <div className="app-main--narrow" style={{ margin: '2rem auto 4rem', maxWidth: 840, padding: '0 1rem', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
       
       {/* Page Header */}
-      <div style={{ marginBottom: '2.5rem', animation: 'fade-in var(--dur-slow) var(--ease)' }}>
-        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '2.2rem', fontWeight: 800 }}>
-          <HelpCircle size={32} color="var(--brand-blue-600)" strokeWidth={2.5} />
-          {editId ? 'Edit your question' : 'Ask a question'}
+      <div style={{ marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 800, flexWrap: 'wrap', wordBreak: 'break-word' }}>
+          <HelpCircle size={32} color="var(--brand-blue-600)" strokeWidth={2.5} style={{ flexShrink: 0 }} />
+          <span>{editId ? 'Edit your question' : 'Ask a question'}</span>
         </h1>
-        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <BookOpen size={16} /> Be specific, share what you've tried, and review our{' '}
+        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', wordBreak: 'break-word' }}>
+          <BookOpen size={16} style={{ flexShrink: 0 }} /> Be specific, share what you've tried, and review our{' '}
           <a 
             href="/community-guidelines" 
             style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
@@ -147,9 +147,9 @@ export function Ask() {
       </div>
 
       {errors && (
-        <div className="banner banner--danger mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
+        <div className="banner banner--danger mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)', boxSizing: 'border-box' }}>
           <AlertTriangle size={20} style={{ flexShrink: 0 }} />
-          <div>
+          <div style={{ minWidth: 0, wordBreak: 'break-word' }}>
             <b style={{ display: 'block', marginBottom: '0.2rem' }}>{errors.message}</b>
             {Object.entries(errors.fields).map(([field, messages]) => (
               <div key={field} style={{ fontSize: '0.85rem' }}>• {messages.join(' ')}</div>
@@ -159,29 +159,29 @@ export function Ask() {
       )}
 
       {/* Authoring Panel */}
-      <div className="panel" style={{ padding: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' }}>
+      <div className="panel" style={{ padding: 'clamp(1.25rem, 3vw, 2.5rem)', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
         
         {/* Title Field */}
         <div className="field mb-3">
-          <div className="row row--between mb-1">
+          <div className="row row--between mb-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
             <label htmlFor="title" style={{ fontSize: '1rem', color: 'var(--ink-900)', margin: 0 }}>
               Question Title
             </label>
-            <span className="font-mono text-3" style={{ color: titleLengthColor, fontWeight: 600 }}>
+            <span className="font-mono text-3" style={{ color: titleLengthColor, fontWeight: 600, flexShrink: 0 }}>
               {title.length} / 180
             </span>
           </div>
           <input
             id="title"
             className={`input input--lg ${title.length > 180 ? 'input--error' : ''}`}
-            style={{ fontWeight: 500 }}
+            style={{ fontWeight: 500, width: '100%', boxSizing: 'border-box' }}
             value={title}
             maxLength={200}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. How can I troubleshoot an Nmap scan that shows no open ports?"
           />
           <div className="row row--between mt-1">
-            <p className="hint" style={{ margin: 0, color: title.length >= 15 ? 'var(--success)' : 'var(--text-3)' }}>
+            <p className="hint" style={{ margin: 0, color: title.length >= 15 ? 'var(--success)' : 'var(--text-3)', wordBreak: 'break-word' }}>
               {title.length >= 15 ? '✓ Good — a clear title helps others find your question.' : 'Minimum 15 characters. Describe the problem, not just your goal.'}
             </p>
           </div>
@@ -191,14 +191,14 @@ export function Ask() {
           {/* Category Field */}
           <div className="field" style={{ marginBottom: 0 }}>
             <label htmlFor="category" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', display: 'block', marginBottom: '0.4rem' }}>Category</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <FolderOpen size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <FolderOpen size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <select 
                 id="category" 
                 className="select input--with-affix" 
                 value={categoryId} 
                 onChange={(e) => setCategoryId(e.target.value)}
-                style={{ appearance: 'none', cursor: 'pointer', width: '100%', paddingLeft: '40px' }}
+                style={{ appearance: 'none', cursor: 'pointer', width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }}
               >
                 <option value="" disabled>Select a category…</option>
                 {categories.map((category) => (
@@ -210,13 +210,13 @@ export function Ask() {
 
           {/* Tags Field */}
           <div className="field" style={{ marginBottom: 0 }}>
-            <div className="row row--between mb-1">
+            <div className="row row--between mb-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
               <label htmlFor="tags" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', margin: 0 }}>Tags</label>
-              <span className="text-3 muted">{tags.length} / 5</span>
+              <span className="text-3 muted" style={{ flexShrink: 0 }}>{tags.length} / 5</span>
             </div>
             
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Hash size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Hash size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input
                 id="tags"
                 className="input input--with-affix"
@@ -230,7 +230,7 @@ export function Ask() {
                   }
                 }}
                 placeholder={tags.length >= 5 ? "Tag limit reached" : "Type and press Enter..."}
-                style={{ width: '100%', paddingLeft: '40px' }}
+                style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }}
               />
             </div>
 
@@ -241,7 +241,7 @@ export function Ask() {
                   <button 
                     key={s.id} type="button" 
                     className="chip chip--ghost" 
-                    style={{ cursor: 'pointer', fontSize: '0.75rem', padding: '0.15rem 0.5rem' }} 
+                    style={{ cursor: 'pointer', fontSize: '0.75rem', padding: '0.15rem 0.5rem', flexShrink: 0 }} 
                     onClick={() => addTag(s.slug)}
                   >
                     {s.name} <span className="muted ml-1" style={{ marginLeft: 4 }}>({formatNumber(s.questions_count)})</span>
@@ -254,7 +254,7 @@ export function Ask() {
             {tags.length > 0 && (
               <div className="row mt-1" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
                 {tags.map((tag) => (
-                  <span key={tag} className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', paddingRight: '0.3rem' }}>
+                  <span key={tag} className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', paddingRight: '0.3rem', flexShrink: 0 }}>
                     {tag}
                     <button
                       type="button"
@@ -274,12 +274,12 @@ export function Ask() {
         </div>
 
         {/* Body / Rich Text with Connected Toolbar & Textarea */}
-        <div className="field mb-4">
+        <div className="field mb-4" style={{ width: '100%', boxSizing: 'border-box' }}>
           <label style={{ fontSize: '1rem', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
-            <PenLine size={16} color="var(--text-3)" />
+            <PenLine size={16} color="var(--text-3)" style={{ flexShrink: 0 }} />
             Problem Description
           </label>
-          <div style={{ width: '100%' }}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
             <RichTextEditor
               value={body}
               onChange={setBody}
@@ -289,36 +289,38 @@ export function Ask() {
         </div>
 
         {/* Security Banner */}
-        <div className="banner banner--warn" style={{ borderRadius: 'var(--radius-lg)', alignItems: 'center', marginBottom: '1.5rem', padding: '1rem 1.25rem' }}>
+        <div className="banner banner--warn" style={{ borderRadius: 'var(--radius-lg)', alignItems: 'center', marginBottom: '1.5rem', padding: '1rem 1.25rem', boxSizing: 'border-box' }}>
           <AlertTriangle size={20} strokeWidth={2} style={{ color: '#b45309', flexShrink: 0 }} aria-hidden="true" />
-          <span style={{ fontSize: '0.9rem', color: '#92400e', lineHeight: 1.5 }}>
+          <span style={{ fontSize: '0.9rem', color: '#92400e', lineHeight: 1.5, wordBreak: 'break-word' }}>
             <strong>Security Check:</strong> Never publish passwords, API keys, tokens, or personal data — including inside screenshots or console outputs.
           </span>
         </div>
 
         {/* Footer Actions */}
-        <div className="row row--between" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--border)', flexWrap: 'wrap', gap: '1rem' }}>
-          <button className="btn btn--quiet btn--sm" onClick={() => navigate(-1)}>Cancel</button>
+        <div className="row row--between" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--border)', flexWrap: 'wrap', gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
+          <button className="btn btn--quiet btn--sm" onClick={() => navigate(-1)} style={{ flex: '1 1 auto' }}>Cancel</button>
           
-          <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', flex: '2 1 auto', justifyContent: 'flex-end' }}>
             {!editing && (
               <button
                 className="btn btn--ghost"
                 disabled={busy || !title.trim() || !body.trim()}
                 onClick={() => void submit(true)}
+                style={{ flex: '1 1 auto' }}
               >
-                <Save size={16} /> Save draft
+                <Save size={16} style={{ flexShrink: 0 }} /> Save draft
               </button>
             )}
             <button
               className="btn btn--fire btn--lg"
               disabled={busy || title.length < 15 || title.length > 180 || body.trim().length < 30 || !categoryId}
               onClick={() => void submit(false)}
+              style={{ flex: '1 1 auto' }}
             >
               {busy ? (
                 'Publishing…'
               ) : (
-                <><Send size={16} /> Publish question</>
+                <><Send size={16} style={{ flexShrink: 0 }} /> Publish question</>
               )}
             </button>
           </div>
