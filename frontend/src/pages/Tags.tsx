@@ -49,9 +49,9 @@ export function Tags() {
           </div>
         </div>
         
-        {/* Search / Filter Input */}
-        <div className="input-affix" style={{ width: '100%', maxWidth: '320px' }}>
-          <Search className="input-affix__icon" size={18} />
+        {/* Search / Filter Input with properly centered icon */}
+        <div className="input-affix" style={{ width: '100%', maxWidth: '320px', display: 'flex', alignItems: 'center', position: 'relative' }}>
+          <Search className="input-affix__icon" size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
           <input
             className="input input--with-affix input--lg"
             placeholder="Search tags..."
@@ -65,7 +65,7 @@ export function Tags() {
               setSearchParams(params)
             }}
             aria-label="Filter tags"
-            style={{ boxShadow: 'var(--shadow-sm)' }}
+            style={{ boxShadow: 'var(--shadow-sm)', width: '100%', paddingLeft: '40px' }}
           />
         </div>
       </div>
