@@ -11,38 +11,38 @@ import {
 
 function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <div className="auth-shell" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
-      <div className="auth-shell__art">
+    <div className="auth-shell" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
+      <div className="auth-shell__art" style={{ boxSizing: 'border-box' }}>
         <div className="auth-shell__art-inner" style={{ animation: 'modal-rise var(--dur-slow) var(--ease)' }}>
           <Link to="/" style={{ display: 'inline-block', marginBottom: '2rem', transition: 'transform var(--dur) var(--ease)' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform = 'none'}>
             <img src={logoWhite} alt="FireShark" style={{ height: 38 }} />
           </Link>
-          <h2 style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.85rem)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2, wordBreak: 'break-word' }}>
             Where cybersecurity professionals ask, answer, and learn.
           </h2>
-          <p style={{ fontSize: '1.05rem', opacity: 0.85, lineHeight: 1.6, marginBottom: '2rem' }}>
+          <p style={{ fontSize: '1.05rem', opacity: 0.85, lineHeight: 1.6, marginBottom: '2rem', wordBreak: 'break-word' }}>
             The FireShark Community is a public knowledge base run on peer-reviewed intelligence.
           </p>
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <Terminal size={18} color="#64BDE5" /> Practical, hands-on cybersecurity questions
+              <Terminal size={18} color="#64BDE5" style={{ flexShrink: 0 }} /> Practical, hands-on cybersecurity questions
             </li>
             <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <Award size={18} color="#fbbf24" /> Monthly leaderboard &amp; reputation badges
+              <Award size={18} color="#fbbf24" style={{ flexShrink: 0 }} /> Monthly leaderboard &amp; reputation badges
             </li>
             <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <ShieldCheck size={18} color="#34d399" /> Verified instructors and professionals
+              <ShieldCheck size={18} color="#34d399" style={{ flexShrink: 0 }} /> Verified instructors and professionals
             </li>
             <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <Search size={18} color="#a78bfa" /> Searchable knowledge that grows with you
+              <Search size={18} color="#a78bfa" style={{ flexShrink: 0 }} /> Searchable knowledge that grows with you
             </li>
           </ul>
         </div>
       </div>
-      <div className="auth-shell__form">
-        <div className="auth-shell__card panel" style={{ padding: '2.5rem 2rem', border: 'none', boxShadow: 'var(--shadow-lg)', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--ink-900)' }}>{title}</h1>
-          {subtitle && <p className="muted" style={{ marginTop: '0.2rem', marginBottom: '1.5rem', fontSize: '0.95rem' }}>{subtitle}</p>}
+      <div className="auth-shell__form" style={{ boxSizing: 'border-box', width: '100%' }}>
+        <div className="auth-shell__card panel" style={{ padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 2vw, 2rem)', border: 'none', boxShadow: 'var(--shadow-lg)', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.75rem)', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--ink-900)', wordBreak: 'break-word' }}>{title}</h1>
+          {subtitle && <p className="muted" style={{ marginTop: '0.2rem', marginBottom: '1.5rem', fontSize: '0.95rem', wordBreak: 'break-word' }}>{subtitle}</p>}
           {children}
         </div>
       </div>
@@ -52,7 +52,7 @@ function AuthShell({ title, subtitle, children }: { title: string; subtitle?: st
 
 function StepDots({ steps, current }: { steps: string[]; current: number }) {
   return (
-    <ol className="step-list" style={{ marginBottom: '2rem', gap: '0.4rem' }}>
+    <ol className="step-list" style={{ marginBottom: '2rem', gap: '0.4rem', width: '100%', boxSizing: 'border-box' }}>
       {steps.map((s, i) => {
         const isActive = i === current
         const isDone = i < current
@@ -66,11 +66,13 @@ function StepDots({ steps, current }: { steps: string[]; current: number }) {
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               borderBottom: isActive ? '2px solid var(--brand-blue-600)' : isDone ? '2px solid var(--success)' : '2px solid transparent',
               background: isActive ? 'var(--brand-blue-50)' : isDone ? 'var(--success-bg)' : 'var(--surface-2)',
-              borderColor: isActive ? 'var(--brand-blue-400)' : isDone ? '#bbf7d0' : 'var(--border)'
+              borderColor: isActive ? 'var(--brand-blue-400)' : isDone ? '#bbf7d0' : 'var(--border)',
+              flex: '1 1 auto',
+              minWidth: 0
             }}
           >
-            <b style={{ fontSize: '0.75rem', opacity: isActive || isDone ? 1 : 0.6 }}>STEP {i + 1}</b>
-            <span style={{ fontWeight: isActive ? 700 : 500, fontSize: '0.8rem', opacity: isActive || isDone ? 1 : 0.7 }}>{s}</span>
+            <b style={{ fontSize: '0.7rem', opacity: isActive || isDone ? 1 : 0.6, whiteSpace: 'nowrap' }}>STEP {i + 1}</b>
+            <span style={{ fontWeight: isActive ? 700 : 500, fontSize: '0.78rem', opacity: isActive || isDone ? 1 : 0.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s}</span>
           </li>
         )
       })}
@@ -97,7 +99,7 @@ function OtpInput({ value, onChange, disabled, autoFocus }: { value: string; onC
     refs.current[Math.min(pasted.length, 5)]?.focus()
   }
   return (
-    <div className="otp-grid" style={{ gap: '0.6rem' }}>
+    <div className="otp-grid" style={{ gap: '0.4rem', width: '100%', boxSizing: 'border-box' }}>
       {Array.from({ length: 6 }).map((_, i) => (
         <input
           key={i}
@@ -114,12 +116,15 @@ function OtpInput({ value, onChange, disabled, autoFocus }: { value: string; onC
           aria-label={`Digit ${i + 1} of 6`}
           className="input"
           style={{ 
-            fontSize: '1.5rem', 
-            height: '3.5rem', 
+            fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
+            height: 'clamp(2.8rem, 7vw, 3.5rem)', 
             borderRadius: 'var(--radius-md)',
             boxShadow: value[i] ? '0 0 0 1px var(--brand-blue-400) inset' : 'none',
             background: value[i] ? 'var(--brand-blue-50)' : 'var(--surface)',
-            transition: 'all var(--dur-fast) var(--ease)'
+            transition: 'all var(--dur-fast) var(--ease)',
+            padding: 0,
+            textAlign: 'center',
+            boxSizing: 'border-box'
           }}
         />
       ))}
@@ -209,35 +214,35 @@ export function Login() {
       <StepDots steps={['Credentials', 'Verification']} current={step === 'password' ? 0 : 1} />
 
       {error && (
-        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)' }}>
-          <AlertTriangle size={18} /> {error}
+        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', boxSizing: 'border-box' }}>
+          <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>{error}</span>
         </div>
       )}
 
       {step === 'password' && (
-        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
           <div className="field">
             <label htmlFor="login-email">Email or username</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
-              <input id="login-email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
+              <input id="login-email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
             </div>
           </div>
           <div className="field">
-            <div className="row row--between mb-1">
+            <div className="row row--between mb-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
               <label htmlFor="login-password" style={{ margin: 0 }}>Password</label>
               <Link 
                 to="/forgot-password" 
                 className="text-3 muted font-medium" 
-                style={{ textDecoration: 'none', transition: 'color 0.2s ease' }}
+                style={{ textDecoration: 'none', transition: 'color 0.2s ease', whiteSpace: 'nowrap' }}
                 onMouseOver={e => e.currentTarget.style.color = 'var(--ink-900)'}
                 onMouseOut={e => e.currentTarget.style.color = 'var(--text-3)'}
               >
                 Forgot password?
               </Link>
             </div>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input 
                 id="login-password" 
                 type={showPassword ? 'text' : 'password'} 
@@ -247,12 +252,12 @@ export function Login() {
                 required 
                 autoComplete="current-password" 
                 placeholder="••••••••" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -260,38 +265,38 @@ export function Login() {
             </div>
           </div>
           <button className="btn btn--primary btn--block btn--lg mt-3" disabled={busy}>
-            {busy ? 'Authenticating…' : <><ArrowRight size={18} /> Continue to verification</>}
+            {busy ? 'Authenticating…' : <><ArrowRight size={18} style={{ flexShrink: 0 }} /> Continue to verification</>}
           </button>
         </form>
       )}
 
       {step === 'otp' && (
-        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
           <div className="field">
             <OtpInput value={otp} onChange={setOtp} disabled={busy} autoFocus />
-            <div className="row row--between mt-1">
-              <p className="help-inline" style={{ margin: 0 }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
+            <div className="row row--between mt-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+              <p className="help-inline" style={{ margin: 0, wordBreak: 'break-word' }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
               <div className="otp-resend" style={{ margin: 0 }}>
-                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem' }}>
+                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
                   {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
                 </button>
               </div>
             </div>
           </div>
           <button className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || otp.length !== 6}>
-            {busy ? 'Verifying…' : <><ShieldCheck size={18} /> Verify & sign in</>}
+            {busy ? 'Verifying…' : <><ShieldCheck size={18} style={{ flexShrink: 0 }} /> Verify & sign in</>}
           </button>
           
           <div className="divider">Or</div>
           
           <button type="button" className="btn btn--ghost btn--block" onClick={() => { setStep('password'); setOtp(''); setError(null) }}>
-            <ArrowLeft size={16} /> Back to password
+            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Back to password
           </button>
         </form>
       )}
 
       {step === 'password' && (
-        <p className="muted" style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem' }}>
+        <p className="muted" style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem', wordBreak: 'break-word' }}>
           New to the community?{' '}
           <Link 
             to="/register" 
@@ -431,29 +436,29 @@ export function Register() {
       <StepDots steps={['Profile', 'Verification', 'Security']} current={step === 'details' ? 0 : step === 'otp' ? 1 : 2} />
 
       {error && (
-        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)' }}>
-          <AlertTriangle size={18} /> {error}
+        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', boxSizing: 'border-box' }}>
+          <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>{error}</span>
         </div>
       )}
 
       {step === 'details' && (
-        <form onSubmit={submitDetails} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+        <form onSubmit={submitDetails} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
           <div className="grid-2" style={{ gap: '1rem', marginBottom: '1rem' }}>
             <div className="field" style={{ marginBottom: 0 }}>
               <label htmlFor="reg-name">Full name</label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
-                <input id="reg-name" className="input input--with-affix" value={form.name} onChange={update('name')} required autoFocus placeholder="Jane Doe" style={{ width: '100%', paddingLeft: '40px' }} />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+                <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
+                <input id="reg-name" className="input input--with-affix" value={form.name} onChange={update('name')} required autoFocus placeholder="Jane Doe" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
               </div>
             </div>
             <div className="field" style={{ marginBottom: 0 }}>
               <label htmlFor="reg-username">Username</label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <AtSign size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
-                <input id="reg-username" className={`input input--with-affix ${usernameStatus === 'taken' ? 'input--error' : ''}`} value={form.username} onChange={update('username')} required minLength={3} maxLength={30} placeholder="janedoe" style={{ width: '100%', paddingLeft: '40px' }} />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+                <AtSign size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
+                <input id="reg-username" className={`input input--with-affix ${usernameStatus === 'taken' ? 'input--error' : ''}`} value={form.username} onChange={update('username')} required minLength={3} maxLength={30} placeholder="janedoe" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
               </div>
               {usernameStatus !== 'idle' && usernameHint && (
-                <p className={`help-inline ${usernameStatus === 'ok' ? 'is-ok' : 'is-bad'}`} style={{ marginTop: '0.2rem' }}>
+                <p className={`help-inline ${usernameStatus === 'ok' ? 'is-ok' : 'is-bad'}`} style={{ marginTop: '0.2rem', wordBreak: 'break-word' }}>
                   {usernameStatus === 'checking' ? 'Checking...' : (usernameStatus === 'ok' ? '✓ ' : '✕ ') + usernameHint}
                 </p>
               )}
@@ -462,16 +467,16 @@ export function Register() {
           
           <div className="field">
             <label htmlFor="reg-email">Email Address</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
-              <input id="reg-email" type="email" className="input input--with-affix input--lg" value={form.email} onChange={update('email')} required placeholder="name@company.com" style={{ width: '100%', paddingLeft: '40px' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
+              <input id="reg-email" type="email" className="input input--with-affix input--lg" value={form.email} onChange={update('email')} required placeholder="name@company.com" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
             </div>
           </div>
           
           <div className="field">
             <label htmlFor="reg-password">Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input 
                 id="reg-password" 
                 type={showPassword ? 'text' : 'password'} 
@@ -482,12 +487,12 @@ export function Register() {
                 minLength={8} 
                 autoComplete="new-password" 
                 placeholder="••••••••" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -501,45 +506,45 @@ export function Register() {
             className="btn btn--fire btn--block btn--lg mt-3"
             disabled={busy || !form.name || !form.username || !form.email || form.password.length < 8}
           >
-            {busy ? 'Sending verification…' : <><ArrowRight size={18} /> Continue</>}
+            {busy ? 'Sending verification…' : <><ArrowRight size={18} style={{ flexShrink: 0 }} /> Continue</>}
           </button>
         </form>
       )}
 
       {step === 'otp' && (
-        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
           <div className="field">
             <OtpInput value={otp} onChange={setOtp} disabled={busy} autoFocus />
-            <div className="row row--between mt-1">
-              <p className="help-inline" style={{ margin: 0 }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
+            <div className="row row--between mt-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+              <p className="help-inline" style={{ margin: 0, wordBreak: 'break-word' }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
               <div className="otp-resend" style={{ margin: 0 }}>
-                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem' }}>
+                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
                   {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
                 </button>
               </div>
             </div>
           </div>
           <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || otp.length !== 6}>
-            {busy ? 'Verifying…' : <><ShieldCheck size={18} /> Verify email</>}
+            {busy ? 'Verifying…' : <><ShieldCheck size={18} style={{ flexShrink: 0 }} /> Verify email</>}
           </button>
           
           <div className="divider">Or</div>
           
           <button type="button" className="btn btn--ghost btn--block" onClick={() => setStep('details')}>
-            <ArrowLeft size={16} /> Edit profile details
+            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Edit profile details
           </button>
         </form>
       )}
 
       {step === 'password' && (
-        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
-          <div className="banner banner--success mb-3">
-            <CheckCircle2 size={18} /> Email verified successfully. Set your final password.
+        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
+          <div className="banner banner--success mb-3" style={{ boxSizing: 'border-box' }}>
+            <CheckCircle2 size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>Email verified successfully. Set your final password.</span>
           </div>
           <div className="field">
             <label htmlFor="reg-pw-1">Secure Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input 
                 id="reg-pw-1" 
                 type={showPassword ? 'text' : 'password'} 
@@ -549,12 +554,12 @@ export function Register() {
                 required 
                 minLength={8} 
                 autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -563,8 +568,8 @@ export function Register() {
           </div>
           <div className="field">
             <label htmlFor="reg-pw-2">Confirm Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input 
                 id="reg-pw-2" 
                 type={showConfirmPassword ? 'text' : 'password'} 
@@ -574,12 +579,12 @@ export function Register() {
                 required 
                 minLength={8} 
                 autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
                 aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -595,7 +600,7 @@ export function Register() {
 
       {step === 'details' && (
         <>
-          <p className="muted" style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem' }}>
+          <p className="muted" style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', wordBreak: 'break-word' }}>
             Already a member?{' '}
             <Link 
               to="/login" 
@@ -606,7 +611,7 @@ export function Register() {
               Log in
             </Link>
           </p>
-          <p className="muted text-3" style={{ textAlign: 'center', marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+          <p className="muted text-3" style={{ textAlign: 'center', marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem', wordBreak: 'break-word' }}>
             By registering, you agree to our{' '}
             <Link 
               to="/community-guidelines" 
@@ -711,60 +716,60 @@ export function ForgotPassword() {
       <StepDots steps={['Request', 'Verify', 'Reset']} current={step === 'email' ? 0 : step === 'otp' ? 1 : 2} />
 
       {error && (
-        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)' }}>
-          <AlertTriangle size={18} /> {error}
+        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', boxSizing: 'border-box' }}>
+          <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>{error}</span>
         </div>
       )}
 
       {step === 'email' && (
-        <form onSubmit={submitEmail} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+        <form onSubmit={submitEmail} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
           <div className="field">
             <label htmlFor="forgot-email">Account Email</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
-              <input id="forgot-email" type="email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
+              <input id="forgot-email" type="email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
             </div>
           </div>
           <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy}>
-            {busy ? 'Sending…' : <><ArrowRight size={18} /> Send recovery code</>}
+            {busy ? 'Sending…' : <><ArrowRight size={18} style={{ flexShrink: 0 }} /> Send recovery code</>}
           </button>
         </form>
       )}
 
       {step === 'otp' && (
-        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
-          <div className="banner banner--info mb-3">
-            If an account exists for {email}, a code has been sent.
+        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
+          <div className="banner banner--info mb-3" style={{ boxSizing: 'border-box' }}>
+            <span style={{ wordBreak: 'break-word' }}>If an account exists for {email}, a code has been sent.</span>
           </div>
           <div className="field">
             <OtpInput value={otp} onChange={setOtp} disabled={busy} autoFocus />
-            <div className="row row--between mt-1">
-              <p className="help-inline" style={{ margin: 0 }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
+            <div className="row row--between mt-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+              <p className="help-inline" style={{ margin: 0, wordBreak: 'break-word' }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
               <div className="otp-resend" style={{ margin: 0 }}>
-                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem' }}>
+                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
                   {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
                 </button>
               </div>
             </div>
           </div>
           <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || otp.length !== 6}>
-            {busy ? 'Verifying…' : <><ShieldCheck size={18} /> Verify code</>}
+            {busy ? 'Verifying…' : <><ShieldCheck size={18} style={{ flexShrink: 0 }} /> Verify code</>}
           </button>
           
           <div className="divider">Or</div>
           
           <button type="button" className="btn btn--ghost btn--block" onClick={() => { setStep('email'); setOtp(''); setError(null) }}>
-            <ArrowLeft size={16} /> Try a different email
+            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Try a different email
           </button>
         </form>
       )}
 
       {step === 'password' && (
-        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
           <div className="field">
             <label htmlFor="reset-pw-1">New Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input 
                 id="reset-pw-1" 
                 type={showPassword ? 'text' : 'password'} 
@@ -774,12 +779,12 @@ export function ForgotPassword() {
                 required 
                 minLength={8} 
                 autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -789,8 +794,8 @@ export function ForgotPassword() {
           </div>
           <div className="field">
             <label htmlFor="reset-pw-2">Confirm New Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
               <input 
                 id="reset-pw-2" 
                 type={showConfirmPassword ? 'text' : 'password'} 
@@ -800,12 +805,12 @@ export function ForgotPassword() {
                 required 
                 minLength={8} 
                 autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
                 aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -822,7 +827,7 @@ export function ForgotPassword() {
       {step === 'email' && (
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
           <Link to="/login" className="btn btn--quiet">
-            <ArrowLeft size={16} /> Back to login
+            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Back to login
           </Link>
         </div>
       )}
