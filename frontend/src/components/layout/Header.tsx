@@ -4,7 +4,10 @@ import logo from '../../assets/fireshark_community.png'
 import { useAuth } from '../../context/AuthContext'
 import { notificationsApi } from '../../api/endpoints'
 import { Avatar } from '../ui/Avatar'
-import { Search, Menu, X, Bell, User, ChevronDown, Bookmark, Settings, LogOut } from 'lucide-react'
+import { 
+  Search, Menu, X, Bell, User, ChevronDown, 
+  Bookmark, Settings, LogOut, ShieldCheck, Plus, Sparkles 
+} from 'lucide-react'
 
 export function Header() {
   const { user, logout, unreadCount, setUnreadCount } = useAuth()
@@ -55,96 +58,156 @@ export function Header() {
 
   return (
     <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''}`}>
-      <div className="site-header__top">
+      <div className="site-header__top" style={{ gap: '2rem' }}>
+        
+        {/* Brand Logo */}
         <Link to="/" className="brand" aria-label="FireShark Community home" onClick={closeMenu}>
-          <span className="brand__mark"><img src={logo} alt="FireShark Community" /></span>
+          <span className="brand__mark">
+            <img src={logo} alt="FireShark Community" style={{ height: '32px', width: 'auto' }} />
+          </span>
         </Link>
 
+        {/* Mobile Nav Burger */}
         <button className="nav-burger" onClick={() => setNavOpen(!navOpen)} aria-expanded={navOpen} aria-label="Toggle navigation">
-          {navOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
+          {navOpen ? <X size={22} strokeWidth={2.5} /> : <Menu size={22} strokeWidth={2.5} />}
         </button>
 
-        <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main">
+        {/* Main Navigation Links */}
+        <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main" style={{ gap: '0.3rem' }}>
           <NavLink to="/" end onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Home</NavLink>
           <NavLink to="/questions" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Questions</NavLink>
-          <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Categories</NavLink>
+          <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Ecosystems</NavLink>
           <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Tags</NavLink>
-          <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Leaderboard</NavLink>
+          <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Hall of Fame</NavLink>
         </nav>
 
+        {/* Search Bar */}
         <form className="header-search" role="search" onSubmit={submitSearch}>
-          <Search className="header-search__icon" aria-hidden="true" size={20} strokeWidth={2} />
+          <Search className="header-search__icon" aria-hidden="true" size={16} strokeWidth={2.5} />
           <input
             className="header-search__input"
             type="search"
-            placeholder="Search questions, tags, topics…"
+            placeholder="Search Nmap, Burp, AWS IAM..."
             value={q}
             onChange={(e) => setQ(e.target.value)}
             aria-label="Search"
           />
         </form>
 
-        <div className="header-actions">
-          <Link to="/ask" className="btn btn--fire btn--sm">Ask Question</Link>
-          {user
-            ? (
-              <div className="dropdown" ref={menuRef}>
-                <button
-                  className="btn btn--ghost btn--sm"
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  aria-expanded={menuOpen}
-                  aria-label="Account menu"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: '#e6edf7', borderColor: 'rgba(255,255,255,0.16)' }}
-                >
+        {/* Actions & Profile Dropdown */}
+        <div className="header-actions" style={{ gap: '0.75rem' }}>
+          <Link to="/ask" className="btn btn--fire btn--sm" style={{ padding: '0.5rem 1rem', borderRadius: '99px' }}>
+            <Plus size={16} strokeWidth={2.5} /> Ask Question
+          </Link>
+          
+          {user ? (
+            <div className="dropdown" ref={menuRef}>
+              <button
+                className="btn btn--ghost btn--sm"
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-expanded={menuOpen}
+                aria-label="Account menu"
+                style={{ 
+                  background: 'rgba(255,255,255,0.08)', 
+                  color: '#e6edf7', 
+                  borderColor: 'rgba(255,255,255,0.2)',
+                  borderRadius: '99px',
+                  padding: '0.35rem 0.75rem 0.35rem 0.35rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <div style={{ position: 'relative' }}>
                   <Avatar name={user.name} path={user.avatar_path} size="sm" />
-                  <span style={{ marginLeft: 6 }}>{user.name.split(' ')[0]}</span>
-                  <ChevronDown size={16} strokeWidth={2.5} />
                   {unreadCount > 0 && (
-                    <span style={{ background: 'var(--fire-500)', color: '#fff', borderRadius: 999, fontSize: 11, padding: '0 6px', fontWeight: 700, marginLeft: 6 }}>
-                      {unreadCount}
-                    </span>
+                    <span style={{ 
+                      position: 'absolute', top: '-2px', right: '-2px',
+                      width: '10px', height: '10px', background: '#f2600c', 
+                      borderRadius: '50%', border: '2px solid #0b1220' 
+                    }} />
                   )}
-                </button>
+                </div>
+                <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>{user.name.split(' ')[0]}</span>
+                <ChevronDown size={14} strokeWidth={2.5} style={{ opacity: 0.7 }} />
+              </button>
 
-                {menuOpen && (
-                  <div className="dropdown__menu" style={{ background: '#fff', color: 'var(--ink-900)' }}>
-                    <Link to={`/users/${user.username}`} onClick={closeMenu}>
-                      <User size={16} strokeWidth={2} style={{ marginRight: 8 }} /> My profile
-                    </Link>
-                    <Link to="/bookmarks" onClick={closeMenu}>
-                      <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Bookmarks
-                    </Link>
-                    <Link to="/notifications" onClick={closeMenu}>
-                      <Bell size={16} strokeWidth={2} style={{ marginRight: 8 }} />
-                      Notifications {unreadCount > 0 && `(${unreadCount})`}
-                    </Link>
-                    <Link to="/settings" onClick={closeMenu}>
-                      <Settings size={16} strokeWidth={2} style={{ marginRight: 8 }} />
-                      Settings
-                    </Link>
-                    {(user.role === 'admin' || user.role === 'moderator') && (
-                      <>
-                        <hr />
-                        <Link to="/admin" onClick={closeMenu}>
-                          <Settings size={16} strokeWidth={2} style={{ marginRight: 8 }} />
-                          Admin dashboard
-                        </Link>
-                      </>
-                    )}
-                    <hr />
-                    <button onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }}>
-                      <LogOut size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Log out
-                    </button>
+              {menuOpen && (
+                <div 
+                  className="dropdown__menu" 
+                  style={{ 
+                    background: 'var(--surface)', 
+                    color: 'var(--ink-900)',
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: 'var(--shadow-lg)',
+                    border: '1px solid var(--border)',
+                    padding: '0.5rem',
+                    minWidth: '220px'
+                  }}
+                >
+                  <div style={{ padding: '0.6rem 0.9rem', borderBottom: '1px solid var(--border)', marginBottom: '0.4rem' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--ink-900)' }}>{user.name}</div>
+                    <div className="muted font-mono" style={{ fontSize: '0.75rem' }}>@{user.username}</div>
                   </div>
-                )}
-              </div>
-            )
-            : (
-              <>
-                <Link to="/login" className="btn btn--ghost btn--sm" style={{ background: 'rgba(255,255,255,0.08)', color: '#e6edf7', borderColor: 'rgba(255,255,255,0.18)' }}>Log in</Link>
-                <Link to="/register" className="btn btn--primary btn--sm">Sign up</Link>
-              </>
-            )}
+
+                  <Link to={`/users/${user.username}`} onClick={closeMenu} style={{ borderRadius: 'var(--radius)' }}>
+                    <User size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> My profile
+                  </Link>
+                  <Link to="/bookmarks" onClick={closeMenu} style={{ borderRadius: 'var(--radius)' }}>
+                    <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Saved Intel
+                  </Link>
+                  <Link to="/notifications" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="row" style={{ gap: '8px' }}>
+                      <Bell size={16} strokeWidth={2} style={{ color: 'var(--brand-blue-600)' }} /> Notifications
+                    </span>
+                    {unreadCount > 0 && (
+                      <span style={{ background: '#f2600c', color: '#fff', borderRadius: 999, fontSize: '0.75rem', padding: '0.1rem 0.5rem', fontWeight: 700 }}>
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link to="/settings" onClick={closeMenu} style={{ borderRadius: 'var(--radius)' }}>
+                    <Settings size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Settings
+                  </Link>
+
+                  {(user.role === 'admin' || user.role === 'moderator') && (
+                    <>
+                      <div style={{ height: '1px', background: 'var(--border)', margin: '0.4rem 0' }} />
+                      <Link to="/admin" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', color: 'var(--brand-blue-700)', fontWeight: 600 }}>
+                        <ShieldCheck size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Admin Console
+                      </Link>
+                    </>
+                  )}
+
+                  <div style={{ height: '1px', background: 'var(--border)', margin: '0.4rem 0' }} />
+                  
+                  <button 
+                    onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }}
+                    style={{ borderRadius: 'var(--radius)', color: 'var(--danger)', width: '100%', textAlign: 'left' }}
+                  >
+                    <LogOut size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Log out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Link 
+                to="/login" 
+                className="btn btn--ghost btn--sm" 
+                style={{ background: 'rgba(255,255,255,0.08)', color: '#e6edf7', borderColor: 'rgba(255,255,255,0.18)', borderRadius: '99px', padding: '0.5rem 1.1rem' }}
+              >
+                Log in
+              </Link>
+              <Link 
+                to="/register" 
+                className="btn btn--primary btn--sm" 
+                style={{ borderRadius: '99px', padding: '0.5rem 1.25rem' }}
+              >
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
