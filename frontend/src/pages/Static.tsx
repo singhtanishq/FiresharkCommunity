@@ -80,7 +80,7 @@ export function CommunityGuidelines() {
             <RuleItem type="danger" icon={<XCircle size={20} />} text="Requests for unauthorised access, credential theft, malware distribution or any illegal activity." />
             <RuleItem type="danger" icon={<XCircle size={20} />} text="Doxxing, harassment, phishing promotion or malicious links." />
             <RuleItem type="danger" icon={<XCircle size={20} />} text="Spam, advertising and excessive self-promotion." />
-            <RuleItem type="danger" icon={<XCircle size={20} />} text={<>Account recovery, payment disputes and order problems — use <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>FireShark Support</a> instead.</>} />
+            <RuleItem type="danger" icon={<XCircle size={20} />} text={<>Account recovery, payment disputes and order problems — use <a href="https://help.fireshark.in/" target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>FireShark Support</a> instead.</>} />
           </div>
           <div className="banner banner--warn mt-2" style={{ boxSizing: 'border-box' }}>
             <ShieldAlert size={18} style={{ flexShrink: 0 }} /> 
