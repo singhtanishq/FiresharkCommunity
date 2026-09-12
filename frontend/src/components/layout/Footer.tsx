@@ -84,7 +84,7 @@ export function Footer() {
               Learn <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
             <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              fireshark.ai <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
+              Our Services <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
           </div>
         </div>
