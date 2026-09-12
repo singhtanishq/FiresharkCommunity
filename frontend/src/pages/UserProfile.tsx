@@ -62,28 +62,27 @@ export function UserProfile() {
       {/* Premium Profile Header */}
       <div className="panel" style={{ padding: 0, overflow: 'hidden', marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
         {/* Top Banner Gradient */}
-        <div style={{ height: '100px', background: 'linear-gradient(135deg, var(--brand-blue-600), var(--brand-blue-700))' }} />
+        <div style={{ height: '110px', background: 'linear-gradient(135deg, var(--brand-blue-600), var(--brand-blue-700))' }} />
         
         <div style={{ padding: '0 2rem 2rem', display: 'flex', flexDirection: 'column' }}>
           
-          <div className="row" style={{ alignItems: 'flex-end', gap: '1.5rem', marginTop: '-40px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-            <div style={{ border: '4px solid var(--surface)', borderRadius: '50%', background: 'var(--surface)', display: 'inline-flex', boxShadow: 'var(--shadow-sm)' }}>
-              {/* Force avatar a bit larger via inline scale if native 'lg' isn't large enough */}
-              <div style={{ transform: 'scale(1.15)', transformOrigin: 'bottom left' }}>
+          <div className="row" style={{ alignItems: 'flex-end', gap: '1.5rem', marginTop: '-48px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+            <div style={{ border: '4px solid var(--surface)', borderRadius: '50%', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ transform: 'scale(1.15)', transformOrigin: 'center' }}>
                 <Avatar name={profile.name} path={profile.avatar_path} size="lg" />
               </div>
             </div>
             
-            <div style={{ flex: 1, minWidth: '300px', paddingBottom: '0.5rem' }}>
-              <h1 className="row" style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.4rem', color: 'var(--ink-900)', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '300px', paddingBottom: '0.2rem' }}>
+              <h1 className="row" style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.4rem', color: '#fff', gap: '0.6rem', flexWrap: 'wrap', textShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>
                 {profile.name}
                 {profile.verification && (
-                  <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', border: 'none', fontSize: '0.8rem', padding: '0.2rem 0.6rem' }}>
+                  <span className="chip" style={{ background: 'rgba(255,255,255,0.9)', color: 'var(--brand-blue-700)', border: 'none', fontSize: '0.8rem', padding: '0.2rem 0.6rem', textShadow: 'none' }}>
                     <ShieldCheck size={14} /> {verificationLabels[profile.verification] ?? 'Verified'}
                   </span>
                 )}
                 {(profile.role === 'admin' || profile.role === 'moderator') && (
-                  <span className="chip" style={{ background: '#fff1e8', color: '#c2410c', border: '1px solid #fed7aa', fontSize: '0.8rem', padding: '0.2rem 0.6rem' }}>
+                  <span className="chip" style={{ background: '#fff1e8', color: '#c2410c', border: '1px solid #fed7aa', fontSize: '0.8rem', padding: '0.2rem 0.6rem', textShadow: 'none' }}>
                     {profile.role === 'admin' ? 'Administrator' : 'Moderator'}
                   </span>
                 )}
@@ -199,8 +198,8 @@ export function UserProfile() {
         </div>
       )}
 
-      {/* Content Tabs & Feed */}
-      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both' }}>
+      {/* Content Tabs & Feed with added spacing */}
+      <div style={{ marginTop: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both' }}>
         
         {/* Segmented Control */}
         <div className="row" style={{ marginBottom: '1.5rem' }}>
