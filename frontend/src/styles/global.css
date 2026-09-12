@@ -1288,3 +1288,64 @@ code, pre { font-family: var(--font-mono); font-size: 0.85em; }
 }
 .divider::before { left: 0; }
 .divider::after { right: 0; }
+
+/* ==========================================================================
+   Mobile Responsiveness Enhancements
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  /* Prevent horizontal layout shifts */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Compress main container padding for tight mobile viewports */
+  .app-main {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  /* Make grid elements single-column or fluid on mobile */
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* Stat & Tile grids fluid adjustment */
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Auth shell mobile padding reduction */
+  .auth-shell__form {
+    padding: 1.5rem 1rem;
+  }
+
+  /* Scale down massive headings slightly on mobile */
+  h1 {
+    font-size: 1.6rem !important;
+  }
+  
+  /* Optimize OTP grid for narrow screens */
+  .otp-grid {
+    gap: 0.35rem;
+  }
+  .otp-grid input {
+    font-size: 1.2rem;
+    height: 3rem;
+    padding: 0.4rem 0;
+  }
+}
+
+@media (max-width: 400px) {
+  /* For extremely narrow devices (e.g., iPhone SE 1st gen) */
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 1.75rem 1rem;
+  }
+}
