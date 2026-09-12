@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Question } from '../../types'
 import { formatNumber, timeAgo, verificationLabels } from '../../lib/format'
-import { CheckCircle2, Lock, Eye, MessageSquare, ThumbsUp, ShieldCheck } from 'lucide-react'
+import { CheckCircle2, Lock, ShieldCheck } from 'lucide-react'
 
 export function QuestionCard({ question }: { question: Question }) {
   const isClosed = question.status === 'closed'
