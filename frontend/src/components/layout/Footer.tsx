@@ -75,7 +75,7 @@ export function Footer() {
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'inherit' }}>
             <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              fireshark.in <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
+              FireShark <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
             <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               Academy <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
