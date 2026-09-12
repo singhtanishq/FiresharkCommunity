@@ -131,7 +131,7 @@ export function Header() {
           align-items: center;
           gap: 0.25rem;
           flex-shrink: 0;
-          margin-right: auto; /* Pushes Search and Actions to the right */
+          margin-right: auto;
         }
 
         .nav-link-item {
@@ -188,11 +188,10 @@ export function Header() {
 
         /* =========================================
            TABLET MODE (769px - 1120px) 
-           Single row, dropdown nav, inline search
            ========================================= */
         @media (max-width: 1120px) and (min-width: 769px) {
           .header-container { gap: 1rem; }
-          .header-brand-row { margin-right: auto; } /* Pushes search/actions to right */
+          .header-brand-row { margin-right: auto; }
           
           .main-nav {
             display: none !important;
@@ -200,28 +199,28 @@ export function Header() {
             top: 100%;
             left: 0;
             right: 0;
-            background: var(--surface);
+            background: #0b1220 !important; /* FIXED: Dark Background */
             flex-direction: column;
             padding: 1rem;
             align-items: stretch;
-            border-bottom: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
           }
           .main-nav.is-open { display: flex !important; }
           
           .nav-link-item {
-            color: var(--ink-900);
+            color: #e6edf7 !important; /* FIXED: Light text */
             padding: 0.6rem 0.75rem;
           }
           .nav-link-item:hover, .nav-link-item.is-active {
-            background: var(--surface-2);
+            background: rgba(255,255,255,0.1) !important;
           }
           
           .mobile-only-actions {
             display: flex;
             align-items: center;
           }
-          .mobile-ask-btn { display: none !important; } /* Tablet uses inline ask */
+          .mobile-ask-btn { display: none !important; }
           
           .nav-burger {
             display: inline-flex;
@@ -237,7 +236,6 @@ export function Header() {
 
         /* =========================================
            MOBILE MODE (<= 768px) 
-           2 Rows + Scroll Compression
            ========================================= */
         @media (max-width: 768px) {
           .header-container {
@@ -268,7 +266,6 @@ export function Header() {
             padding: 0.2rem;
           }
           
-          /* Force Search to Row 2 */
           .header-search {
             width: 100%;
             max-width: 100%;
@@ -279,7 +276,6 @@ export function Header() {
             overflow: hidden;
           }
           
-          /* Compress header on scroll down */
           .site-header--compressed .header-search {
             max-height: 0;
             opacity: 0;
@@ -295,28 +291,27 @@ export function Header() {
             top: 100%;
             left: 0;
             right: 0;
-            background: var(--surface);
+            background: #0b1220 !important; /* FIXED: Dark Background */
             flex-direction: column;
             padding: 1rem;
             align-items: stretch;
-            border-bottom: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
             gap: 0.5rem;
           }
           .main-nav.is-open { display: flex !important; }
           
           .nav-link-item {
-            color: var(--ink-900);
+            color: #e6edf7 !important; /* FIXED: Light text */
             padding: 0.6rem 0.75rem;
           }
-          .nav-link-item:hover, .nav-link-item.is-active { background: var(--surface-2); }
+          .nav-link-item:hover, .nav-link-item.is-active { background: rgba(255,255,255,0.1) !important; }
 
-          /* Embed User/Auth inside Mobile Nav */
           .mobile-nav-append {
             display: flex;
             flex-direction: column;
             margin-top: 0.5rem;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.08) !important;
             padding-top: 1rem;
             gap: 0.25rem;
           }
@@ -327,10 +322,14 @@ export function Header() {
             gap: 0.75rem;
             padding: 0.6rem 0.75rem;
             border-radius: var(--radius);
-            color: var(--ink-900);
+            color: #e6edf7 !important; /* FIXED: Light text */
             text-decoration: none;
             font-weight: 500;
             font-size: 0.95rem;
+            transition: background 0.2s;
+          }
+          .mobile-nav-link:hover {
+            background: rgba(255,255,255,0.1) !important;
           }
           
           .mobile-auth-btns {
@@ -384,9 +383,9 @@ export function Header() {
           <div className="mobile-nav-append">
             {user ? (
               <>
-                <div style={{ padding: '0.5rem 0.75rem', background: 'var(--surface-2)', borderRadius: 'var(--radius)', marginBottom: '0.5rem' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--ink-900)' }}>{user.name}</div>
-                  <div className="muted font-mono" style={{ fontSize: '0.75rem' }}>@{user.username}</div>
+                <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius)', marginBottom: '0.5rem' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>{user.name}</div>
+                  <div className="muted font-mono" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>@{user.username}</div>
                 </div>
                 <Link to={`/users/${user.username}`} onClick={closeMenu} className="mobile-nav-link">
                   <User size={16} /> My profile
@@ -408,18 +407,23 @@ export function Header() {
                   <Settings size={16} /> Settings
                 </Link>
                 {(user.role === 'admin' || user.role === 'moderator') && (
-                  <Link to="/admin" onClick={closeMenu} className="mobile-nav-link" style={{ color: 'var(--brand-blue-700)', fontWeight: 600 }}>
+                  <Link to="/admin" onClick={closeMenu} className="mobile-nav-link" style={{ color: '#93c5fd', fontWeight: 600 }}>
                     <ShieldCheck size={16} /> Admin Console
                   </Link>
                 )}
-                <button onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }} className="mobile-nav-link" style={{ color: 'var(--danger)', background: 'transparent', border: 'none', textAlign: 'left', cursor: 'pointer', marginTop: '0.5rem' }}>
+                <button onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }} className="mobile-nav-link" style={{ color: '#f87171', background: 'transparent', border: 'none', textAlign: 'left', cursor: 'pointer', marginTop: '0.5rem' }}>
                   <LogOut size={16} /> Log out
                 </button>
               </>
             ) : (
               <div className="mobile-auth-btns">
-                <Link to="/login" onClick={closeMenu} className="btn btn--ghost">Log in</Link>
-                <Link to="/register" onClick={closeMenu} className="btn btn--primary">Sign up</Link>
+                {/* FIXED: White button with dark text for optimal contrast */}
+                <Link to="/login" onClick={closeMenu} className="btn" style={{ background: '#ffffff', color: '#0f172a', fontWeight: 600, border: '1px solid #ffffff' }}>
+                  Log in
+                </Link>
+                <Link to="/register" onClick={closeMenu} className="btn btn--primary">
+                  Sign up
+                </Link>
               </div>
             )}
           </div>
