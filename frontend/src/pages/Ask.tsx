@@ -273,7 +273,7 @@ export function Ask() {
           </div>
         </div>
 
-        {/* Body / Rich Text with Clean, Non-Nested Spacing & Symmetrical Padding */}
+        {/* Body / Rich Text with Connected Toolbar & Textarea */}
         <div className="field mb-4">
           <label style={{ fontSize: '1rem', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
             <PenLine size={16} color="var(--text-3)" />
@@ -285,11 +285,6 @@ export function Ask() {
               onChange={setBody}
               placeholder={'Describe your question in detail:\n\n- What are you trying to accomplish?\n- What have you already tried?\n- What error do you receive? Include the exact output in a code block.\n- What is your environment (OS, tool version)?'}
             />
-          </div>
-          <div style={{ padding: '0.5rem 0.25rem 0' }}>
-            <p className="hint muted" style={{ margin: 0, lineHeight: 1.5 }}>
-              Markdown supported. Images up to 5 MB (PNG, JPG, WEBP) — remove personal or sensitive information from screenshots before uploading.
-            </p>
           </div>
         </div>
 
