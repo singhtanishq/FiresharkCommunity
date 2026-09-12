@@ -58,16 +58,16 @@ export function Categories() {
           }}>
             <Layers size={28} strokeWidth={2.5} />
           </div>
-          Ecosystems
+          Categories
         </h1>
-        <p style={{ fontSize: '1.15rem', color: 'var(--text-2)', lineHeight: 1.6, margin: 0 }}>
+        <p style={{ fontSize: '1rem', color: 'var(--text-2)', lineHeight: 1.6, margin: 0 }}>
           Browse specialized technical topics, discover deep-dives, and find the exact security expertise you need across our organized domains.
         </p>
       </div>
 
       {categories.length === 0 ? (
         <div className="panel" style={{ padding: '4rem 2rem' }}>
-          <EmptyState icon={<FolderOpen size={48} color="var(--brand-blue-400)" strokeWidth={1.5} />} title="No ecosystems defined yet." />
+          <EmptyState icon={<FolderOpen size={48} color="var(--brand-blue-400)" strokeWidth={1.5} />} title="No categories defined yet." />
         </div>
       ) : (
         <div style={{
@@ -142,7 +142,7 @@ export function Categories() {
                   marginTop: 'auto'
                 }}
               >
-                Enter domain <ChevronRight size={16} strokeWidth={2.5} />
+                Explore category <ChevronRight size={16} strokeWidth={2.5} />
               </div>
             </Link>
           ))}
