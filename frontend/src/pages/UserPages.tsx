@@ -10,7 +10,8 @@ import { timeAgo } from '../lib/format'
 import { apiError } from '../api/client'
 import { 
   Bell, Bookmark, Mail, User, Shield, AlertOctagon, 
-  MapPin, Globe, CheckCircle2, AlertTriangle, Briefcase
+  MapPin, Globe, CheckCircle2, AlertTriangle, Briefcase,
+  Eye, EyeOff
 } from 'lucide-react'
 
 // =====================================================================
@@ -205,10 +206,13 @@ export function Settings() {
   const [busy, setBusy] = useState(false)
 
   const [passwords, setPasswords] = useState({ current_password: '', password: '', password_confirmation: '' })
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
   const [pwMessage, setPwMessage] = useState<string | null>(null)
   const [pwError, setPwError] = useState<string | null>(null)
 
   const [deletePassword, setDeletePassword] = useState('')
+  const [showDeletePassword, setShowDeletePassword] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showDelete, setShowDelete] = useState(false)
 
@@ -273,11 +277,11 @@ export function Settings() {
   }
 
   return (
-    <div className="app-main--narrow" style={{ margin: '0 auto', maxWidth: 760, animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main--narrow" style={{ margin: '2rem auto 4rem', maxWidth: 760, animation: 'fade-in var(--dur-slow) var(--ease)' }}>
       
       <div style={{ marginBottom: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.2rem' }}>
-          Account Settings
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.2rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <User size={28} color="var(--brand-blue-600)" strokeWidth={2.5} /> Account Settings
         </h1>
         <p className="muted" style={{ fontSize: '1.05rem', margin: 0 }}>Manage your profile identity, security, and account status.</p>
       </div>
@@ -304,7 +308,7 @@ export function Settings() {
       )}
 
       {/* Profile Section */}
-      <section className="panel mb-4" style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both' }}>
+      <section className="panel mb-4" style={{ marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both' }}>
         <div className="panel__header">
           <h2 style={{ fontSize: '1.1rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <User size={18} color="var(--brand-blue-600)" /> Profile Identity
@@ -335,25 +339,25 @@ export function Settings() {
             <div className="grid-2 mt-2">
               <div className="field">
                 <label htmlFor="set-expertise">Primary Expertise</label>
-                <div className="input-affix">
-                  <Briefcase className="input-affix__icon" size={16} />
-                  <input id="set-expertise" className="input input--with-affix" value={form.expertise} onChange={(e) => setForm({ ...form, expertise: e.target.value })} placeholder="e.g. SOC Analyst, Pentester" />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Briefcase size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+                  <input id="set-expertise" className="input input--with-affix" value={form.expertise} onChange={(e) => setForm({ ...form, expertise: e.target.value })} placeholder="e.g. SOC Analyst, Pentester" style={{ width: '100%', paddingLeft: '40px' }} />
                 </div>
               </div>
               <div className="field">
                 <label htmlFor="set-location">Location</label>
-                <div className="input-affix">
-                  <MapPin className="input-affix__icon" size={16} />
-                  <input id="set-location" className="input input--with-affix" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="e.g. London, UK" />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <MapPin size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+                  <input id="set-location" className="input input--with-affix" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="e.g. London, UK" style={{ width: '100%', paddingLeft: '40px' }} />
                 </div>
               </div>
             </div>
             
             <div className="field">
               <label htmlFor="set-website">Personal Website / Link</label>
-              <div className="input-affix">
-                <Globe className="input-affix__icon" size={16} />
-                <input id="set-website" type="url" className="input input--with-affix" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://" />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <Globe size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+                <input id="set-website" type="url" className="input input--with-affix" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://" style={{ width: '100%', paddingLeft: '40px' }} />
               </div>
             </div>
             
@@ -367,7 +371,7 @@ export function Settings() {
       </section>
 
       {/* Security Section */}
-      <section className="panel mb-4" style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both' }}>
+      <section className="panel mb-4" style={{ marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both' }}>
         <div className="panel__header">
           <h2 style={{ fontSize: '1.1rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Shield size={18} color="var(--brand-blue-600)" /> Security
@@ -388,12 +392,53 @@ export function Settings() {
           <form onSubmit={savePassword}>
             <div className="field mb-3">
               <label htmlFor="set-current">Current Password</label>
-              <input id="set-current" type="password" className="input" value={passwords.current_password} onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })} required autoComplete="current-password" placeholder="••••••••" />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input 
+                  id="set-current" 
+                  type={showCurrentPassword ? 'text' : 'password'} 
+                  className="input" 
+                  value={passwords.current_password} 
+                  onChange={(e) => setPasswords({ ...passwords, current_password: e.target.value })} 
+                  required 
+                  autoComplete="current-password" 
+                  placeholder="••••••••" 
+                  style={{ width: '100%', paddingRight: '40px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  style={{ all: 'unset', position: 'absolute', right: '12px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                  aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             <div className="grid-2">
               <div className="field">
                 <label htmlFor="set-new">New Password</label>
-                <input id="set-new" type="password" className="input" value={passwords.password} onChange={(e) => setPasswords({ ...passwords, password: e.target.value })} required minLength={8} autoComplete="new-password" placeholder="••••••••" />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input 
+                    id="set-new" 
+                    type={showNewPassword ? 'text' : 'password'} 
+                    className="input" 
+                    value={passwords.password} 
+                    onChange={(e) => setPasswords({ ...passwords, password: e.target.value })} 
+                    required 
+                    minLength={8} 
+                    autoComplete="new-password" 
+                    placeholder="••••••••" 
+                    style={{ width: '100%', paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    style={{ all: 'unset', position: 'absolute', right: '12px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                    aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
               <div className="field">
                 <label htmlFor="set-confirm">Confirm New Password</label>
@@ -443,7 +488,28 @@ export function Settings() {
               </div>
               <div className="field mb-3">
                 <label htmlFor="set-delete">Confirm your password to authorize deactivation</label>
-                <input id="set-delete" type="password" className="input input--lg" value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} required autoComplete="current-password" autoFocus placeholder="••••••••" />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input 
+                    id="set-delete" 
+                    type={showDeletePassword ? 'text' : 'password'} 
+                    className="input input--lg" 
+                    value={deletePassword} 
+                    onChange={(e) => setDeletePassword(e.target.value)} 
+                    required 
+                    autoComplete="current-password" 
+                    autoFocus 
+                    placeholder="••••••••" 
+                    style={{ width: '100%', paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDeletePassword(!showDeletePassword)}
+                    style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                    aria-label={showDeletePassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showDeletePassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
               <div className="row" style={{ gap: '1rem' }}>
                 <button type="button" className="btn btn--ghost" onClick={() => setShowDelete(false)}>Cancel Request</button>
