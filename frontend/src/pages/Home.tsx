@@ -297,8 +297,8 @@ export function Home() {
                         #{index + 1}
                       </span>
                       <div className="avatar avatar--sm" style={{ border: index === 0 ? '2px solid var(--warning)' : 'none', flexShrink: 0 }}>
-                        {person.avatar_url ? (
-                          <img src={person.avatar_url} alt={person.name} />
+                        {person.avatar_path ? (
+                          <img src={person.avatar_path} alt={person.name} />
                         ) : (
                           person.name.charAt(0)
                         )}
