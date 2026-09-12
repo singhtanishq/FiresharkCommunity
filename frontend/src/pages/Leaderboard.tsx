@@ -244,7 +244,7 @@ export function Leaderboard() {
                             </span>
                             {safeReputation !== undefined && (
                               <span className="muted" style={{ fontSize: '0.8rem', fontWeight: 500 }}>
-                                {formatNumber(safeReputation)} all-time rep
+                                {formatNumber(safeReputation)} All-time Reputations
                               </span>
                             )}
                           </div>
