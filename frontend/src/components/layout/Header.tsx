@@ -88,7 +88,6 @@ export function Header() {
   return (
     <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''} ${scrollDirection === 'down' && scrolled ? 'site-header--compressed' : ''}`}>
       
-      {/* Surgical CSS overrides to enforce perfect responsiveness regardless of global styles */}
       <style>{`
         .site-header {
           position: sticky !important;
@@ -108,7 +107,7 @@ export function Header() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 1rem;
+          gap: 1.5rem;
           padding: 0.75rem 1rem;
           width: 100%;
           max-width: var(--container, 1400px);
@@ -127,23 +126,17 @@ export function Header() {
         .header-collapsible {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: 1.5rem;
           flex: 1;
-          justify-content: flex-end;
+          justify-content: space-between;
           min-width: 0;
         }
-
-        .header-search {
-          flex: 1 1 150px;
-          max-width: 420px;
-          min-width: 120px;
-          margin: 0;
-          position: relative;
-        }
         
-        .header-search__input {
-          width: 100%;
-          box-sizing: border-box;
+        .main-nav {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex-shrink: 0;
         }
 
         .header-actions {
@@ -156,9 +149,17 @@ export function Header() {
         .mobile-ask-btn {
           display: none !important;
         }
+        
+        .nav-burger {
+          display: none;
+        }
 
-        /* Mobile specific overrides */
-        @media (max-width: 768px) {
+        /* 1120px Threshold for Tablet & Mobile */
+        @media (max-width: 1120px) {
+          .nav-burger {
+            display: inline-flex;
+          }
+        
           .header-container {
             flex-direction: column;
             align-items: stretch;
@@ -184,7 +185,7 @@ export function Header() {
             margin-top: 0.75rem;
           }
           
-          /* Compression state when scrolling down on mobile */
+          /* Compression state when scrolling down on tablet/mobile */
           .site-header--compressed .header-collapsible {
             max-height: 0;
             opacity: 0;
@@ -192,17 +193,18 @@ export function Header() {
             pointer-events: none;
           }
 
-          .header-search {
-            max-width: 100%;
-            width: 100%;
-          }
-
           .header-actions {
             width: 100%;
-            justify-content: space-between;
+            justify-content: stretch;
+          }
+          
+          .header-actions .btn {
+            flex: 1;
+            justify-content: center;
+            text-align: center;
           }
 
-          /* Relocate Ask Question button to top row for mobile */
+          /* Hide Desktop Ask Button, Show Mobile Ask Button */
           .desktop-ask-btn {
             display: none !important;
           }
@@ -211,6 +213,21 @@ export function Header() {
             display: inline-flex !important;
             margin-left: auto;
             margin-right: 0.75rem;
+          }
+          
+          /* Strictly Handle Nav Menu Visibility */
+          .main-nav {
+            flex-direction: column;
+            width: 100%;
+            align-items: flex-start;
+          }
+          .main-nav:not(.is-open) {
+            display: none !important;
+          }
+          .main-nav.is-open {
+            display: flex !important;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
           }
         }
 
@@ -230,16 +247,16 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Mobile Only: Ask Question Button */}
+          {/* Mobile/Tablet Only: Ask Question Button */}
           <div className="mobile-only mobile-ask-btn">
             <Link to="/ask" className="btn btn--fire btn--sm" style={{ padding: '0.4rem 0.85rem', borderRadius: '99px' }} onClick={closeMenu}>
               <Plus size={16} strokeWidth={2.5} /> <span className="hide-on-very-small" style={{ marginLeft: 4 }}>Ask</span>
             </Link>
           </div>
 
-          {/* Mobile Nav Burger */}
-          <button className="nav-burger" onClick={() => setNavOpen(!navOpen)} aria-expanded={navOpen} aria-label="Toggle navigation" style={{ flexShrink: 0 }}>
-            {navOpen ? <X size={22} strokeWidth={2.5} /> : <Menu size={22} strokeWidth={2.5} />}
+          {/* Mobile/Tablet Nav Burger */}
+          <button className="nav-burger" onClick={() => setNavOpen(!navOpen)} aria-expanded={navOpen} aria-label="Toggle navigation" style={{ flexShrink: 0, background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>
+            {navOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
           </button>
         </div>
 
@@ -247,17 +264,17 @@ export function Header() {
         <div className="header-collapsible">
           
           {/* Main Navigation Links */}
-          <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main" style={{ gap: '0.3rem' }}>
+          <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main">
             <NavLink to="/" end onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Home</NavLink>
             <NavLink to="/questions" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Questions</NavLink>
-            <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Categories</NavLink>
+            <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Ecosystems</NavLink>
             <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Tags</NavLink>
-            <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Leaderboard</NavLink>
+            <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Hall of Fame</NavLink>
           </nav>
 
-          {/* Search Bar */}
-          <form className="header-search" role="search" onSubmit={submitSearch}>
-            <Search className="header-search__icon" aria-hidden="true" size={16} strokeWidth={2.5} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+          {/* Search Bar - Absolutely constrained relative container to prevent dropping icon */}
+          <form className="header-search" role="search" onSubmit={submitSearch} style={{ position: 'relative', flex: '1 1 auto', margin: 0, width: '100%', minWidth: '120px' }}>
+            <Search className="header-search__icon" aria-hidden="true" size={16} strokeWidth={2.5} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} />
             <input
               className="header-search__input input"
               type="search"
@@ -265,7 +282,7 @@ export function Header() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               aria-label="Search"
-              style={{ paddingLeft: '38px', borderRadius: '99px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.9rem' }}
+              style={{ width: '100%', paddingLeft: '40px', borderRadius: '99px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '0.95rem', height: '2.5rem', boxSizing: 'border-box' }}
             />
           </form>
 
@@ -273,7 +290,7 @@ export function Header() {
           <div className="header-actions">
             
             {/* Desktop Only: Ask Question Button */}
-            <Link to="/ask" className="btn btn--fire btn--sm desktop-ask-btn" style={{ padding: '0.5rem 1rem', borderRadius: '99px' }}>
+            <Link to="/ask" className="btn btn--fire btn--sm desktop-ask-btn" style={{ padding: '0.5rem 1.1rem', borderRadius: '99px' }}>
               <Plus size={16} strokeWidth={2.5} /> <span style={{ display: 'inline' }}>Ask Question</span>
             </Link>
             
@@ -378,7 +395,7 @@ export function Header() {
                 <Link 
                   to="/login" 
                   className="btn btn--ghost btn--sm" 
-                  style={{ background: 'rgba(255,255,255,0.08)', color: '#e6edf7', borderColor: 'rgba(255,255,255,0.18)', borderRadius: '99px', padding: '0.5rem 1.1rem', flex: 1, textAlign: 'center', justifyContent: 'center' }}
+                  style={{ background: 'rgba(255,255,255,0.08)', color: '#e6edf7', borderColor: 'rgba(255,255,255,0.18)', borderRadius: '99px', padding: '0.5rem 1.1rem' }}
                   onClick={closeMenu}
                 >
                   Log in
@@ -386,7 +403,7 @@ export function Header() {
                 <Link 
                   to="/register" 
                   className="btn btn--primary btn--sm" 
-                  style={{ borderRadius: '99px', padding: '0.5rem 1.25rem', flex: 1, textAlign: 'center', justifyContent: 'center' }}
+                  style={{ borderRadius: '99px', padding: '0.5rem 1.25rem' }}
                   onClick={closeMenu}
                 >
                   Sign up
