@@ -1,836 +1,607 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import logoWhite from '../assets/fireshark_community.png'
-import { authApi } from '../api/endpoints'
-import { apiError } from '../api/client'
+import { useCallback, useEffect, useState } from 'react'
+import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { api, apiError } from '../api/client'
+import { useAuth } from '../context/AuthContext'
+import { EmptyState, Spinner } from '../components/ui/States'
+import { Avatar } from '../components/ui/Avatar'
+import { Pagination } from '../components/ui/Pagination'
+import { formatNumber, reportReasonLabels, timeAgo, verificationLabels } from '../lib/format'
 import { 
-  Mail, Lock, User, AtSign, ArrowRight, ArrowLeft, 
-  ShieldCheck, Terminal, Award, Search, AlertTriangle, CheckCircle2,
-  Eye, EyeOff
+  LayoutDashboard, Flag, MessageSquare, FileText, Users, 
+  FolderOpen, Award, Settings, CheckCircle2, 
+  EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock, Search
 } from 'lucide-react'
 
-function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+// ------------------------------------------------------------------ shell
+
+const ADMIN_NAV = [
+  ['/admin', <LayoutDashboard size={18} strokeWidth={2} />, 'Dashboard'],
+  ['/admin/reports', <Flag size={18} strokeWidth={2} />, 'Reports'],
+  ['/admin/questions', <MessageSquare size={18} strokeWidth={2} />, 'Questions'],
+  ['/admin/answers', <FileText size={18} strokeWidth={2} />, 'Answers'],
+  ['/admin/users', <Users size={18} strokeWidth={2} />, 'Users'],
+  ['/admin/categories', <FolderOpen size={18} strokeWidth={2} />, 'Categories & tags'],
+  ['/admin/badges', <Award size={18} strokeWidth={2} />, 'Badges & reputation'],
+  ['/admin/settings', <Settings size={18} strokeWidth={2} />, 'Settings & config'],
+] as const
+
+export function AdminLayout() {
+  const { user, loading } = useAuth()
+
+  if (loading) return <Spinner />
+  if (!user) return <Navigate to="/login" state={{ from: '/admin' }} replace />
+  if (user.role !== 'admin' && user.role !== 'moderator') return <Navigate to="/" replace />
+
   return (
-    <div className="auth-shell" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-      <div className="auth-shell__art" style={{ boxSizing: 'border-box' }}>
-        <div className="auth-shell__art-inner" style={{ animation: 'modal-rise var(--dur-slow) var(--ease)' }}>
-          <Link to="/" style={{ display: 'inline-block', marginBottom: '2rem', transition: 'transform var(--dur) var(--ease)' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseOut={e => e.currentTarget.style.transform = 'none'}>
-            <img src={logoWhite} alt="FireShark" style={{ height: 38 }} />
-          </Link>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.85rem)', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.2, wordBreak: 'break-word' }}>
-            Where cybersecurity professionals ask, answer, and learn.
-          </h2>
-          <p style={{ fontSize: '1.05rem', opacity: 0.85, lineHeight: 1.6, marginBottom: '2rem', wordBreak: 'break-word' }}>
-            The FireShark Community is a public knowledge base run on peer-reviewed intelligence.
-          </p>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <Terminal size={18} color="#64BDE5" style={{ flexShrink: 0 }} /> Practical, hands-on cybersecurity questions
-            </li>
-            <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <Award size={18} color="#fbbf24" style={{ flexShrink: 0 }} /> Monthly leaderboard &amp; reputation badges
-            </li>
-            <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <ShieldCheck size={18} color="#34d399" style={{ flexShrink: 0 }} /> Verified instructors and professionals
-            </li>
-            <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <Search size={18} color="#a78bfa" style={{ flexShrink: 0 }} /> Searchable knowledge that grows with you
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="auth-shell__form" style={{ boxSizing: 'border-box', width: '100%' }}>
-        <div className="auth-shell__card panel" style={{ padding: 'clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 2vw, 2rem)', border: 'none', boxShadow: 'var(--shadow-lg)', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
-          <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.75rem)', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--ink-900)', wordBreak: 'break-word' }}>{title}</h1>
-          {subtitle && <p className="muted" style={{ marginTop: '0.2rem', marginBottom: '1.5rem', fontSize: '0.95rem', wordBreak: 'break-word' }}>{subtitle}</p>}
-          {children}
+    <div className="admin-layout" style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
+      <style>{`
+        .admin-layout-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          width: 100%;
+        }
+        .admin-nav-sidebar {
+          display: flex;
+          gap: 0.5rem;
+          overflow-x: auto;
+          padding-bottom: 0.5rem;
+          margin-bottom: 1rem;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .admin-nav-sidebar::-webkit-scrollbar {
+          display: none;
+        }
+        .admin-nav-link {
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+          .admin-layout-container {
+            flex-direction: row;
+            align-items: flex-start;
+          }
+          .admin-nav-sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            flex-direction: column;
+            overflow-x: visible;
+            position: sticky;
+            top: calc(var(--header-h, 60px) + 1.5rem);
+            margin-bottom: 0;
+            padding-bottom: 0;
+          }
+          .admin-nav-link {
+            width: 100%;
+          }
+        }
+        @media (max-width: 767px) {
+          .hide-on-mobile {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      <div className="admin-layout-container">
+        <nav className="admin-nav-sidebar panel" style={{ padding: '0.75rem', boxSizing: 'border-box' }} aria-label="Admin">
+          <div className="hide-on-mobile" style={{ padding: '0.5rem 0.75rem', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Administration
+          </div>
+          {ADMIN_NAV.map(([to, icon, label]) => (
+            <NavLink 
+              key={to} 
+              to={to} 
+              end={to === '/admin'} 
+              className={({ isActive }) => `row admin-nav-link ${isActive ? 'is-active' : ''}`}
+              style={{ 
+                padding: '0.6rem 0.85rem', 
+                borderRadius: 'var(--radius)', 
+                textDecoration: 'none',
+                transition: 'background var(--dur) var(--ease), color var(--dur) var(--ease)',
+                boxSizing: 'border-box'
+              }}
+            >
+              {icon} <span style={{ fontWeight: 500 }}>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
+        
+        <div style={{ minWidth: 0, flex: 1, width: '100%', overflowX: 'hidden' }}>
+          <Outlet />
         </div>
       </div>
     </div>
   )
 }
 
-function StepDots({ steps, current }: { steps: string[]; current: number }) {
+export function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <ol className="step-list" style={{ marginBottom: '2rem', gap: '0.4rem', width: '100%', boxSizing: 'border-box' }}>
-      {steps.map((s, i) => {
-        const isActive = i === current
-        const isDone = i < current
-        return (
-          <li 
-            key={s} 
-            className={isActive ? 'is-active' : isDone ? 'is-done' : ''}
-            style={{
-              transition: 'all var(--dur) var(--ease)',
-              padding: '0.6rem 0.4rem',
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              borderBottom: isActive ? '2px solid var(--brand-blue-600)' : isDone ? '2px solid var(--success)' : '2px solid transparent',
-              background: isActive ? 'var(--brand-blue-50)' : isDone ? 'var(--success-bg)' : 'var(--surface-2)',
-              borderColor: isActive ? 'var(--brand-blue-400)' : isDone ? '#bbf7d0' : 'var(--border)',
-              flex: '1 1 auto',
-              minWidth: 0
-            }}
-          >
-            <b style={{ fontSize: '0.7rem', opacity: isActive || isDone ? 1 : 0.6, whiteSpace: 'nowrap' }}>STEP {i + 1}</b>
-            <span style={{ fontWeight: isActive ? 700 : 500, fontSize: '0.78rem', opacity: isActive || isDone ? 1 : 0.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s}</span>
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
-
-function OtpInput({ value, onChange, disabled, autoFocus }: { value: string; onChange: (v: string) => void; disabled?: boolean; autoFocus?: boolean }) {
-  const refs = useRef<(HTMLInputElement | null)[]>([])
-  const handle = (i: number, v: string) => {
-    const digit = v.replace(/\D/g, '').slice(-1)
-    const next = (value.padEnd(6, ' ').split('') as string[]).map((c, idx) => (idx === i ? digit : c))
-    const out = next.join('').replace(/\s/g, '').slice(0, 6)
-    onChange(out)
-    if (digit && i < 5) refs.current[i + 1]?.focus()
-  }
-  const handleKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !value[i] && i > 0) refs.current[i - 1]?.focus()
-  }
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
-    onChange(pasted)
-    refs.current[Math.min(pasted.length, 5)]?.focus()
-  }
-  return (
-    <div className="otp-grid" style={{ gap: '0.4rem', width: '100%', boxSizing: 'border-box' }}>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <input
-          key={i}
-          ref={(el) => { refs.current[i] = el }}
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={1}
-          value={value[i] ?? ''}
-          onChange={(e) => handle(i, e.target.value)}
-          onKeyDown={(e) => handleKey(i, e)}
-          onPaste={handlePaste}
-          disabled={disabled}
-          autoFocus={autoFocus && i === 0}
-          aria-label={`Digit ${i + 1} of 6`}
-          className="input"
-          style={{ 
-            fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', 
-            height: 'clamp(2.8rem, 7vw, 3.5rem)', 
-            borderRadius: 'var(--radius-md)',
-            boxShadow: value[i] ? '0 0 0 1px var(--brand-blue-400) inset' : 'none',
-            background: value[i] ? 'var(--brand-blue-50)' : 'var(--surface)',
-            transition: 'all var(--dur-fast) var(--ease)',
-            padding: 0,
-            textAlign: 'center',
-            boxSizing: 'border-box'
-          }}
-        />
-      ))}
+    <div className="page-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <h1 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.5rem)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', wordBreak: 'break-word' }}>
+        {title}
+      </h1>
+      <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', width: 'auto', maxWidth: '100%' }}>
+        {children}
+      </div>
     </div>
   )
 }
 
-// =====================================================================
-// LOGIN
-// =====================================================================
+// -------------------------------------------------------------- dashboard
 
-export function Login() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const from = (location.state as { from?: string } | null)?.from ?? '/'
-
-  const [step, setStep] = useState<'password' | 'otp'>('password')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [otp, setOtp] = useState('')
-  const [otpToken, setOtpToken] = useState('')
-  const [expiresAt, setExpiresAt] = useState<Date | null>(null)
-  const [resendAfter, setResendAfter] = useState<Date | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
-  const [cooldown, setCooldown] = useState(0)
+export function AdminDashboard() {
+  const [data, setData] = useState<any>(null)
 
   useEffect(() => {
-    if (!resendAfter) return
-    const tick = () => setCooldown(Math.max(0, Math.ceil((resendAfter.getTime() - Date.now()) / 1000)))
-    tick()
-    const i = setInterval(tick, 500)
-    return () => clearInterval(i)
-  }, [resendAfter])
+    api.get('/admin/dashboard').then((r) => setData(r.data.data))
+  }, [])
 
-  const submitPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setBusy(true)
-    setError(null)
-    try {
-      const start = await authApi.startLogin({ email, password })
-      setEmail(start.identifier)
-      setOtpToken(start.token)
-      setExpiresAt(new Date(start.expires_at))
-      setResendAfter(new Date(start.resend_after ?? new Date(Date.now() + 30_000).toISOString()))
-      setStep('otp')
-    } catch (err) {
-      setError(apiError(err).message)
-    } finally {
-      setBusy(false)
-    }
-  }
+  if (!data) return <Spinner />
 
-  const submitOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (otp.length !== 6) return
-    setBusy(true)
-    setError(null)
-    try {
-      await authApi.verifyLoginOtp({ identifier: email, code: otp }, otpToken)
-      navigate(from)
-    } catch (err) {
-      setError(apiError(err).message)
-      setOtp('')
-    } finally {
-      setBusy(false)
-    }
-  }
+  const { stats, recent_activity: activity } = data
 
-  const resend = async () => {
-    if (cooldown > 0) return
-    setBusy(true)
-    try {
-      const r = await authApi.resendLoginOtp(email)
-      setOtpToken(r.token)
-      setExpiresAt(new Date(r.expires_at))
-      setResendAfter(new Date(Date.now() + 30_000))
-    } catch (err) { setError(apiError(err).message) }
-    finally { setBusy(false) }
-  }
-
-  const ttl = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 1000)) : 0
-
-  return (
-    <AuthShell title="Welcome back" subtitle={step === 'otp' ? `Enter the 6-digit code sent to ${email}.` : 'Sign in to your account.'}>
-      <StepDots steps={['Credentials', 'Verification']} current={step === 'password' ? 0 : 1} />
-
-      {error && (
-        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', boxSizing: 'border-box' }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>{error}</span>
-        </div>
-      )}
-
-      {step === 'password' && (
-        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="field">
-            <label htmlFor="login-email">Email or username</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input id="login-email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
-            </div>
-          </div>
-          <div className="field">
-            <div className="row row--between mb-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-              <label htmlFor="login-password" style={{ margin: 0 }}>Password</label>
-              <Link 
-                to="/forgot-password" 
-                className="text-3 muted font-medium" 
-                style={{ textDecoration: 'none', transition: 'color 0.2s ease', whiteSpace: 'nowrap' }}
-                onMouseOver={e => e.currentTarget.style.color = 'var(--ink-900)'}
-                onMouseOut={e => e.currentTarget.style.color = 'var(--text-3)'}
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input 
-                id="login-password" 
-                type={showPassword ? 'text' : 'password'} 
-                className="input input--with-affix input--lg" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                autoComplete="current-password" 
-                placeholder="••••••••" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-          <button className="btn btn--primary btn--block btn--lg mt-3" disabled={busy}>
-            {busy ? 'Authenticating…' : <><ArrowRight size={18} style={{ flexShrink: 0 }} /> Continue to verification</>}
-          </button>
-        </form>
-      )}
-
-      {step === 'otp' && (
-        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="field">
-            <OtpInput value={otp} onChange={setOtp} disabled={busy} autoFocus />
-            <div className="row row--between mt-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-              <p className="help-inline" style={{ margin: 0, wordBreak: 'break-word' }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
-              <div className="otp-resend" style={{ margin: 0 }}>
-                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
-                  {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
-                </button>
-              </div>
-            </div>
-          </div>
-          <button className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || otp.length !== 6}>
-            {busy ? 'Verifying…' : <><ShieldCheck size={18} style={{ flexShrink: 0 }} /> Verify & sign in</>}
-          </button>
-          
-          <div className="divider">Or</div>
-          
-          <button type="button" className="btn btn--ghost btn--block" onClick={() => { setStep('password'); setOtp(''); setError(null) }}>
-            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Back to password
-          </button>
-        </form>
-      )}
-
-      {step === 'password' && (
-        <p className="muted" style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem', wordBreak: 'break-word' }}>
-          New to the community?{' '}
-          <Link 
-            to="/register" 
-            style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
-            onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
-            onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
-          >
-            Create an account
-          </Link>
-        </p>
-      )}
-    </AuthShell>
-  )
-}
-
-// =====================================================================
-// REGISTER
-// =====================================================================
-
-export function Register() {
-  const navigate = useNavigate()
-  const [step, setStep] = useState<'details' | 'otp' | 'password'>('details')
-  const [form, setForm] = useState({ name: '', username: '', email: '', password: '' })
-  const [confirm, setConfirm] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [otp, setOtp] = useState('')
-  const [otpToken, setOtpToken] = useState('')
-  const [expiresAt, setExpiresAt] = useState<Date | null>(null)
-  const [resendAfter, setResendAfter] = useState<Date | null>(null)
-  const [cooldown, setCooldown] = useState(0)
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
-  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'ok' | 'taken' | 'reserved'>('idle')
-  const [usernameHint, setUsernameHint] = useState<string | null>(null)
-
-  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [k]: e.target.value })
-
-  useEffect(() => {
-    if (step !== 'details') return
-    const u = form.username.trim()
-    if (u.length < 3) { setUsernameStatus('idle'); setUsernameHint(null); return }
-    setUsernameStatus('checking')
-    const t = setTimeout(async () => {
-      try {
-        const r = await authApi.checkUsername(u)
-        setUsernameStatus(r.available ? 'ok' : 'taken')
-        setUsernameHint(r.available
-          ? 'Username is available.'
-          : r.reason === 'reserved' ? 'That username is reserved.'
-          : 'That username is already taken.')
-      } catch { setUsernameStatus('idle') }
-    }, 400)
-    return () => clearTimeout(t)
-  }, [form.username, step])
-
-  useEffect(() => {
-    if (!resendAfter) return
-    const tick = () => setCooldown(Math.max(0, Math.ceil((resendAfter.getTime() - Date.now()) / 1000)))
-    tick()
-    const i = setInterval(tick, 500)
-    return () => clearInterval(i)
-  }, [resendAfter])
-
-  const submitDetails = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setBusy(true)
-    setError(null)
-    try {
-      const r = await authApi.startRegistration(form)
-      setOtpToken(r.token)
-      setExpiresAt(new Date(r.expires_at))
-      setResendAfter(new Date(Date.now() + 30_000))
-      setStep('otp')
-    } catch (err) {
-      setError(apiError(err).message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const submitOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (otp.length !== 6) return
-    setBusy(true)
-    setError(null)
-    try {
-      await authApi.verifySignupOtp({ identifier: form.email, code: otp }, otpToken)
-      setStep('password')
-    } catch (err) {
-      setError(apiError(err).message)
-      setOtp('')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const submitPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (form.password !== confirm) { setError('Passwords do not match.'); return }
-    setBusy(true)
-    setError(null)
-    try {
-      await authApi.completeRegistration(form.email)
-      navigate('/')
-    } catch (err) {
-      setError(apiError(err).message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const resend = async () => {
-    if (cooldown > 0) return
-    setBusy(true)
-    try {
-      const r = await authApi.resendSignupOtp(form.email)
-      setOtpToken(r.token)
-      setExpiresAt(new Date(r.expires_at))
-      setResendAfter(new Date(Date.now() + 30_000))
-    } catch (err) { setError(apiError(err).message) }
-    finally { setBusy(false) }
-  }
-
-  const ttl = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 1000)) : 0
-
-  return (
-    <AuthShell
-      title="Join the Community"
-      subtitle={
-        step === 'details' ? 'Create an account to participate.'
-        : step === 'otp' ? `Verify the code sent to ${form.email}.`
-        : 'Secure your account with a strong password.'
-      }
+  const StatCard = ({ value, label, warn = false }: { value: string | number, label: string, warn?: boolean }) => (
+    <div 
+      className="panel stat-card" 
+      style={{ 
+        border: warn ? '1px solid var(--danger)' : undefined,
+        background: warn ? 'var(--danger-bg)' : 'var(--surface)',
+        transition: 'transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease)',
+        boxSizing: 'border-box',
+        padding: '1.5rem 1rem',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start'
+      }}
+      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
+      onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-xs)'; }}
     >
-      <StepDots steps={['Profile', 'Verification', 'Security']} current={step === 'details' ? 0 : step === 'otp' ? 1 : 2} />
+      <b style={{ color: warn ? 'var(--danger)' : 'var(--ink-900)', fontSize: '1.75rem', display: 'block', marginBottom: '0.25rem', lineHeight: 1 }}>{value}</b>
+      <span style={{ color: warn ? '#991b1b' : 'var(--text-3)', fontSize: '0.85rem', lineHeight: 1.3 }}>{label}</span>
+    </div>
+  )
 
-      {error && (
-        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', boxSizing: 'border-box' }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>{error}</span>
+  return (
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
+      <style>{`
+        .admin-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+        @media (min-width: 640px) {
+          .admin-stat-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        @media (min-width: 1024px) {
+          .admin-stat-grid {
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          }
+        }
+        .admin-dashboard-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        @media (min-width: 900px) {
+          .admin-dashboard-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+      `}</style>
+
+      <AdminHeader title="Dashboard Overview" />
+
+      <div className="admin-stat-grid">
+        <StatCard value={formatNumber(stats.users.total)} label="Total users" />
+        <StatCard value={formatNumber(stats.users.active_month)} label="Active this month" />
+        <StatCard value={formatNumber(stats.questions.published)} label="Published questions" />
+        <StatCard value={formatNumber(stats.questions.unanswered)} label="Unanswered" />
+        <StatCard value={formatNumber(stats.answers.total)} label="Total Answers" />
+        <StatCard value={formatNumber(stats.reports.pending)} label="Open reports" warn={stats.reports.pending > 0} />
+      </div>
+
+      <div className="admin-dashboard-grid">
+        <div className="panel" style={{ overflowX: 'hidden', boxSizing: 'border-box' }}>
+          <div className="panel__header" style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Recent questions</h2>
+            <NavLink to="/admin/questions" className="muted text-3" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>View all →</NavLink>
+          </div>
+          <div className="panel__body" style={{ padding: 0 }}>
+            {activity.questions.map((q: any) => (
+              <div 
+                key={q.id} 
+                className="row row--between" 
+                style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'nowrap', gap: '0.75rem' }}
+                onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'}
+                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <div className="row" style={{ gap: '0.5rem', flex: 1, minWidth: 0, flexWrap: 'nowrap' }}>
+                  {q.status === 'hidden' && <EyeOff size={14} color="var(--text-3)" style={{ flexShrink: 0 }} />}
+                  {q.status === 'closed' && <Lock size={14} color="var(--warning)" style={{ flexShrink: 0 }} />}
+                  <span style={{ fontSize: '0.88rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {q.title}
+                  </span>
+                </div>
+                <span className="muted" style={{ fontSize: '0.78rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{timeAgo(q.created_at)}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
 
-      {step === 'details' && (
-        <form onSubmit={submitDetails} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="grid-2" style={{ gap: '1rem', marginBottom: '1rem' }}>
-            <div className="field" style={{ marginBottom: 0 }}>
-              <label htmlFor="reg-name">Full name</label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-                <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-                <input id="reg-name" className="input input--with-affix" value={form.name} onChange={update('name')} required autoFocus placeholder="Jane Doe" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
+        <div className="panel" style={{ overflowX: 'hidden', boxSizing: 'border-box' }}>
+          <div className="panel__header" style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Latest reports</h2>
+            <NavLink to="/admin/reports" className="muted text-3" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>Review queue →</NavLink>
+          </div>
+          <div className="panel__body" style={{ padding: 0 }}>
+            {activity.reports.length === 0 && <p className="muted" style={{ padding: '1.5rem', textAlign: 'center', margin: 0 }}>No recent reports.</p>}
+            {activity.reports.map((report: any) => (
+              <div 
+                key={report.id} 
+                className="row row--between" 
+                style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'nowrap', gap: '0.75rem' }}
+                onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'}
+                onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+              >
+                <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap', minWidth: 0 }}>
+                  <AlertCircle size={14} color="var(--danger)" style={{ flexShrink: 0 }} /> 
+                  <span style={{ fontSize: '0.88rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {reportReasonLabels[report.reason] ?? report.reason}
+                  </span>
+                  <span className="chip chip--ghost" style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', flexShrink: 0, textTransform: 'capitalize' }}>{report.status}</span>
+                </div>
+                <span className="muted" style={{ fontSize: '0.78rem', flexShrink: 0, whiteSpace: 'nowrap' }}>{timeAgo(report.created_at)}</span>
               </div>
-            </div>
-            <div className="field" style={{ marginBottom: 0 }}>
-              <label htmlFor="reg-username">Username</label>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-                <AtSign size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-                <input id="reg-username" className={`input input--with-affix ${usernameStatus === 'taken' ? 'input--error' : ''}`} value={form.username} onChange={update('username')} required minLength={3} maxLength={30} placeholder="janedoe" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- reports
+
+export function AdminReports() {
+  const [reports, setReports] = useState<any[]>([])
+  const [status, setStatus] = useState('pending')
+  const [loading, setLoading] = useState(true)
+  const [busyId, setBusyId] = useState<number | null>(null)
+  const [note, setNote] = useState('')
+
+  const load = useCallback(() => {
+    setLoading(true)
+    api.get('/admin/reports', { params: { status: status || undefined } })
+      .then((r) => setReports(r.data.data))
+      .finally(() => setLoading(false))
+  }, [status])
+
+  useEffect(load, [load])
+
+  const resolve = async (reportId: number, newStatus: string, action: string) => {
+    setBusyId(reportId)
+    try {
+      await api.post(`/admin/reports/${reportId}/status`, { status: newStatus, action, resolution_note: note || undefined })
+      load()
+      setNote('')
+    } catch (e) {
+      alert(apiError(e).message)
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  return (
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
+      <AdminHeader title="Moderation Queue">
+        <select className="select" style={{ width: '100%', minWidth: '180px', flex: '1 1 auto' }} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter reports">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="reviewing">Reviewing</option>
+          <option value="resolved">Resolved</option>
+          <option value="dismissed">Dismissed</option>
+        </select>
+      </AdminHeader>
+
+      {loading ? (
+        <Spinner />
+      ) : reports.length === 0 ? (
+        <div className="panel" style={{ padding: '3rem 1rem' }}>
+          <EmptyState icon={<ShieldCheck size={40} color="var(--success)" strokeWidth={1.5} />} title="Queue is empty. Great job." />
+        </div>
+      ) : (
+        <div className="question-list" style={{ gap: '1.25rem' }}>
+          {reports.map((report) => (
+            <div key={report.id} className="panel" style={{ padding: '1.25rem', boxSizing: 'border-box', overflowX: 'hidden' }}>
+              <div className="row row--between mb-1" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div className="row" style={{ gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <span className={`chip ${report.status === 'pending' ? '' : 'chip--ghost'}`} style={{ flexShrink: 0 }}>
+                    {reportReasonLabels[report.reason] ?? report.reason}
+                  </span>
+                  <span className="text-3 muted row" style={{ gap: '0.3rem', flexShrink: 0 }}>
+                    <Clock size={12} /> {timeAgo(report.created_at)}
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: report.status === 'pending' ? 'var(--warning)' : 'var(--text-3)', flexShrink: 0 }}>
+                  {report.status}
+                </span>
               </div>
-              {usernameStatus !== 'idle' && usernameHint && (
-                <p className={`help-inline ${usernameStatus === 'ok' ? 'is-ok' : 'is-bad'}`} style={{ marginTop: '0.2rem', wordBreak: 'break-word' }}>
-                  {usernameStatus === 'checking' ? 'Checking...' : (usernameStatus === 'ok' ? '✓ ' : '✕ ') + usernameHint}
-                </p>
+              
+              <div style={{ background: 'var(--surface-3)', padding: '1rem', borderRadius: 'var(--radius)', borderLeft: '3px solid var(--brand-blue-400)', margin: '1rem 0', fontSize: '0.95rem', color: 'var(--ink-800)', wordBreak: 'break-word' }}>
+                {report.target_excerpt ?? <span className="muted"><i>(Content already deleted)</i></span>}
+              </div>
+              
+              <p className="text-3 mb-3" style={{ wordBreak: 'break-word', lineHeight: 1.5 }}>
+                {report.description && <span><b>Context:</b> “{report.description}” — </span>}
+                Reported by <b>{report.reporter?.name ?? 'Unknown user'}</b> on {report.reportable_type} #{report.reportable_id}
+              </p>
+
+              {report.status === 'pending' || report.status === 'reviewing' ? (
+                <div style={{ background: 'var(--surface-2)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <input className="input" style={{ width: '100%', boxSizing: 'border-box' }} placeholder="Resolution note (optional)..." value={note} onChange={(e) => setNote(e.target.value)} />
+                  <div className="row" style={{ gap: '0.5rem', flexWrap: 'wrap', width: '100%', justifyContent: 'flex-end' }}>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'reviewing', 'none')} style={{ flex: '1 1 auto' }}>Reviewing</button>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'dismissed', 'none')} style={{ flex: '1 1 auto' }}>Dismiss</button>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'hide')} style={{ flex: '1 1 auto' }}><EyeOff size={14} /> Hide</button>
+                    <button className="btn btn--danger btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'delete')} style={{ flex: '1 1 auto' }}><Trash2 size={14} /> Delete</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="row" style={{ fontSize: '0.85rem', color: 'var(--text-2)', background: 'var(--surface-2)', padding: '0.75rem 1rem', borderRadius: 'var(--radius)', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} color="var(--success)" style={{ flexShrink: 0 }} />
+                  {report.handled_by && <span>Handled by <b>{report.handled_by.name}</b>:</span>}
+                  <span style={{ wordBreak: 'break-word', flex: 1 }}>{report.resolution_note || 'No resolution note provided.'}</span>
+                </div>
               )}
             </div>
-          </div>
-          
-          <div className="field">
-            <label htmlFor="reg-email">Email Address</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input id="reg-email" type="email" className="input input--with-affix input--lg" value={form.email} onChange={update('email')} required placeholder="name@company.com" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
-            </div>
-          </div>
-          
-          <div className="field">
-            <label htmlFor="reg-password">Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input 
-                id="reg-password" 
-                type={showPassword ? 'text' : 'password'} 
-                className="input input--with-affix input--lg" 
-                value={form.password} 
-                onChange={update('password')} 
-                required 
-                minLength={8} 
-                autoComplete="new-password" 
-                placeholder="••••••••" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <p className="hint">Must be at least 8 characters long.</p>
-          </div>
-          
-          <button
-            type="submit"
-            className="btn btn--fire btn--block btn--lg mt-3"
-            disabled={busy || !form.name || !form.username || !form.email || form.password.length < 8}
-          >
-            {busy ? 'Sending verification…' : <><ArrowRight size={18} style={{ flexShrink: 0 }} /> Continue</>}
-          </button>
-        </form>
+          ))}
+        </div>
       )}
-
-      {step === 'otp' && (
-        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="field">
-            <OtpInput value={otp} onChange={setOtp} disabled={busy} autoFocus />
-            <div className="row row--between mt-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-              <p className="help-inline" style={{ margin: 0, wordBreak: 'break-word' }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
-              <div className="otp-resend" style={{ margin: 0 }}>
-                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
-                  {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
-                </button>
-              </div>
-            </div>
-          </div>
-          <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || otp.length !== 6}>
-            {busy ? 'Verifying…' : <><ShieldCheck size={18} style={{ flexShrink: 0 }} /> Verify email</>}
-          </button>
-          
-          <div className="divider">Or</div>
-          
-          <button type="button" className="btn btn--ghost btn--block" onClick={() => setStep('details')}>
-            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Edit profile details
-          </button>
-        </form>
-      )}
-
-      {step === 'password' && (
-        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="banner banner--success mb-3" style={{ boxSizing: 'border-box' }}>
-            <CheckCircle2 size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>Email verified successfully. Set your final password.</span>
-          </div>
-          <div className="field">
-            <label htmlFor="reg-pw-1">Secure Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input 
-                id="reg-pw-1" 
-                type={showPassword ? 'text' : 'password'} 
-                className="input input--with-affix input--lg" 
-                value={form.password} 
-                onChange={update('password')} 
-                required 
-                minLength={8} 
-                autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-          <div className="field">
-            <label htmlFor="reg-pw-2">Confirm Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input 
-                id="reg-pw-2" 
-                type={showConfirmPassword ? 'text' : 'password'} 
-                className={`input input--with-affix input--lg ${confirm && confirm !== form.password ? 'input--error' : ''}`} 
-                value={confirm} 
-                onChange={(e) => setConfirm(e.target.value)} 
-                required 
-                minLength={8} 
-                autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {confirm && confirm !== form.password && <p className="help-inline is-bad mt-1">Passwords do not match.</p>}
-          </div>
-          <button type="submit" className="btn btn--fire btn--block btn--lg mt-3" disabled={busy || !confirm || confirm !== form.password}>
-            {busy ? 'Creating account…' : 'Create account'}
-          </button>
-        </form>
-      )}
-
-      {step === 'details' && (
-        <>
-          <p className="muted" style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem', wordBreak: 'break-word' }}>
-            Already a member?{' '}
-            <Link 
-              to="/login" 
-              style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
-              onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
-              onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
-            >
-              Log in
-            </Link>
-          </p>
-          <p className="muted text-3" style={{ textAlign: 'center', marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem', wordBreak: 'break-word' }}>
-            By registering, you agree to our{' '}
-            <Link 
-              to="/community-guidelines" 
-              style={{ textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
-              onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
-              onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
-            >
-              Community Guidelines
-            </Link>.
-          </p>
-        </>
-      )}
-    </AuthShell>
+    </div>
   )
 }
 
-// =====================================================================
-// FORGOT PASSWORD
-// =====================================================================
+// ---------------------------------------------------------------- content
 
-export function ForgotPassword() {
-  const navigate = useNavigate()
-  const [step, setStep] = useState<'email' | 'otp' | 'password'>('email')
-  const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState('')
-  const [otpToken, setOtpToken] = useState('')
-  const [expiresAt, setExpiresAt] = useState<Date | null>(null)
-  const [resendAfter, setResendAfter] = useState<Date | null>(null)
-  const [cooldown, setCooldown] = useState(0)
-  const [resetToken, setResetToken] = useState<string | null>(null)
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
+  const [items, setItems] = useState<any[]>([])
+  const [statusFilter, setStatusFilter] = useState('')
+  const [q, setQ] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(() => {
+    setLoading(true)
+    api.get(`/admin/${kind}`, { params: { status: statusFilter || undefined, q: q || undefined } })
+      .then((r) => setItems(r.data.data))
+      .finally(() => setLoading(false))
+  }, [kind, statusFilter, q])
 
   useEffect(() => {
-    if (!resendAfter) return
-    const tick = () => setCooldown(Math.max(0, Math.ceil((resendAfter.getTime() - Date.now()) / 1000)))
-    tick()
-    const i = setInterval(tick, 500)
-    return () => clearInterval(i)
-  }, [resendAfter])
+    const t = setTimeout(load, q ? 300 : 0)
+    return () => clearTimeout(t)
+  }, [load, q])
 
-  const submitEmail = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setBusy(true)
-    setError(null)
+  const act = async (action: string, body: Record<string, unknown>) => {
     try {
-      const r = await authApi.forgotPassword(email)
-      setOtpToken(r.token)
-      setExpiresAt(new Date(r.expires_at))
-      setResendAfter(new Date(Date.now() + 30_000))
-      setStep('otp')
-    } catch (err) { setError(apiError(err).message) }
-    finally { setBusy(false) }
+      await api.post(`/admin/content/${action}`, body)
+      load()
+    } catch (e) {
+      alert(apiError(e).message)
+    }
   }
-
-  const submitOtp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (otp.length !== 6) return
-    setBusy(true)
-    setError(null)
-    try {
-      const r = await authApi.verifyResetOtp({ email, code: otp }, otpToken)
-      setResetToken(r.reset_token ?? null)
-      setStep('password')
-    } catch (err) { setError(apiError(err).message); setOtp('') }
-    finally { setBusy(false) }
-  }
-
-  const submitPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password !== confirm) { setError('Passwords do not match.'); return }
-    if (!resetToken) { setError('Reset session expired. Please request a new code.'); return }
-    setBusy(true)
-    setError(null)
-    try {
-      await authApi.resetPassword({ email, reset_token: resetToken, password, password_confirmation: confirm })
-      navigate('/login')
-    } catch (err) { setError(apiError(err).message) }
-    finally { setBusy(false) }
-  }
-
-  const resend = async () => {
-    if (cooldown > 0) return
-    setBusy(true)
-    try {
-      const r = await authApi.resendResetOtp(email)
-      setOtpToken(r.token)
-      setExpiresAt(new Date(r.expires_at))
-      setResendAfter(new Date(Date.now() + 30_000))
-    } catch (err) { setError(apiError(err).message) }
-    finally { setBusy(false) }
-  }
-
-  const ttl = expiresAt ? Math.max(0, Math.ceil((expiresAt.getTime() - Date.now()) / 1000)) : 0
 
   return (
-    <AuthShell title="Reset Password" subtitle="Enter your email to receive a secure recovery code.">
-      <StepDots steps={['Request', 'Verify', 'Reset']} current={step === 'email' ? 0 : step === 'otp' ? 1 : 2} />
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
+      <AdminHeader title={kind === 'questions' ? 'Questions Library' : 'Answers Library'}>
+        <select className="select" style={{ width: '100%', minWidth: '160px', flex: '1 1 auto' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status filter">
+          <option value="">All statuses</option>
+          <option value="published">Published</option>
+          <option value="hidden">Hidden</option>
+          <option value="closed">Closed</option>
+        </select>
+        <div className="input-affix" style={{ width: '100%', minWidth: '220px', flex: '2 1 auto' }}>
+          <Search className="input-affix__icon" size={16} />
+          <input className="input input--with-affix" style={{ width: '100%' }} placeholder="Search content..." value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
+      </AdminHeader>
 
-      {error && (
-        <div className="banner banner--danger mb-2" style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', boxSizing: 'border-box' }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span style={{ wordBreak: 'break-word' }}>{error}</span>
+      {loading ? (
+        <Spinner />
+      ) : items.length === 0 ? (
+        <div className="panel"><EmptyState icon={<FolderOpen size={32} strokeWidth={1.5} />} title="No content found." /></div>
+      ) : (
+        <div className="panel" style={{ padding: 0, overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                <th style={{ padding: '1rem' }}>Content Details</th>
+                <th style={{ padding: '1rem' }}>Author</th>
+                {kind === 'questions' && <th style={{ padding: '1rem' }}>Status</th>}
+                <th style={{ padding: '1rem' }}>Date</th>
+                <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => {
+                const title = kind === 'questions' ? item.title : item.question?.title
+                const slug = kind === 'questions' ? item.slug : item.question?.slug
+                const type = kind === 'questions' ? 'question' : 'answer'
+                const isHidden = item.status === 'hidden'
+                return (
+                  <tr key={item.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '1rem', maxWidth: 360 }}>
+                      <div style={{ fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {slug ? <a href={`/questions/${slug}`} target="_blank" rel="noreferrer" style={{ color: 'var(--ink-900)', textDecoration: 'none' }}>{title}</a> : title}
+                      </div>
+                      {kind === 'answers' && <div className="muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.3rem' }}>{item.excerpt}</div>}
+                    </td>
+                    <td style={{ padding: '1rem', maxWidth: 150 }}>
+                      <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap' }}>
+                        <Avatar name={item.user?.name ?? '?'} size="sm" />
+                        <span style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.user?.name ?? '—'}</span>
+                      </div>
+                    </td>
+                    {kind === 'questions' && (
+                      <td style={{ padding: '1rem' }}>
+                        <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.2rem 0.6rem', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                          {item.status}
+                        </span>
+                      </td>
+                    )}
+                    <td className="muted" style={{ padding: '1rem', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{timeAgo(item.created_at)}</td>
+                    <td style={{ padding: '1rem' }}>
+                      <div className="row" style={{ gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                        {isHidden ? (
+                          <button className="btn btn--ghost btn--sm" onClick={() => act('restore', { type, id: item.id })}>Restore</button>
+                        ) : (
+                          <button className="btn btn--ghost btn--sm" onClick={() => act('hide', { type, id: item.id, reason: 'Moderation: hidden' })}>Hide</button>
+                        )}
+                        <button className="btn btn--danger btn--sm" style={{ padding: '0.4rem' }} onClick={() => { if (window.confirm('Delete this content permanently?')) act('delete', { type, id: item.id, reason: 'Deleted by moderation' }) }}>
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
+    </div>
+  )
+}
 
-      {step === 'email' && (
-        <form onSubmit={submitEmail} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="field">
-            <label htmlFor="forgot-email">Account Email</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input id="forgot-email" type="email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }} />
-            </div>
-          </div>
-          <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy}>
-            {busy ? 'Sending…' : <><ArrowRight size={18} style={{ flexShrink: 0 }} /> Send recovery code</>}
-          </button>
-        </form>
-      )}
+// ------------------------------------------------------------------ users
 
-      {step === 'otp' && (
-        <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="banner banner--info mb-3" style={{ boxSizing: 'border-box' }}>
-            <span style={{ wordBreak: 'break-word' }}>If an account exists for {email}, a code has been sent.</span>
-          </div>
-          <div className="field">
-            <OtpInput value={otp} onChange={setOtp} disabled={busy} autoFocus />
-            <div className="row row--between mt-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
-              <p className="help-inline" style={{ margin: 0, wordBreak: 'break-word' }}>Code expires in <b style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.floor(ttl / 60)}:{String(ttl % 60).padStart(2, '0')}</b></p>
-              <div className="otp-resend" style={{ margin: 0 }}>
-                <button type="button" onClick={resend} disabled={cooldown > 0 || busy} style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
-                  {cooldown > 0 ? `Resend available in ${cooldown}s` : 'Resend code'}
-                </button>
-              </div>
-            </div>
-          </div>
-          <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || otp.length !== 6}>
-            {busy ? 'Verifying…' : <><ShieldCheck size={18} style={{ flexShrink: 0 }} /> Verify code</>}
-          </button>
-          
-          <div className="divider">Or</div>
-          
-          <button type="button" className="btn btn--ghost btn--block" onClick={() => { setStep('email'); setOtp(''); setError(null) }}>
-            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Try a different email
-          </button>
-        </form>
-      )}
+export function AdminUsers() {
+  const [users, setUsers] = useState<any[]>([])
+  const [q, setQ] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [meta, setMeta] = useState({ current_page: 1, last_page: 1 })
+  const { user: me } = useAuth()
 
-      {step === 'password' && (
-        <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-          <div className="field">
-            <label htmlFor="reset-pw-1">New Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input 
-                id="reset-pw-1" 
-                type={showPassword ? 'text' : 'password'} 
-                className="input input--with-affix input--lg" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                minLength={8} 
-                autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <p className="hint">At least 8 characters required.</p>
-          </div>
-          <div className="field">
-            <label htmlFor="reset-pw-2">Confirm New Password</label>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
-              <input 
-                id="reset-pw-2" 
-                type={showConfirmPassword ? 'text' : 'password'} 
-                className={`input input--with-affix input--lg ${confirm && confirm !== password ? 'input--error' : ''}`} 
-                value={confirm} 
-                onChange={(e) => setConfirm(e.target.value)} 
-                required 
-                minLength={8} 
-                autoComplete="new-password" 
-                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px', boxSizing: 'border-box' }} 
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {confirm && confirm !== password && <p className="help-inline is-bad mt-1">Passwords do not match.</p>}
-          </div>
-          <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy || !confirm || confirm !== password}>
-            {busy ? 'Resetting…' : 'Secure my account'}
-          </button>
-        </form>
-      )}
+  const load = useCallback(() => {
+    setLoading(true)
+    api.get('/admin/users', { params: { q: q || undefined } })
+      .then((r) => {
+        setUsers(r.data.data)
+        setMeta({ current_page: r.data.meta.current_page, last_page: r.data.meta.last_page })
+      })
+      .finally(() => setLoading(false))
+  }, [q])
 
-      {step === 'email' && (
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <Link to="/login" className="btn btn--quiet">
-            <ArrowLeft size={16} style={{ flexShrink: 0 }} /> Back to login
-          </Link>
+  useEffect(() => {
+    const t = setTimeout(load, q ? 300 : 0)
+    return () => clearTimeout(t)
+  }, [load, q])
+
+  const action = async (path: string, body?: Record<string, unknown>) => {
+    try {
+      await api.post(path, body)
+      load()
+    } catch (e) {
+      alert(apiError(e).message)
+    }
+  }
+
+  return (
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
+      <AdminHeader title="User Directory">
+        <div className="input-affix" style={{ width: '100%', minWidth: '220px', flex: '1 1 auto' }}>
+          <Search className="input-affix__icon" size={16} />
+          <input className="input input--with-affix" style={{ width: '100%' }} placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
+      </AdminHeader>
+
+      {loading ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="panel" style={{ padding: 0, overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
+            <table className="data-table" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                  <th style={{ padding: '1rem' }}>Profile</th>
+                  <th style={{ padding: '1rem' }}>Role</th>
+                  <th style={{ padding: '1rem' }}>Reputation</th>
+                  <th style={{ padding: '1rem' }}>Activity (Q/A)</th>
+                  <th style={{ padding: '1rem' }}>Account Status</th>
+                  <th style={{ padding: '1rem', textAlign: 'right' }}>Management</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => (
+                  <tr key={u.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <td style={{ padding: '1rem', maxWidth: 200 }}>
+                      <div className="row" style={{ gap: '0.75rem', flexWrap: 'nowrap' }}>
+                        <Avatar name={u.name} path={u.avatar_path} size="md" />
+                        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                          <a href={`/users/${u.username}`} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: 'var(--ink-900)', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: 'none' }}>{u.name}</a>
+                          <span className="muted" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '2px' }}>{u.email}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      {me?.role === 'admin' ? (
+                        <select className="select" style={{ width: '120px', padding: '0.4rem', fontSize: '0.85rem' }} value={u.role} onChange={(e) => action(`/admin/users/${u.id}/role`, { role: e.target.value })} aria-label={`Role for ${u.name}`}>
+                          <option value="user">User</option>
+                          <option value="moderator">Moderator</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                      ) : (
+                        <span className="chip chip--ghost" style={{ textTransform: 'capitalize' }}>{u.role}</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '1rem', fontWeight: 700, color: 'var(--brand-blue-600)', whiteSpace: 'nowrap' }}>{formatNumber(u.reputation)}</td>
+                    <td className="muted" style={{ padding: '1rem', fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{u.questions_count} <span style={{ opacity: 0.5, margin: '0 0.2rem' }}>/</span> {u.answers_count}</td>
+                    <td style={{ padding: '1rem', whiteSpace: 'nowrap' }}>
+                      {u.is_suspended ? (
+                        <span className="chip" style={{ background: 'var(--danger-bg)', color: 'var(--danger)', padding: '0.2rem 0.6rem' }}><Lock size={12} /> Suspended</span>
+                      ) : u.verification ? (
+                        <span className="verified-chip" style={{ padding: '0.2rem 0.6rem' }}><Award size={12} /> {verificationLabels[u.verification] ?? u.verification}</span>
+                      ) : (
+                        <span className="chip chip--ghost" style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}>Active</span>
+                      )}
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      <div className="row" style={{ gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                        {me?.role === 'admin' && (
+                          <>
+                            <button className="btn btn--ghost btn--sm" onClick={() => {
+                              const type = window.prompt('Verification type: team, instructor, expert, alumni, professional')
+                              if (type) action(`/admin/users/${u.id}/verify`, { type })
+                            }}>Verify</button>
+                            {u.verification && (
+                              <button className="btn btn--ghost btn--sm" onClick={() => action(`/admin/users/${u.id}/revoke-verification`)}>Unverify</button>
+                            )}
+                          </>
+                        )}
+                        {u.is_suspended ? (
+                          <button className="btn btn--ghost btn--sm" onClick={() => action(`/admin/users/${u.id}/unsuspend`)}>Restore</button>
+                        ) : (
+                          <button className="btn btn--danger btn--sm" onClick={() => {
+                            const reason = window.prompt('Suspension reason:')
+                            if (reason) action(`/admin/users/${u.id}/suspend`, { reason })
+                          }}>Suspend</button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 row row--between" style={{ width: '100%', boxSizing: 'border-box' }}>
+            <Pagination meta={meta} baseUrl="/admin/users" />
+          </div>
+        </>
       )}
-    </AuthShell>
+    </div>
   )
 }
