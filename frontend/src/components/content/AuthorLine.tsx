@@ -7,19 +7,19 @@ import { ShieldCheck, Zap } from 'lucide-react'
 /** Premium author line used under questions, answers, and comments. */
 export function AuthorLine({ user, prefix, date }: { user: UserSummary; prefix?: string; date?: string }) {
   return (
-    <div className="row" style={{ gap: '0.5rem', display: 'inline-flex', alignItems: 'center' }}>
+    <div className="row" style={{ gap: '0.5rem', display: 'inline-flex', alignItems: 'center', maxWidth: '100%', flexWrap: 'wrap' }}>
       
       {/* Interactive Avatar Wrapper */}
       <Link 
         to={`/users/${user.username}`} 
-        style={{ display: 'flex', transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)' }}
+        style={{ display: 'flex', transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)', flexShrink: 0 }}
         onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1) translateY(-1px)'}
         onMouseOut={e => e.currentTarget.style.transform = 'none'}
       >
         <Avatar name={user.name} path={user.avatar_path} size="sm" />
       </Link>
       
-      <span style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+      <span style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', minWidth: 0 }}>
         {prefix && <span className="muted" style={{ fontWeight: 500 }}>{prefix}</span>}
         
         {/* Name with subtle color transition */}
@@ -29,7 +29,8 @@ export function AuthorLine({ user, prefix, date }: { user: UserSummary; prefix?:
             fontWeight: 700, 
             color: 'var(--ink-900)',
             textDecoration: 'none',
-            transition: 'color var(--dur-fast) var(--ease)'
+            transition: 'color var(--dur-fast) var(--ease)',
+            wordBreak: 'break-word'
           }}
           onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
           onMouseOut={e => e.currentTarget.style.color = 'var(--ink-900)'}
@@ -52,7 +53,8 @@ export function AuthorLine({ user, prefix, date }: { user: UserSummary; prefix?:
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.25rem',
-              marginLeft: '0.1rem'
+              marginLeft: '0.1rem',
+              flexShrink: 0
             }}
           >
             <ShieldCheck size={12} strokeWidth={2.5} /> 
@@ -62,7 +64,7 @@ export function AuthorLine({ user, prefix, date }: { user: UserSummary; prefix?:
         
         {/* Styled Separator & Date */}
         {date && (
-          <span className="muted" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
+          <span className="muted" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
             <span style={{ opacity: 0.4, fontSize: '0.6rem' }}>●</span> {date}
           </span>
         )}
@@ -87,7 +89,8 @@ export function ReputationPill({ reputation }: { reputation: number }) {
         background: 'linear-gradient(135deg, var(--brand-blue-50) 0%, #d8ebfb 100%)',
         border: '1px solid var(--brand-blue-100)',
         padding: '0.15rem 0.5rem',
-        boxShadow: '0 1px 2px rgba(22, 122, 201, 0.05)'
+        boxShadow: '0 1px 2px rgba(22, 122, 201, 0.05)',
+        flexShrink: 0
       }}
     >
       <Zap size={12} fill="currentColor" strokeWidth={2} />
