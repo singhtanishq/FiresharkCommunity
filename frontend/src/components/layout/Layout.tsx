@@ -11,7 +11,7 @@ export function Layout() {
   }, [pathname])
 
   return (
-    <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
       
       {/* High-Accessibility Skip to Content Button */}
       <a 
@@ -42,7 +42,7 @@ export function Layout() {
       {/* Main Dynamic View Outlet */}
       <main 
         id="main-content" 
-        style={{ flex: '1 1 auto', width: '100%', display: 'flex', flexDirection: 'column' }}
+        style={{ flex: '1 1 auto', width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}
       >
         <Outlet />
       </main>
