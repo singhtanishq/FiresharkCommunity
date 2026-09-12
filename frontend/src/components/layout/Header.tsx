@@ -250,7 +250,7 @@ export function Header() {
           <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main" style={{ gap: '0.3rem' }}>
             <NavLink to="/" end onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Home</NavLink>
             <NavLink to="/questions" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Questions</NavLink>
-            <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Ecosystems</NavLink>
+            <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Categories</NavLink>
             <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Tags</NavLink>
             <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Hall of Fame</NavLink>
           </nav>
