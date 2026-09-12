@@ -51,11 +51,11 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
   const baseUrl = location.pathname + (searchParams.has('sort') ? `?sort=${sort}` : '')
 
   return (
-    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Premium Header with improved vertical spacing */}
-      <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
-        <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
+      <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both', width: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ gap: '1.25rem', flex: '1 1 280px', minWidth: 0, flexWrap: 'wrap' }}>
           <div 
             style={{ 
               width: '64px', height: '64px', 
@@ -63,16 +63,17 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
               background: unansweredOnly ? 'var(--warning-bg)' : 'var(--brand-blue-50)', 
               color: unansweredOnly ? '#d97706' : 'var(--brand-blue-600)', 
               display: 'grid', placeItems: 'center',
-              boxShadow: unansweredOnly ? '0 4px 12px rgba(217, 119, 6, 0.1)' : '0 4px 12px rgba(22, 122, 201, 0.1)'
+              boxShadow: unansweredOnly ? '0 4px 12px rgba(217, 119, 6, 0.1)' : '0 4px 12px rgba(22, 122, 201, 0.1)',
+              flexShrink: 0
             }}
           >
-            {unansweredOnly ? <Inbox size={32} strokeWidth={2} /> : <Activity size={32} strokeWidth={2} />}
+            {unansweredOnly ? <Inbox size={32} strokeWidth={2} style={{ flexShrink: 0 }} /> : <Activity size={32} strokeWidth={2} style={{ flexShrink: 0 }} />}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1, wordBreak: 'break-word' }}>
               {unansweredOnly ? 'Unanswered Intel' : 'Live Global Feed'}
             </h1>
-            <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
               {loading ? 'Scanning network...' : `${formatNumber(meta.total)} active ${meta.total === 1 ? 'discussion' : 'discussions'}`}
             </p>
           </div>
@@ -80,15 +81,15 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
         <Link 
           to="/ask" 
           className="btn btn--fire btn--lg" 
-          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem' }}
+          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem', flexShrink: 0 }}
         >
-          <Plus size={18} strokeWidth={2.5} /> Ignite Discussion
+          <Plus size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} /> <span>Ignite Discussion</span>
         </Link>
       </div>
 
       {/* Segmented Control Sorting with proper top separation */}
       {!unansweredOnly && (
-        <div className="row" style={{ marginTop: '1.5rem', marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap' }}>
+        <div className="row" style={{ marginTop: '1.5rem', marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap', width: '100%', overflowX: 'auto', boxSizing: 'border-box' }}>
           <div 
             style={{ 
               background: 'var(--surface-2)', 
@@ -97,10 +98,12 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
               display: 'inline-flex', 
               gap: '0.2rem',
               border: '1px solid var(--border)',
-              alignItems: 'center'
+              alignItems: 'center',
+              flexWrap: 'nowrap',
+              boxSizing: 'border-box'
             }}
           >
-            <div style={{ padding: '0 0.5rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+            <div style={{ padding: '0 0.5rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
               <Filter size={16} />
             </div>
             {SORTS.map(([value, label]) => {
@@ -119,7 +122,9 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
                     color: isActive ? 'var(--brand-blue-700)' : 'var(--text-2)',
                     background: isActive ? '#fff' : 'transparent',
                     boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
-                    transition: 'all var(--dur-fast) var(--ease)'
+                    transition: 'all var(--dur-fast) var(--ease)',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
                   }}
                 >
                   {label}
@@ -131,7 +136,7 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
       )}
 
       {/* Question Feed */}
-      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both' }}>
+      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both', width: '100%', boxSizing: 'border-box' }}>
         {loading ? (
           <div style={{ padding: '4rem 0' }}>
             <Spinner />
@@ -149,15 +154,15 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
                   ? 'All systems nominal. No open questions require assistance.' 
                   : 'The feed is currently empty. Initiate the first sequence.'
               }
-              action={<Link to="/ask" className="btn btn--fire"><Plus size={16} /> Ask a Question</Link>}
+              action={<Link to="/ask" className="btn btn--fire" style={{ flexWrap: 'wrap', justifyContent: 'center' }}><Plus size={16} style={{ flexShrink: 0 }} /> <span>Ask a Question</span></Link>}
             />
           </div>
         ) : (
-          <div className="question-list" style={{ gap: '1rem' }}>
+          <div className="question-list" style={{ gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
             {questions.map((question) => (
               <div 
                 key={question.id} 
-                style={{ transition: 'transform 0.3s ease' }} 
+                style={{ transition: 'transform 0.3s ease', width: '100%', boxSizing: 'border-box' }} 
                 onMouseOver={e => e.currentTarget.style.transform = 'scale(1.01)'} 
                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
               >
@@ -170,7 +175,7 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
 
       {/* Pagination Container */}
       {!loading && meta.last_page > 1 && (
-        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both' }}>
+        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both', width: '100%', boxSizing: 'border-box', flexWrap: 'wrap' }}>
           <Pagination meta={meta} baseUrl={baseUrl} />
         </div>
       )}
