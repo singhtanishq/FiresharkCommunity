@@ -50,8 +50,8 @@ export function Footer() {
             Community
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'inherit' }}>
-            <Link to="/questions" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Questions Feed</Link>
-            <Link to="/categories" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Ecosystems</Link>
+            <Link to="/questions" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Questions</Link>
+            <Link to="/categories" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Categories</Link>
             <Link to="/tags" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>System Tags</Link>
             <Link to="/leaderboard" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Hall of Fame</Link>
           </div>
