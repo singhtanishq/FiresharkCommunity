@@ -129,7 +129,14 @@ export function CategoryDetail() {
         </div>
 
         {related_tags.length > 0 && (
-          <div className="row" style={{ gap: '0.5rem', paddingLeft: '0', sm: { paddingLeft: '1.5rem' }, borderLeft: 'none', sm: { borderLeft: '1px solid var(--border)' }, flexWrap: 'wrap', width: '100%', boxSizing: 'border-box' }}>
+          <div className="row" style={{
+            gap: '0.5rem',
+            paddingLeft: '0',
+            borderLeft: 'none',
+            flexWrap: 'wrap',
+            width: '100%',
+            boxSizing: 'border-box',
+          }}>
             <Tag size={16} color="var(--text-3)" style={{ flexShrink: 0 }} />
             <div className="row" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
               {related_tags.map((tag) => (
