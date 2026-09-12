@@ -449,7 +449,11 @@ export function QuestionDetail() {
               <RichTextEditor value={answerBody} onChange={setAnswerBody} placeholder="Draft your solution here. Use code blocks for logs, commands, and scripts..." minHeight={220} />
             </div>
             <div className="row mt-3" style={{ justifyContent: 'flex-end', width: '100%', boxSizing: 'border-box' }}>
-              <button className="btn btn--fire btn--lg" onClick={postAnswer} disabled={postingAnswer || answerBody.trim().length < 30} style={{ width: '100%', sm: { width: 'auto' }, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button className="btn btn--fire btn--lg" onClick={postAnswer} disabled={postingAnswer || answerBody.trim().length < 30} style={{
+                width: '100%',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+              }}>
                 {postingAnswer ? 'Transmitting…' : <><MessageSquare size={16} style={{ flexShrink: 0 }} /> <span>Submit Answer</span></>}
               </button>
             </div>
