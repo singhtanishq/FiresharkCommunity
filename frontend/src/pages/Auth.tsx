@@ -5,7 +5,8 @@ import { authApi } from '../api/endpoints'
 import { apiError } from '../api/client'
 import { 
   Mail, Lock, User, AtSign, ArrowRight, ArrowLeft, 
-  ShieldCheck, Terminal, Award, Search, AlertTriangle, CheckCircle2
+  ShieldCheck, Terminal, Award, Search, AlertTriangle, CheckCircle2,
+  Eye, EyeOff
 } from 'lucide-react'
 
 function AuthShell({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
@@ -138,6 +139,7 @@ export function Login() {
   const [step, setStep] = useState<'password' | 'otp'>('password')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [otp, setOtp] = useState('')
   const [otpToken, setOtpToken] = useState('')
   const [expiresAt, setExpiresAt] = useState<Date | null>(null)
@@ -216,19 +218,45 @@ export function Login() {
         <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
           <div className="field">
             <label htmlFor="login-email">Email or username</label>
-            <div className="input-affix">
-              <User className="input-affix__icon" size={18} />
-              <input id="login-email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" autoFocus placeholder="e.g. jdoe@example.com" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <User size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input id="login-email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px' }} />
             </div>
           </div>
           <div className="field">
             <div className="row row--between mb-1">
               <label htmlFor="login-password" style={{ margin: 0 }}>Password</label>
-              <Link to="/forgot-password" className="text-3 muted font-medium">Forgot password?</Link>
+              <Link 
+                to="/forgot-password" 
+                className="text-3 muted font-medium" 
+                style={{ textDecoration: 'none', transition: 'color 0.2s ease' }}
+                onMouseOver={e => e.currentTarget.style.color = 'var(--ink-900)'}
+                onMouseOut={e => e.currentTarget.style.color = 'var(--text-3)'}
+              >
+                Forgot password?
+              </Link>
             </div>
-            <div className="input-affix">
-              <Lock className="input-affix__icon" size={18} />
-              <input id="login-password" type="password" className="input input--with-affix input--lg" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" placeholder="••••••••" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input 
+                id="login-password" 
+                type={showPassword ? 'text' : 'password'} 
+                className="input input--with-affix input--lg" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                autoComplete="current-password" 
+                placeholder="••••••••" 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
           <button className="btn btn--primary btn--block btn--lg mt-3" disabled={busy}>
@@ -264,7 +292,15 @@ export function Login() {
 
       {step === 'password' && (
         <p className="muted" style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.9rem' }}>
-          New to the community? <Link to="/register" style={{ fontWeight: 600 }}>Create an account</Link>
+          New to the community?{' '}
+          <Link 
+            to="/register" 
+            style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
+            onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
+            onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
+          >
+            Create an account
+          </Link>
         </p>
       )}
     </AuthShell>
@@ -280,6 +316,8 @@ export function Register() {
   const [step, setStep] = useState<'details' | 'otp' | 'password'>('details')
   const [form, setForm] = useState({ name: '', username: '', email: '', password: '' })
   const [confirm, setConfirm] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [otp, setOtp] = useState('')
   const [otpToken, setOtpToken] = useState('')
   const [expiresAt, setExpiresAt] = useState<Date | null>(null)
@@ -403,16 +441,16 @@ export function Register() {
           <div className="grid-2" style={{ gap: '1rem', marginBottom: '1rem' }}>
             <div className="field" style={{ marginBottom: 0 }}>
               <label htmlFor="reg-name">Full name</label>
-              <div className="input-affix">
-                <User className="input-affix__icon" size={16} />
-                <input id="reg-name" className="input input--with-affix" value={form.name} onChange={update('name')} required autoFocus placeholder="Jane Doe" />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <User size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+                <input id="reg-name" className="input input--with-affix" value={form.name} onChange={update('name')} required autoFocus placeholder="Jane Doe" style={{ width: '100%', paddingLeft: '40px' }} />
               </div>
             </div>
             <div className="field" style={{ marginBottom: 0 }}>
               <label htmlFor="reg-username">Username</label>
-              <div className="input-affix">
-                <AtSign className="input-affix__icon" size={16} />
-                <input id="reg-username" className={`input input--with-affix ${usernameStatus === 'taken' ? 'input--error' : ''}`} value={form.username} onChange={update('username')} required minLength={3} maxLength={30} placeholder="janedoe" />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <AtSign size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+                <input id="reg-username" className={`input input--with-affix ${usernameStatus === 'taken' ? 'input--error' : ''}`} value={form.username} onChange={update('username')} required minLength={3} maxLength={30} placeholder="janedoe" style={{ width: '100%', paddingLeft: '40px' }} />
               </div>
               {usernameStatus !== 'idle' && usernameHint && (
                 <p className={`help-inline ${usernameStatus === 'ok' ? 'is-ok' : 'is-bad'}`} style={{ marginTop: '0.2rem' }}>
@@ -424,17 +462,36 @@ export function Register() {
           
           <div className="field">
             <label htmlFor="reg-email">Email Address</label>
-            <div className="input-affix">
-              <Mail className="input-affix__icon" size={16} />
-              <input id="reg-email" type="email" className="input input--with-affix input--lg" value={form.email} onChange={update('email')} required placeholder="name@company.com" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Mail size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input id="reg-email" type="email" className="input input--with-affix input--lg" value={form.email} onChange={update('email')} required placeholder="name@company.com" style={{ width: '100%', paddingLeft: '40px' }} />
             </div>
           </div>
           
           <div className="field">
             <label htmlFor="reg-password">Password</label>
-            <div className="input-affix">
-              <Lock className="input-affix__icon" size={16} />
-              <input id="reg-password" type="password" className="input input--with-affix input--lg" value={form.password} onChange={update('password')} required minLength={8} autoComplete="new-password" placeholder="••••••••" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input 
+                id="reg-password" 
+                type={showPassword ? 'text' : 'password'} 
+                className="input input--with-affix input--lg" 
+                value={form.password} 
+                onChange={update('password')} 
+                required 
+                minLength={8} 
+                autoComplete="new-password" 
+                placeholder="••••••••" 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             <p className="hint">Must be at least 8 characters long.</p>
           </div>
@@ -449,7 +506,6 @@ export function Register() {
         </form>
       )}
 
-      {/* OTP and Password steps mirror the visual upgrades applied to Login */}
       {step === 'otp' && (
         <form onSubmit={submitOtp} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
           <div className="field">
@@ -482,16 +538,52 @@ export function Register() {
           </div>
           <div className="field">
             <label htmlFor="reg-pw-1">Secure Password</label>
-            <div className="input-affix">
-              <Lock className="input-affix__icon" size={16} />
-              <input id="reg-pw-1" type="password" className="input input--with-affix input--lg" value={form.password} onChange={update('password')} required minLength={8} autoComplete="new-password" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input 
+                id="reg-pw-1" 
+                type={showPassword ? 'text' : 'password'} 
+                className="input input--with-affix input--lg" 
+                value={form.password} 
+                onChange={update('password')} 
+                required 
+                minLength={8} 
+                autoComplete="new-password" 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
           <div className="field">
             <label htmlFor="reg-pw-2">Confirm Password</label>
-            <div className="input-affix">
-              <Lock className="input-affix__icon" size={16} />
-              <input id="reg-pw-2" type="password" className={`input input--with-affix input--lg ${confirm && confirm !== form.password ? 'input--error' : ''}`} value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} autoComplete="new-password" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input 
+                id="reg-pw-2" 
+                type={showConfirmPassword ? 'text' : 'password'} 
+                className={`input input--with-affix input--lg ${confirm && confirm !== form.password ? 'input--error' : ''}`} 
+                value={confirm} 
+                onChange={(e) => setConfirm(e.target.value)} 
+                required 
+                minLength={8} 
+                autoComplete="new-password" 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             {confirm && confirm !== form.password && <p className="help-inline is-bad mt-1">Passwords do not match.</p>}
           </div>
@@ -504,10 +596,26 @@ export function Register() {
       {step === 'details' && (
         <>
           <p className="muted" style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.9rem' }}>
-            Already a member? <Link to="/login" style={{ fontWeight: 600 }}>Log in</Link>
+            Already a member?{' '}
+            <Link 
+              to="/login" 
+              style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
+              onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
+              onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
+            >
+              Log in
+            </Link>
           </p>
           <p className="muted text-3" style={{ textAlign: 'center', marginTop: '1rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-            By registering, you agree to our <Link to="/community-guidelines">Community Guidelines</Link>.
+            By registering, you agree to our{' '}
+            <Link 
+              to="/community-guidelines" 
+              style={{ textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
+              onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
+              onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
+            >
+              Community Guidelines
+            </Link>.
           </p>
         </>
       )}
@@ -531,6 +639,8 @@ export function ForgotPassword() {
   const [resetToken, setResetToken] = useState<string | null>(null)
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -610,9 +720,9 @@ export function ForgotPassword() {
         <form onSubmit={submitEmail} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
           <div className="field">
             <label htmlFor="forgot-email">Account Email</label>
-            <div className="input-affix">
-              <Mail className="input-affix__icon" size={18} />
-              <input id="forgot-email" type="email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="e.g. jdoe@example.com" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Mail size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input id="forgot-email" type="email" className="input input--with-affix input--lg" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus placeholder="e.g. jdoe@example.com" style={{ width: '100%', paddingLeft: '40px' }} />
             </div>
           </div>
           <button type="submit" className="btn btn--primary btn--block btn--lg mt-3" disabled={busy}>
@@ -653,17 +763,53 @@ export function ForgotPassword() {
         <form onSubmit={submitPassword} style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
           <div className="field">
             <label htmlFor="reset-pw-1">New Password</label>
-            <div className="input-affix">
-              <Lock className="input-affix__icon" size={18} />
-              <input id="reset-pw-1" type="password" className="input input--with-affix input--lg" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input 
+                id="reset-pw-1" 
+                type={showPassword ? 'text' : 'password'} 
+                className="input input--with-affix input--lg" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                minLength={8} 
+                autoComplete="new-password" 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             <p className="hint">At least 8 characters required.</p>
           </div>
           <div className="field">
             <label htmlFor="reset-pw-2">Confirm New Password</label>
-            <div className="input-affix">
-              <Lock className="input-affix__icon" size={18} />
-              <input id="reset-pw-2" type="password" className={`input input--with-affix input--lg ${confirm && confirm !== password ? 'input--error' : ''}`} value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} autoComplete="new-password" />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Lock size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+              <input 
+                id="reset-pw-2" 
+                type={showConfirmPassword ? 'text' : 'password'} 
+                className={`input input--with-affix input--lg ${confirm && confirm !== password ? 'input--error' : ''}`} 
+                value={confirm} 
+                onChange={(e) => setConfirm(e.target.value)} 
+                required 
+                minLength={8} 
+                autoComplete="new-password" 
+                style={{ width: '100%', paddingLeft: '40px', paddingRight: '40px' }} 
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ all: 'unset', position: 'absolute', right: '14px', cursor: 'pointer', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             {confirm && confirm !== password && <p className="help-inline is-bad mt-1">Passwords do not match.</p>}
           </div>
