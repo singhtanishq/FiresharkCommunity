@@ -9,7 +9,7 @@ interface AuthContextValue {
   unreadCount: number
   refresh: () => Promise<void>
   logout: () => Promise<void>
-  setUnreadCount: (n: number) => void
+  setUnreadCount: (n: number | ((prev: number) => number)) => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -53,6 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext)
-  if (! ctx) throw new Error('useAuth must be used inside AuthProvider')
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
   return ctx
 }
