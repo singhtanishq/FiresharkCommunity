@@ -4,8 +4,7 @@ import { reportsApi } from '../../api/endpoints'
 import { reportReasonLabels } from '../../lib/format'
 import { apiError } from '../../api/client'
 import { 
-  Flag, AlertTriangle, CheckCircle2, ShieldAlert, 
-  MessageSquare, FileText, HelpCircle 
+  Flag, AlertTriangle, CheckCircle2, ShieldAlert 
 } from 'lucide-react'
 
 export function ReportModal({ reportableType, reportableId, onClose }: {
