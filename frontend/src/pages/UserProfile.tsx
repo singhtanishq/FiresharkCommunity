@@ -88,7 +88,7 @@ export function UserProfile() {
                 )}
               </h1>
               
-              <div className="row" style={{ gap: '1rem', color: 'var(--text-2)', fontSize: '0.92rem', flexWrap: 'wrap', marginTop: '0.4rem' }}>
+              <div className="row" style={{ gap: '1rem', color: 'var(--text-2)', fontSize: '0.92rem', flexWrap: 'wrap', marginTop: '0.6rem' }}>
                 {profile.expertise && (
                   <span className="row" style={{ gap: '0.35rem' }}><Briefcase size={14} /> {profile.expertise}</span>
                 )}
