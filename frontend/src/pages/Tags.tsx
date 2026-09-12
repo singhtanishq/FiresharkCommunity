@@ -24,8 +24,8 @@ export function Tags() {
   return (
     <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
       
-      {/* Premium Header */}
-      <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
+      {/* Premium Header with proper spacing */}
+      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
         <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
           <div 
             style={{ 
@@ -39,11 +39,11 @@ export function Tags() {
           >
             <Hash size={32} strokeWidth={2.5} />
           </div>
-          <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1 }}>
               System Tags
             </h1>
-            <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '1rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
               Filter and explore intelligence by specific technological signatures.
             </p>
           </div>
@@ -169,8 +169,8 @@ export function TagDetail() {
         <span style={{ color: 'var(--ink-900)', fontWeight: 700 }}>{data.tag.name}</span>
       </nav>
 
-      {/* Premium Header */}
-      <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
+      {/* Premium Header with proper spacing */}
+      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
         <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
           <div 
             style={{ 
@@ -185,11 +185,11 @@ export function TagDetail() {
           >
             <Hash size={32} strokeWidth={2.5} />
           </div>
-          <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.5rem', lineHeight: 1.1 }}>
               {data.tag.name}
             </h1>
-            <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <p style={{ fontSize: '1rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Activity size={16} /> 
               {formatNumber(data.questions.meta.total)} {data.questions.meta.total === 1 ? 'discussion' : 'discussions'} tagged
             </p>
