@@ -64,7 +64,7 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
   }
 
   return (
-    <div style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', maxWidth: '100%' }}>
       
       {/* Editor Tabs / Mode Switcher */}
       <div className="editor-tabs" role="tablist" style={{ borderBottom: 'none', marginBottom: '0.75rem' }}>
@@ -112,10 +112,10 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
       </div>
 
       {tab === 'write' && (
-        <div style={{ animation: 'fade-in var(--dur-fast) var(--ease)' }}>
+        <div style={{ animation: 'fade-in var(--dur-fast) var(--ease)', width: '100%' }}>
           
           {/* Outer wrapper box to seamlessly bind toolbar and textarea */}
-          <div style={{ border: '1px solid var(--border-strong)', borderRadius: 'var(--radius)', overflow: 'hidden', background: 'var(--surface)' }}>
+          <div style={{ border: '1px solid var(--border-strong)', borderRadius: 'var(--radius)', overflow: 'hidden', background: 'var(--surface)', width: '100%' }}>
             
             {/* Formatting Toolbar */}
             <div 
@@ -125,7 +125,8 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
                 background: 'var(--surface-2)', 
                 padding: '0.5rem 0.75rem', 
                 borderBottom: '1px solid var(--border)',
-                display: 'flex', gap: '0.3rem', flexWrap: 'wrap'
+                display: 'flex', gap: '0.3rem', flexWrap: 'wrap',
+                alignItems: 'center'
               }}
             >
               <button type="button" onClick={() => surround('**', '**', 'bold text')} title="Bold">
@@ -189,7 +190,9 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
                 boxShadow: 'none',
                 fontSize: '0.95rem',
                 lineHeight: 1.6,
-                resize: 'vertical'
+                resize: 'vertical',
+                width: '100%',
+                maxWidth: '100%'
               }}
               value={value}
               placeholder={placeholder}
@@ -201,7 +204,7 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
           {uploadError && <div className="form-error mt-1">{uploadError}</div>}
           
           <div style={{ padding: '0.5rem 0.25rem 0' }}>
-            <p className="hint muted" style={{ margin: 0, lineHeight: 1.5 }}>
+            <p className="hint muted" style={{ margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
               Markdown supported. Images up to 5 MB (PNG, JPG, WEBP) — remove personal or sensitive information from screenshots before uploading.
             </p>
           </div>
@@ -209,8 +212,8 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
       )}
 
       {tab === 'preview' && (
-        <div className="panel" style={{ minHeight, animation: 'fade-in var(--dur-fast) var(--ease)' }}>
-          <div className="panel__body rich-text" style={{ padding: '1.5rem' }}>
+        <div className="panel" style={{ minHeight, animation: 'fade-in var(--dur-fast) var(--ease)', width: '100%', overflowX: 'hidden' }}>
+          <div className="panel__body rich-text" style={{ padding: '1.5rem', width: '100%', overflowX: 'hidden' }}>
             {value.trim() ? <RichText markdown={value} /> : <span className="muted" style={{ fontStyle: 'italic' }}>Nothing to preview yet. Start typing in the Write tab.</span>}
           </div>
         </div>
