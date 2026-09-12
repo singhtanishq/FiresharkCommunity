@@ -42,7 +42,7 @@ export function RichText({ markdown, className = '' }: { markdown: string; class
       className={`rich-text ${className}`}
       // Content is sanitised above with a strict allowlist.
       dangerouslySetInnerHTML={{ __html: clean }}
-      style={{ animation: 'fade-in var(--dur-fast) var(--ease)' }}
+      style={{ animation: 'fade-in var(--dur-fast) var(--ease)', width: '100%', overflowX: 'hidden', wordBreak: 'break-word' }}
       ref={(el) => {
         if (!el) return
         el.querySelectorAll('pre code').forEach((block) => {
@@ -54,6 +54,18 @@ export function RichText({ markdown, className = '' }: { markdown: string; class
           if (link.hostname !== window.location.hostname) {
             link.setAttribute('target', '_blank')
             link.setAttribute('rel', 'noopener noreferrer')
+          }
+        })
+
+        // Ensure tables are responsive on small mobile viewports
+        el.querySelectorAll('table').forEach((table) => {
+          if (!table.parentElement?.classList.contains('table-responsive-wrapper')) {
+            const wrapper = document.createElement('div')
+            wrapper.style.overflowX = 'auto'
+            wrapper.style.width = '100%'
+            wrapper.style.margin = '0.75rem 0'
+            table.parentNode?.insertBefore(wrapper, table)
+            wrapper.appendChild(table)
           }
         })
       }}
