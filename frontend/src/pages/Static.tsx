@@ -127,7 +127,7 @@ export function CommunityGuidelines() {
 
       <div style={{ textAlign: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)', animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both', width: '100%', boxSizing: 'border-box' }}>
         <p className="muted" style={{ fontSize: '1rem', wordBreak: 'break-word' }}>
-          Questions about these guidelines? Reach the core team via <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>fireshark.in</a>.
+          Questions about these guidelines? Reach the core team via <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>FireShark</a>.
         </p>
       </div>
     </div>
