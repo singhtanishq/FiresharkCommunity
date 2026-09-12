@@ -22,11 +22,11 @@ export function Tags() {
   }, [page, q])
 
   return (
-    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Premium Header with proper spacing */}
-      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
-        <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
+      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both', width: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ gap: '1.25rem', flex: '1 1 280px', minWidth: 0, flexWrap: 'wrap' }}>
           <div 
             style={{ 
               width: '64px', height: '64px', 
@@ -34,24 +34,25 @@ export function Tags() {
               background: 'var(--brand-blue-50)', 
               color: 'var(--brand-blue-600)', 
               display: 'grid', placeItems: 'center',
-              boxShadow: '0 4px 12px rgba(22, 122, 201, 0.1)'
+              boxShadow: '0 4px 12px rgba(22, 122, 201, 0.1)',
+              flexShrink: 0
             }}
           >
-            <Hash size={32} strokeWidth={2.5} />
+            <Hash size={32} strokeWidth={2.5} style={{ flexShrink: 0 }} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1, wordBreak: 'break-word' }}>
               System Tags
             </h1>
-            <p style={{ fontSize: '1rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '1rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, wordBreak: 'break-word' }}>
               Filter and explore intelligence by specific technological signatures.
             </p>
           </div>
         </div>
         
         {/* Search / Filter Input with properly centered icon */}
-        <div className="input-affix" style={{ width: '100%', maxWidth: '320px', display: 'flex', alignItems: 'center', position: 'relative' }}>
-          <Search className="input-affix__icon" size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
+        <div className="input-affix" style={{ width: '100%', maxWidth: '320px', display: 'flex', alignItems: 'center', position: 'relative', flexShrink: 0, boxSizing: 'border-box' }}>
+          <Search className="input-affix__icon" size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)', flexShrink: 0 }} />
           <input
             className="input input--with-affix input--lg"
             placeholder="Search tags..."
@@ -65,7 +66,7 @@ export function Tags() {
               setSearchParams(params)
             }}
             aria-label="Filter tags"
-            style={{ boxShadow: 'var(--shadow-sm)', width: '100%', paddingLeft: '40px' }}
+            style={{ boxShadow: 'var(--shadow-sm)', width: '100%', paddingLeft: '40px', boxSizing: 'border-box' }}
           />
         </div>
       </div>
@@ -73,7 +74,7 @@ export function Tags() {
       {!data ? (
         <div style={{ padding: '4rem 0' }}><Spinner /></div>
       ) : data.data.length === 0 ? (
-        <div className="panel" style={{ padding: '4rem 2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' }}>
+        <div className="panel" style={{ padding: '4rem 2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', boxSizing: 'border-box' }}>
           <EmptyState 
             icon={<Tag size={48} color="var(--brand-blue-300)" strokeWidth={1.5} />} 
             title={q ? `No tags found matching "${q}".` : "No tags exist in the system yet."} 
@@ -81,8 +82,8 @@ export function Tags() {
         </div>
       ) : (
         <div style={{ 
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', 
-          gap: '1.25rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' 
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', 
+          gap: '1.25rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', width: '100%', boxSizing: 'border-box' 
         }}>
           {data.data.map((tag) => (
             <Link 
@@ -93,7 +94,9 @@ export function Tags() {
                 padding: '1.25rem', 
                 color: 'inherit', 
                 textDecoration: 'none',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                boxSizing: 'border-box',
+                overflowX: 'hidden'
               }}
               onMouseOver={e => {
                 e.currentTarget.style.transform = 'translateY(-4px)'
@@ -106,12 +109,12 @@ export function Tags() {
                 e.currentTarget.style.borderColor = 'var(--border)'
               }}
             >
-              <div className="row row--between mb-1" style={{ alignItems: 'flex-start' }}>
-                <span className="chip" style={{ fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem', background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', border: 'none' }}>
-                  <Hash size={14} strokeWidth={2.5} /> {tag.name}
+              <div className="row row--between mb-1" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.4rem' }}>
+                <span className="chip" style={{ fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem', background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', border: 'none', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', boxSizing: 'border-box' }}>
+                  <Hash size={14} strokeWidth={2.5} style={{ flexShrink: 0 }} /> <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tag.name}</span>
                 </span>
               </div>
-              <div className="muted" style={{ fontSize: '0.9rem', fontWeight: 500 }}>
+              <div className="muted" style={{ fontSize: '0.9rem', fontWeight: 500, wordBreak: 'break-word' }}>
                 {formatNumber(tag.questions_count)} {tag.questions_count === 1 ? 'discussion' : 'discussions'}
               </div>
             </Link>
@@ -120,7 +123,7 @@ export function Tags() {
       )}
 
       {data && data.meta.last_page > 1 && (
-        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.2s both' }}>
+        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.2s both', width: '100%', boxSizing: 'border-box', flexWrap: 'wrap' }}>
           <Pagination meta={data.meta} baseUrl={q ? `/tags?q=${encodeURIComponent(q)}` : '/tags'} />
         </div>
       )}
@@ -160,18 +163,18 @@ export function TagDetail() {
   const baseUrl = `/tags/${slug}${sort !== 'latest' ? `?sort=${sort}` : ''}`
 
   return (
-    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Breadcrumbs */}
-      <nav className="breadcrumb row" style={{ gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.88rem' }} aria-label="Breadcrumb">
+      <nav className="breadcrumb row" style={{ gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.88rem', flexWrap: 'wrap' }} aria-label="Breadcrumb">
         <Link to="/tags" style={{ color: 'var(--text-3)', fontWeight: 500 }}>System Tags</Link>
-        <ChevronRight size={14} color="var(--border-strong)" />
-        <span style={{ color: 'var(--ink-900)', fontWeight: 700 }}>{data.tag.name}</span>
+        <ChevronRight size={14} color="var(--border-strong)" style={{ flexShrink: 0 }} />
+        <span style={{ color: 'var(--ink-900)', fontWeight: 700, wordBreak: 'break-word' }}>{data.tag.name}</span>
       </nav>
 
       {/* Premium Header with proper spacing */}
-      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
-        <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
+      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both', width: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ gap: '1.25rem', flex: '1 1 280px', minWidth: 0, flexWrap: 'wrap' }}>
           <div 
             style={{ 
               width: '64px', height: '64px', 
@@ -180,36 +183,37 @@ export function TagDetail() {
               color: 'var(--brand-blue-600)', 
               border: '2px solid var(--brand-blue-100)',
               display: 'grid', placeItems: 'center',
-              boxShadow: 'var(--shadow-sm)'
+              boxShadow: 'var(--shadow-sm)',
+              flexShrink: 0
             }}
           >
-            <Hash size={32} strokeWidth={2.5} />
+            <Hash size={32} strokeWidth={2.5} style={{ flexShrink: 0 }} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.5rem', lineHeight: 1.1 }}>
-              {data.tag.name}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.5rem', lineHeight: 1.1, wordBreak: 'break-word', flexWrap: 'wrap' }}>
+              <span>{data.tag.name}</span>
             </h1>
-            <p style={{ fontSize: '1rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Activity size={16} /> 
-              {formatNumber(data.questions.meta.total)} {data.questions.meta.total === 1 ? 'discussion' : 'discussions'} tagged
+            <p style={{ fontSize: '1rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '0.5rem', wordBreak: 'break-word', flexWrap: 'wrap' }}>
+              <Activity size={16} style={{ flexShrink: 0 }} /> 
+              <span>{formatNumber(data.questions.meta.total)} {data.questions.meta.total === 1 ? 'discussion' : 'discussions'} tagged</span>
             </p>
           </div>
         </div>
         <Link 
           to={`/ask?tags=${data.tag.slug}`} 
           className="btn btn--fire btn--lg" 
-          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem' }}
+          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem', flexShrink: 0 }}
         >
-          <Plus size={18} strokeWidth={2.5} /> Ask Question
+          <Plus size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} /> <span>Ask Question</span>
         </Link>
       </div>
 
       {/* Description Panel */}
       {data.tag.description && (
-        <div className="panel mb-4" style={{ padding: '1.25rem 1.5rem', background: 'var(--brand-blue-50)', borderColor: 'var(--brand-blue-100)', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' }}>
-          <div className="row" style={{ gap: '0.75rem', alignItems: 'flex-start' }}>
+        <div className="panel mb-4" style={{ padding: '1.25rem 1.5rem', background: 'var(--brand-blue-50)', borderColor: 'var(--brand-blue-100)', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+          <div className="row" style={{ gap: '0.75rem', alignItems: 'flex-start', flexWrap: 'nowrap' }}>
             <BookOpen size={20} color="var(--brand-blue-600)" style={{ flexShrink: 0, marginTop: '2px' }} />
-            <p style={{ margin: 0, color: 'var(--brand-blue-700)', fontSize: '1.05rem', lineHeight: 1.6, fontWeight: 500 }}>
+            <p style={{ margin: 0, color: 'var(--brand-blue-700)', fontSize: '1.05rem', lineHeight: 1.6, fontWeight: 500, wordBreak: 'break-word', minWidth: 0, flex: 1 }}>
               {data.tag.description}
             </p>
           </div>
@@ -217,21 +221,21 @@ export function TagDetail() {
       )}
 
       {/* Feed */}
-      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both' }}>
+      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both', width: '100%', boxSizing: 'border-box' }}>
         {data.questions.data.length === 0 ? (
-          <div className="panel" style={{ padding: '4rem 2rem' }}>
+          <div className="panel" style={{ padding: '4rem 2rem', boxSizing: 'border-box' }}>
             <EmptyState 
               icon={<MessageSquare size={48} color="var(--brand-blue-300)" strokeWidth={1.5} />} 
               title={`No intelligence found for the signature "${data.tag.name}".`} 
-              action={<Link to={`/ask?tags=${data.tag.slug}`} className="btn btn--primary"><Plus size={16} /> Be the first to ask</Link>}
+              action={<Link to={`/ask?tags=${data.tag.slug}`} className="btn btn--primary" style={{ flexWrap: 'wrap', justifyContent: 'center' }}><Plus size={16} style={{ flexShrink: 0 }} /> <span>Be the first to ask</span></Link>}
             />
           </div>
         ) : (
-          <div className="question-list" style={{ gap: '1rem' }}>
+          <div className="question-list" style={{ gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
             {data.questions.data.map((question) => (
               <div 
                 key={question.id} 
-                style={{ transition: 'transform 0.3s ease' }} 
+                style={{ transition: 'transform 0.3s ease', width: '100%', boxSizing: 'border-box' }} 
                 onMouseOver={e => e.currentTarget.style.transform = 'scale(1.01)'} 
                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
               >
@@ -243,7 +247,7 @@ export function TagDetail() {
       </div>
 
       {data.questions.meta.last_page > 1 && (
-        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.2s both' }}>
+        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.2s both', width: '100%', boxSizing: 'border-box', flexWrap: 'wrap' }}>
           <Pagination meta={data.questions.meta} baseUrl={baseUrl} />
         </div>
       )}
