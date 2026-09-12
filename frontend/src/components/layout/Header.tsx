@@ -6,7 +6,7 @@ import { notificationsApi } from '../../api/endpoints'
 import { Avatar } from '../ui/Avatar'
 import { 
   Search, Menu, X, Bell, User, ChevronDown, 
-  Bookmark, Settings, LogOut, ShieldCheck, Plus, Sparkles 
+  Bookmark, Settings, LogOut, ShieldCheck, Plus 
 } from 'lucide-react'
 
 export function Header() {
@@ -150,15 +150,15 @@ export function Header() {
                     <div className="muted font-mono" style={{ fontSize: '0.75rem' }}>@{user.username}</div>
                   </div>
 
-                  <Link to={`/users/${user.username}`} onClick={closeMenu} style={{ borderRadius: 'var(--radius)' }}>
-                    <User size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> My profile
+                  <Link to={`/users/${user.username}`} onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center' }}>
+                    <User size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> My profile
                   </Link>
-                  <Link to="/bookmarks" onClick={closeMenu} style={{ borderRadius: 'var(--radius)' }}>
-                    <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Saved Intel
+                  <Link to="/bookmarks" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center' }}>
+                    <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Saved Intel
                   </Link>
                   <Link to="/notifications" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-                      <Bell size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Notifications
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                      <Bell size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Notifications
                     </span>
                     {unreadCount > 0 && (
                       <span style={{ background: '#f2600c', color: '#fff', borderRadius: 999, fontSize: '0.75rem', padding: '0.1rem 0.5rem', fontWeight: 700 }}>
@@ -166,15 +166,15 @@ export function Header() {
                       </span>
                     )}
                   </Link>
-                  <Link to="/settings" onClick={closeMenu} style={{ borderRadius: 'var(--radius)' }}>
-                    <Settings size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Settings
+                  <Link to="/settings" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center' }}>
+                    <Settings size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Settings
                   </Link>
 
                   {(user.role === 'admin' || user.role === 'moderator') && (
                     <>
                       <div style={{ height: '1px', background: 'var(--border)', margin: '0.4rem 0' }} />
-                      <Link to="/admin" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', color: 'var(--brand-blue-700)', fontWeight: 600 }}>
-                        <ShieldCheck size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Admin Console
+                      <Link to="/admin" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', color: 'var(--brand-blue-700)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                        <ShieldCheck size={16} strokeWidth={2} style={{ marginRight: 8, flexShrink: 0 }} /> Admin Console
                       </Link>
                     </>
                   )}
@@ -183,9 +183,9 @@ export function Header() {
                   
                   <button 
                     onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }}
-                    style={{ borderRadius: 'var(--radius)', color: 'var(--danger)', width: '100%', textAlign: 'left' }}
+                    style={{ borderRadius: 'var(--radius)', color: 'var(--danger)', width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center' }}
                   >
-                    <LogOut size={16} strokeWidth={2} style={{ marginRight: 8 }} /> Log out
+                    <LogOut size={16} strokeWidth={2} style={{ marginRight: 8, flexShrink: 0 }} /> Log out
                   </button>
                 </div>
               )}
