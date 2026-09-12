@@ -19,7 +19,8 @@ export function QuestionCard({ question }: { question: Question }) {
         background: question.is_solved ? 'linear-gradient(90deg, rgba(236, 253, 243, 0.4) 0%, var(--surface) 20%)' : 'var(--surface)',
         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        width: '100%'
       }}
       onMouseOver={e => {
         e.currentTarget.style.transform = 'translateY(-2px)'
@@ -90,10 +91,10 @@ export function QuestionCard({ question }: { question: Question }) {
       </div>
 
       {/* Main Content Column */}
-      <div style={{ minWidth: 0 }}>
+      <div style={{ minWidth: 0, overflow: 'hidden' }}>
         
         {/* Title & Status Flags */}
-        <h3 className="q-card__title" style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '0.4rem', lineHeight: 1.4 }}>
+        <h3 className="q-card__title" style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '0.4rem', lineHeight: 1.4, wordBreak: 'break-word' }}>
           <Link 
             to={`/questions/${question.slug}`} 
             style={{ color: 'var(--ink-900)', transition: 'color var(--dur-fast) var(--ease)' }}
@@ -103,7 +104,7 @@ export function QuestionCard({ question }: { question: Question }) {
             {question.title}
           </Link>
           {isClosed && (
-            <span className="chip chip--ghost" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.4rem', color: 'var(--warning)', borderColor: 'var(--warning)' }}>
+            <span className="chip chip--ghost" style={{ marginLeft: '0.5rem', fontSize: '0.75rem', padding: '0.1rem 0.4rem', color: 'var(--warning)', borderColor: 'var(--warning)', whiteSpace: 'nowrap' }}>
               <Lock size={12} style={{ display: 'inline', marginRight: '2px' }} /> Closed
             </span>
           )}
@@ -111,7 +112,7 @@ export function QuestionCard({ question }: { question: Question }) {
 
         {/* Excerpt */}
         {question.excerpt && (
-          <p className="q-card__excerpt" style={{ fontSize: '0.92rem', color: 'var(--text-2)', lineHeight: 1.55, margin: '0 0 0.85rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <p className="q-card__excerpt" style={{ fontSize: '0.92rem', color: 'var(--text-2)', lineHeight: 1.55, margin: '0 0 0.85rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}>
             {question.excerpt}
           </p>
         )}
@@ -120,7 +121,7 @@ export function QuestionCard({ question }: { question: Question }) {
         <div className="q-card__meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
           
           {question.is_solved && (
-            <span className="solved-flag" title="This question has an accepted answer" style={{ background: 'var(--success-bg)', color: 'var(--success)', padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-pill)', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <span className="solved-flag" title="This question has an accepted answer" style={{ background: 'var(--success-bg)', color: 'var(--success)', padding: '0.15rem 0.5rem', borderRadius: 'var(--radius-pill)', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap' }}>
               <CheckCircle2 size={13} strokeWidth={2.5} /> Solved
             </span>
           )}
@@ -132,33 +133,33 @@ export function QuestionCard({ question }: { question: Question }) {
             </Link>
           ))}
 
-          {/* Author info aligned to the right */}
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {/* Author info */}
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', width: '100%', justifyContent: 'flex-end', '@media (min-width: 640px)': { width: 'auto' } } as React.CSSProperties}>
             <Link 
               to={`/users/${question.user.username}`} 
               className="row" 
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', minWidth: 0 }}
             >
               <div 
                 style={{
                   width: 24, height: 24, borderRadius: '50%', background: 'var(--brand-blue-600)',
                   color: '#fff', fontSize: '0.7rem', display: 'inline-grid', placeItems: 'center', fontWeight: 800,
-                  boxShadow: 'var(--shadow-xs)'
+                  boxShadow: 'var(--shadow-xs)', flexShrink: 0
                 }}
                 aria-hidden="true"
               >
                 {question.user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
-              <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--ink-800)' }}>{question.user.name}</span>
+              <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--ink-800)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>{question.user.name}</span>
               
               {question.user.verification && (
-                <span className="verified-chip" title={verificationLabels[question.user.verification]} style={{ fontSize: '0.68rem', padding: '0.05rem 0.4rem' }}>
+                <span className="verified-chip" title={verificationLabels[question.user.verification]} style={{ fontSize: '0.68rem', padding: '0.05rem 0.4rem', flexShrink: 0 }}>
                   <ShieldCheck size={10} strokeWidth={2.5} /> {verificationLabels[question.user.verification]}
                 </span>
               )}
             </Link>
             
-            <span className="muted" style={{ fontSize: '0.8rem' }}>
+            <span className="muted" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
               asked {timeAgo(question.created_at)}
             </span>
           </div>
