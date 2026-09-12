@@ -12,7 +12,10 @@ import { ConfirmDialog } from '../components/ui/Modal'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { apiError } from '../api/client'
 import { closedReasonLabels, formatDate, timeAgo } from '../lib/format'
-import { Lock, Lightbulb, Search, CheckCircle2 } from 'lucide-react'
+import { 
+  Lock, Lightbulb, Search, CheckCircle2, Share2, 
+  Bookmark, Flag, Trash2, Edit3, EyeOff, ChevronRight, MessageSquare
+} from 'lucide-react'
 
 export function QuestionDetail() {
   const { slug = '' } = useParams()
@@ -35,7 +38,6 @@ export function QuestionDetail() {
 
   const [newComment, setNewComment] = useState('')
   const [commentBusy, setCommentBusy] = useState(false)
-
   const [copied, setCopied] = useState(false)
 
   const load = useCallback(async () => {
@@ -63,17 +65,17 @@ export function QuestionDetail() {
 
   if (notFound) {
     return (
-      <div className="panel">
+      <div className="panel" style={{ padding: '4rem 2rem', marginTop: '2rem' }}>
         <EmptyState
-          icon={<Search size={32} strokeWidth={1.5} />}
-          title="This question does not exist or is no longer available."
-          action={<Link className="btn btn--primary" to="/questions">Browse questions</Link>}
+          icon={<Search size={48} color="var(--brand-blue-300)" strokeWidth={1.5} />}
+          title="This intelligence report is classified or missing."
+          action={<Link className="btn btn--primary" to="/questions">Return to Feed</Link>}
         />
       </div>
     )
   }
 
-  if (loading || ! question) return <Spinner />
+  if (loading || !question) return <div style={{ paddingTop: '4rem' }}><Spinner /></div>
 
   const isAuthor = user?.id === question.user.id
   const isStaff = user?.role === 'admin' || user?.role === 'moderator'
@@ -134,7 +136,7 @@ export function QuestionDetail() {
   }
 
   const postComment = async () => {
-    if (! newComment.trim()) return
+    if (!newComment.trim()) return
     setCommentBusy(true)
     try {
       const created = await commentsApi.store('question', question.id, newComment)
@@ -157,13 +159,13 @@ export function QuestionDetail() {
   }
 
   const toggleBookmark = async () => {
-    if (! user) return navigate('/login')
+    if (!user) return navigate('/login')
     const result = await questionsApi.bookmark(question.id)
     setQuestion((prev) => prev ? { ...prev, bookmarked: result.bookmarked } : prev)
   }
 
   const toggleFollow = async () => {
-    if (! user) return navigate('/login')
+    if (!user) return navigate('/login')
     const result = await questionsApi.follow(question.id)
     setQuestion((prev) => prev ? { ...prev, following: result.following } : prev)
   }
@@ -182,35 +184,43 @@ export function QuestionDetail() {
   }
 
   return (
-    <div>
-      <nav className="breadcrumb" aria-label="Breadcrumb">
-        <Link to="/questions">Questions</Link> › <Link to={`/categories/${question.category.slug}`}>{question.category.name}</Link>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+      
+      {/* Breadcrumb Navigation */}
+      <nav className="breadcrumb row" style={{ gap: '0.4rem', marginBottom: '1.5rem', fontSize: '0.85rem' }} aria-label="Breadcrumb">
+        <Link to="/questions" style={{ color: 'var(--text-3)', fontWeight: 500 }}>Live Feed</Link>
+        <ChevronRight size={14} color="var(--border-strong)" />
+        <Link to={`/categories/${question.category.slug}`} style={{ color: 'var(--ink-900)', fontWeight: 600 }}>{question.category.name}</Link>
       </nav>
 
-      <div className="row--between row">
-        <h1 className="question-detail__title">{question.title}</h1>
+      {/* Header */}
+      <div className="row row--between mb-3" style={{ alignItems: 'flex-start', gap: '1.5rem', animation: 'modal-rise var(--dur) var(--ease) 0.05s both' }}>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--ink-900)', lineHeight: 1.25, letterSpacing: '-0.02em', margin: 0, flex: 1 }}>
+          {question.title}
+        </h1>
         {(isAuthor || isStaff) && (
-          <Link
-            to={`/ask?edit=${question.id}`}
-            className="btn btn--ghost btn--sm"
-            state={{ question }}
-          >
-            Edit
+          <Link to={`/ask?edit=${question.id}`} className="btn btn--ghost" state={{ question }}>
+            <Edit3 size={16} /> Edit
           </Link>
         )}
       </div>
 
+      {/* Banners */}
       {question.status === 'closed' && (
-        <div className="banner banner--info">
-          <Lock size={18} strokeWidth={2} style={{ marginRight: 8 }} aria-hidden="true" />
-          This question is closed{question.closed_reason ? ` (${closedReasonLabels[question.closed_reason] ?? question.closed_reason})` : ''}. New answers cannot be added.
+        <div className="banner banner--warn mb-3" style={{ borderRadius: 'var(--radius-lg)' }}>
+          <Lock size={18} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
+          <span style={{ fontWeight: 500 }}>This thread is locked {question.closed_reason ? `(${closedReasonLabels[question.closed_reason] ?? question.closed_reason})` : ''}. No further answers can be submitted.</span>
         </div>
       )}
       {question.status === 'hidden' && (
-        <div className="banner banner--info">This question is currently hidden by moderators.</div>
+        <div className="banner banner--danger mb-3" style={{ borderRadius: 'var(--radius-lg)' }}>
+          <EyeOff size={18} strokeWidth={2} style={{ flexShrink: 0 }} />
+          <span style={{ fontWeight: 500 }}>This thread is currently hidden by community moderators.</span>
+        </div>
       )}
 
-      <article className={`panel post ${question.accepted_answer_id ? '' : ''}`}>
+      {/* Primary Question Post */}
+      <article className="panel post mb-2" style={{ border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)', animation: 'modal-rise var(--dur) var(--ease) 0.1s both' }}>
         <VoteControl
           votableType="question"
           votableId={question.id}
@@ -221,100 +231,126 @@ export function QuestionDetail() {
         />
 
         <div className="post__body">
-          <RichText markdown={question.body ?? ''} />
+          <div className="rich-text" style={{ fontSize: '1.05rem', color: 'var(--ink-800)' }}>
+            <RichText markdown={question.body ?? ''} />
+          </div>
 
-          <div className="row mt-2">
+          <div className="row mt-3" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
             {question.tags.map((tag) => (
-              <Link key={tag.id} className="tag-chip" to={`/tags/${tag.slug}`}>{tag.name}</Link>
+              <Link key={tag.id} className="chip" to={`/tags/${tag.slug}`}>{tag.name}</Link>
             ))}
           </div>
 
-          <div className="post__meta">
+          <div className="post__meta mt-3">
             <AuthorLine user={question.user} prefix="asked" date={formatDate(question.created_at)} />
-            <span className="muted">👁 {question.views} views</span>
-            <span className="post__actions">
-              <button className="link-btn" onClick={share}>{copied ? 'Link copied!' : 'Share'}</button>
+            <span className="muted" style={{ paddingLeft: '1rem', borderLeft: '1px solid var(--border)' }}>
+              {formatNumber(question.views)} views
+            </span>
+            
+            <div className="post__actions">
+              <button className="btn btn--quiet btn--sm" onClick={share}>
+                <Share2 size={14} /> {copied ? 'Copied!' : 'Share'}
+              </button>
               {user && (
                 <>
-                  <button className="link-btn" onClick={toggleBookmark}>
-                    {question.bookmarked ? '★ Bookmarked' : '☆ Bookmark'}
+                  <button className="btn btn--quiet btn--sm" onClick={toggleBookmark} style={{ color: question.bookmarked ? 'var(--brand-blue-600)' : undefined }}>
+                    <Bookmark size={14} fill={question.bookmarked ? 'currentColor' : 'none'} /> {question.bookmarked ? 'Saved' : 'Save'}
                   </button>
-                  <button className="link-btn" onClick={toggleFollow}>
-                    {question.following ? '✓ Following' : '＋ Follow'}
+                  <button className="btn btn--quiet btn--sm" onClick={toggleFollow}>
+                    {question.following ? '✓ Following' : 'Follow'}
                   </button>
                 </>
               )}
-              {user && ! isAuthor && (
-                <button className="link-btn" onClick={() => setReportTarget({ type: 'question', id: question.id })}>Report</button>
-              )}
-              {isAuthor && question.answers_count === 0 && (
-                <button className="link-btn" onClick={() => setConfirm({ message: 'Delete this question? This cannot be undone.', action: deleteQuestion })}>
-                  Delete
+              {user && !isAuthor && (
+                <button className="btn btn--quiet btn--sm" onClick={() => setReportTarget({ type: 'question', id: question.id })} style={{ color: 'var(--text-3)' }}>
+                  <Flag size={14} /> Report
                 </button>
               )}
-            </span>
+              {isAuthor && question.answers_count === 0 && (
+                <button className="btn btn--quiet btn--sm" style={{ color: 'var(--danger)' }} onClick={() => setConfirm({ message: 'Delete this question? This cannot be undone.', action: deleteQuestion })}>
+                  <Trash2 size={14} /> Delete
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </article>
 
-      {/* Comments on the question */}
-      <section className="mt-1" style={{ marginLeft: 56 }}>
+      {/* Question Comments */}
+      <section className="comment-thread" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both' }}>
         {comments.map((comment) => (
-          <div key={comment.id} className="row--between row" style={{ padding: '0.35rem 0', borderBottom: '1px dashed var(--border)' }}>
-            <span style={{ fontSize: '0.88rem' }}>
-              <AuthorLine user={comment.user} date={timeAgo(comment.created_at)} />{' '}
-              — {comment.body}
+          <div key={comment.id} className="comment-row" style={{ padding: '0.6rem 0.5rem', transition: 'background var(--dur) var(--ease)' }} onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+            <span style={{ fontSize: '0.9rem', color: 'var(--ink-800)', lineHeight: 1.5, flex: 1 }}>
+              {comment.body} <span className="muted" style={{ margin: '0 0.4rem' }}>—</span> 
+              <AuthorLine user={comment.user} date={timeAgo(comment.created_at)} />
             </span>
             {(user?.id === comment.user.id || isStaff) && (
-              <button className="link-btn" onClick={() => deleteComment(comment)}>delete</button>
+              <button className="btn btn--quiet btn--sm" style={{ padding: '0.2rem', color: 'var(--danger)', opacity: 0.6 }} onClick={() => deleteComment(comment)}>
+                <Trash2 size={14} />
+              </button>
             )}
           </div>
         ))}
+        
         {user && (
-          <div className="row mt-1">
+          <div className="comment-composer row" style={{ marginTop: '0.8rem' }}>
             <input
-              className="input"
-              style={{ maxWidth: 480 }}
-              placeholder="Add a comment…"
+              className="input input--sm"
+              style={{ flex: 1, background: 'var(--surface-2)', border: '1px solid transparent' }}
+              placeholder="Suggest an improvement or ask for clarification..."
               value={newComment}
               maxLength={2000}
               onChange={(e) => setNewComment(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') void postComment() }}
             />
-            <button className="btn btn--ghost btn--sm" onClick={postComment} disabled={commentBusy || ! newComment.trim()}>Comment</button>
+            <button className="btn btn--ghost btn--sm" onClick={postComment} disabled={commentBusy || !newComment.trim()}>
+              Comment
+            </button>
           </div>
         )}
       </section>
 
-      {/* Answers */}
-      <section className="mt-3">
-        <div className="row--between row mb-2">
-          <h2>
-            {question.answers_count} {question.answers_count === 1 ? 'Answer' : 'Answers'}
-            {question.is_solved && <span className="solved-badge" style={{ marginLeft: 10 }}>✓ Solved</span>}
+      {/* Answers Section */}
+      <section className="mt-4" style={{ paddingTop: '2rem', borderTop: '2px solid var(--border)', animation: 'fade-in var(--dur-slow) var(--ease) 0.2s both' }}>
+        <div className="row row--between mb-3">
+          <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {formatNumber(question.answers_count)} {question.answers_count === 1 ? 'Answer' : 'Answers'}
+            {question.is_solved && <span className="chip" style={{ background: 'var(--success-bg)', color: 'var(--success)', border: '1px solid #bbf7d0', padding: '0.2rem 0.6rem' }}><CheckCircle2 size={14} /> Solved</span>}
           </h2>
+          
           {answers.length > 1 && (
-            <div className="sort-tabs">
+            <div style={{ background: 'var(--surface-2)', padding: '0.3rem', borderRadius: 'var(--radius)', display: 'inline-flex', gap: '0.2rem', border: '1px solid var(--border)' }}>
               {(['votes', 'oldest', 'newest'] as const).map((s) => (
-                <Link key={s} to="#" onClick={(e) => { e.preventDefault(); setSort(s) }} className={sort === s ? 'is-active' : ''}>
-                  {s === 'votes' ? 'Highest voted' : s === 'oldest' ? 'Oldest' : 'Newest'}
-                </Link>
+                <button 
+                  key={s} 
+                  onClick={() => setSort(s)} 
+                  style={{
+                    padding: '0.35rem 0.9rem', fontSize: '0.85rem', fontWeight: 600,
+                    borderRadius: 'calc(var(--radius) - 2px)', border: 'none', cursor: 'pointer',
+                    color: sort === s ? 'var(--brand-blue-700)' : 'var(--text-2)',
+                    background: sort === s ? '#fff' : 'transparent',
+                    boxShadow: sort === s ? 'var(--shadow-sm)' : 'none',
+                    transition: 'all var(--dur-fast) var(--ease)'
+                  }}
+                >
+                  {s === 'votes' ? 'Highest Score' : s === 'oldest' ? 'Oldest' : 'Newest'}
+                </button>
               ))}
             </div>
           )}
         </div>
 
         {answers.length === 0 && (
-          <div className="panel">
+          <div className="panel" style={{ padding: '4rem 2rem' }}>
             <EmptyState
-              icon={<Lightbulb size={32} strokeWidth={1.5} />}
-              title="No answers yet. Know the answer? Share your knowledge."
+              icon={<Lightbulb size={40} color="var(--brand-blue-400)" strokeWidth={1.5} />}
+              title="Awaiting intel. Be the first to provide a solution."
             />
           </div>
         )}
 
         {answers.map((answer) => (
-          <article key={answer.id} className={`panel post mt-1 ${answer.accepted ? 'post--accepted' : ''}`} id={`answer-${answer.id}`}>
+          <article key={answer.id} className={`panel post mb-3 ${answer.accepted ? 'post--accepted' : ''}`} id={`answer-${answer.id}`} style={{ border: answer.accepted ? '2px solid var(--success)' : '1px solid var(--border)' }}>
             <VoteControl
               votableType="answer"
               votableId={answer.id}
@@ -326,93 +362,106 @@ export function QuestionDetail() {
 
             <div className="post__body">
               {answer.accepted && (
-                <div className="accepted-flag mb-2" title="Accepted answer">
-                  <CheckCircle2 size={16} strokeWidth={2} style={{ marginRight: 4 }} aria-hidden="true" />
-                  Accepted Answer
+                <div className="row mb-2" style={{ color: 'var(--success)', fontWeight: 700, fontSize: '0.9rem', background: 'var(--success-bg)', display: 'inline-flex', padding: '0.3rem 0.75rem', borderRadius: 'var(--radius-pill)', border: '1px solid #bbf7d0' }}>
+                  <CheckCircle2 size={16} strokeWidth={2.5} style={{ marginRight: '0.4rem' }} />
+                  Accepted Solution
                   {isAuthor && (
-                    <button className="link-btn" style={{ color: 'var(--muted)', fontWeight: 400 }} onClick={() => acceptAnswer(answer)}>
-                      (unaccept)
+                    <button className="link-btn" style={{ marginLeft: '0.5rem', color: 'var(--text-3)', fontWeight: 500, fontSize: '0.8rem' }} onClick={() => acceptAnswer(answer)}>
+                      (Undo)
                     </button>
                   )}
                 </div>
               )}
 
-              <RichText markdown={answer.body} />
+              <div className="rich-text" style={{ fontSize: '1rem', color: 'var(--ink-800)' }}>
+                <RichText markdown={answer.body} />
+              </div>
 
-              <div className="post__meta">
+              <div className="post__meta mt-3">
                 <AuthorLine user={answer.user} prefix="answered" date={formatDate(answer.created_at)} />
                 <span className="post__actions">
-                  {! answer.accepted && isAuthor && question.answers_count > 0 && (
-                    <button className="link-btn" onClick={() => acceptAnswer(answer)}>✓ Accept</button>
+                  {!answer.accepted && isAuthor && question.answers_count > 0 && (
+                    <button className="btn btn--quiet btn--sm" style={{ color: 'var(--success)' }} onClick={() => acceptAnswer(answer)}>
+                      <CheckCircle2 size={14} /> Accept Solution
+                    </button>
                   )}
-                  {user && ! isAuthor && (
-                    <button className="link-btn" onClick={() => setReportTarget({ type: 'answer', id: answer.id })}>Report</button>
+                  {user && !isAuthor && (
+                    <button className="btn btn--quiet btn--sm" onClick={() => setReportTarget({ type: 'answer', id: answer.id })} style={{ color: 'var(--text-3)' }}>
+                      <Flag size={14} /> Report
+                    </button>
                   )}
-                  {(user?.id === answer.user.id && ! answer.accepted) && (
-                    <button className="link-btn" onClick={() => setConfirm({ message: 'Delete this answer?', action: () => deleteAnswer(answer) })}>Delete</button>
+                  {(user?.id === answer.user.id && !answer.accepted) && (
+                    <button className="btn btn--quiet btn--sm" style={{ color: 'var(--danger)' }} onClick={() => setConfirm({ message: 'Delete this answer?', action: () => deleteAnswer(answer) })}>
+                      <Trash2 size={14} /> Delete
+                    </button>
                   )}
                 </span>
               </div>
 
               {answer.comments && answer.comments.length > 0 && (
-                <div className="mt-1" style={{ borderTop: '1px dashed var(--border)', paddingTop: 8 }}>
+                <div className="comment-thread" style={{ margin: '1rem 0 0 0', padding: '1rem 0 0 0' }}>
                   {answer.comments.map((comment) => (
-                    <div key={comment.id} className="row--between row" style={{ padding: '0.3rem 0' }}>
-                      <span style={{ fontSize: '0.86rem' }}>
-                        <AuthorLine user={comment.user} date={timeAgo(comment.created_at)} /> — {comment.body}
+                    <div key={comment.id} className="comment-row" style={{ padding: '0.4rem 0.5rem', transition: 'background var(--dur) var(--ease)' }} onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                      <span style={{ fontSize: '0.88rem', color: 'var(--ink-800)', flex: 1 }}>
+                        {comment.body} <span className="muted" style={{ margin: '0 0.4rem' }}>—</span> 
+                        <AuthorLine user={comment.user} date={timeAgo(comment.created_at)} />
                       </span>
                       {(user?.id === comment.user.id || isStaff) && (
-                        <button className="link-btn" onClick={async () => {
-                          await commentsApi.destroy(comment.id)
-                          await load()
-                        }}>delete</button>
+                        <button className="btn btn--quiet btn--sm" style={{ padding: '0.2rem', color: 'var(--danger)', opacity: 0.6 }} onClick={async () => { await commentsApi.destroy(comment.id); await load() }}>
+                          <Trash2 size={14} />
+                        </button>
                       )}
                     </div>
                   ))}
                 </div>
               )}
-
-              <AnswerCommentBox answerId={answer.id} onAdded={() => load()} />
+              
+              <div style={{ marginLeft: answer.comments?.length ? 0 : 0 }}>
+                <AnswerCommentBox answerId={answer.id} onAdded={() => load()} />
+              </div>
             </div>
           </article>
         ))}
       </section>
 
-      {/* Answer form */}
-      {question.status === 'closed'
-        ? null
-        : user
-          ? (
-            <section className="panel mt-3">
-              <div className="panel__header"><h2>Your Answer</h2></div>
-              <div className="panel__body">
-                {answerError && <div className="form-error">{answerError}</div>}
-                <RichTextEditor value={answerBody} onChange={setAnswerBody} placeholder="Share your knowledge — include commands, configuration and expected results." minHeight={180} />
-                <div className="row mt-2" style={{ justifyContent: 'flex-end' }}>
-                  <button className="btn btn--fire" onClick={postAnswer} disabled={postingAnswer || answerBody.trim().length < 30}>
-                    {postingAnswer ? 'Posting…' : 'Post Your Answer'}
-                  </button>
-                </div>
+      {/* Answer Form */}
+      {question.status === 'closed' ? null : user ? (
+        <section className="panel mt-4" style={{ borderTop: '4px solid var(--brand-blue-600)', animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both' }}>
+          <div className="panel__header" style={{ paddingBottom: 0, borderBottom: 'none' }}>
+            <h2 style={{ fontSize: '1.4rem' }}>Your Answer</h2>
+          </div>
+          <div className="panel__body">
+            {answerError && (
+              <div className="banner banner--danger mb-2">
+                <AlertTriangle size={18} /> {answerError}
               </div>
-            </section>
-          )
-          : (
-            <div className="panel mt-3">
-              <div className="panel__body row" style={{ justifyContent: 'space-between' }}>
-                <span>Know the answer? Log in to help the community.</span>
-                <Link to="/login" className="btn btn--primary btn--sm">Log in</Link>
-              </div>
+            )}
+            <RichTextEditor value={answerBody} onChange={setAnswerBody} placeholder="Draft your solution here. Use code blocks for logs, commands, and scripts..." minHeight={220} />
+            <div className="row mt-3" style={{ justifyContent: 'flex-end' }}>
+              <button className="btn btn--fire btn--lg" onClick={postAnswer} disabled={postingAnswer || answerBody.trim().length < 30}>
+                {postingAnswer ? 'Transmitting…' : <><MessageSquare size={16} /> Submit Answer</>}
+              </button>
             </div>
-          )}
+          </div>
+        </section>
+      ) : (
+        <div className="panel mt-4" style={{ background: 'var(--surface-2)', borderStyle: 'dashed' }}>
+          <div className="panel__body row row--between" style={{ padding: '2rem' }}>
+            <span style={{ fontSize: '1.1rem', fontWeight: 500, color: 'var(--ink-800)' }}>Have a potential solution? Log in to assist the community.</span>
+            <Link to="/login" className="btn btn--primary btn--lg">Authenticate</Link>
+          </div>
+        </div>
+      )}
 
+      {/* Modals */}
       {reportTarget && (
         <ReportModal reportableType={reportTarget.type} reportableId={reportTarget.id} onClose={() => setReportTarget(null)} />
       )}
       {confirm && (
         <ConfirmDialog
-          title="Are you sure?"
+          title="Confirm Deletion"
           message={confirm.message}
-          confirmLabel="Delete"
+          confirmLabel="Delete Permanently"
           danger
           onCancel={() => setConfirm(null)}
           onConfirm={async () => { const action = confirm.action; setConfirm(null); await action() }}
@@ -427,10 +476,10 @@ function AnswerCommentBox({ answerId, onAdded }: { answerId: number; onAdded: ()
   const [body, setBody] = useState('')
   const [busy, setBusy] = useState(false)
 
-  if (! user) return null
+  if (!user) return null
 
   const submit = async () => {
-    if (! body.trim()) return
+    if (!body.trim()) return
     setBusy(true)
     try {
       await commentsApi.store('answer', answerId, body)
@@ -444,17 +493,19 @@ function AnswerCommentBox({ answerId, onAdded }: { answerId: number; onAdded: ()
   }
 
   return (
-    <div className="row mt-1">
+    <div className="comment-composer row" style={{ marginTop: '0.8rem' }}>
       <input
-        className="input"
-        style={{ maxWidth: 420, fontSize: '0.88rem' }}
-        placeholder="Add a comment…"
+        className="input input--sm"
+        style={{ flex: 1, background: 'var(--surface-2)', border: '1px solid transparent' }}
+        placeholder="Request clarification on this answer..."
         value={body}
         maxLength={2000}
         onChange={(e) => setBody(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter') void submit() }}
       />
-      <button className="btn btn--ghost btn--sm" onClick={submit} disabled={busy || ! body.trim()}>Comment</button>
+      <button className="btn btn--ghost btn--sm" onClick={submit} disabled={busy || !body.trim()}>
+        Comment
+      </button>
     </div>
   )
 }
