@@ -88,7 +88,7 @@ export function UserProfile() {
                 )}
               </h1>
               
-              <div className="row" style={{ gap: '1rem', color: 'var(--text-2)', fontSize: '0.92rem', flexWrap: 'wrap' }}>
+              <div className="row" style={{ gap: '1rem', color: 'var(--text-2)', fontSize: '0.92rem', flexWrap: 'wrap', marginTop: '0.4rem' }}>
                 {profile.expertise && (
                   <span className="row" style={{ gap: '0.35rem' }}><Briefcase size={14} /> {profile.expertise}</span>
                 )}
@@ -198,7 +198,7 @@ export function UserProfile() {
         </div>
       )}
 
-      {/* Content Tabs & Feed with added spacing */}
+      {/* Content Tabs & Feed */}
       <div style={{ marginTop: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.15s both' }}>
         
         {/* Segmented Control */}
