@@ -39,3 +39,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+#bash script
+auto-push.sh
