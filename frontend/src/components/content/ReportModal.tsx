@@ -37,8 +37,8 @@ export function ReportModal({ reportableType, reportableId, onClose }: {
   return (
     <Modal
       title={
-        <div className="row" style={{ gap: '0.5rem' }}>
-          <Flag size={20} color="var(--danger)" />
+        <div className="row" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+          <Flag size={20} color="var(--danger)" style={{ flexShrink: 0 }} />
           <span>{done ? 'Report Transmitted' : `Report ${typeLabel}`}</span>
         </div>
       }
@@ -49,18 +49,18 @@ export function ReportModal({ reportableType, reportableId, onClose }: {
             Close Dialog
           </button>
         ) : (
-          <div className="row row--between" style={{ width: '100%' }}>
-            <button className="btn btn--quiet" onClick={onClose} disabled={busy}>
+          <div className="row" style={{ width: '100%', display: 'flex', gap: '0.75rem', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+            <button className="btn btn--quiet" onClick={onClose} disabled={busy} style={{ flex: '1 1 auto' }}>
               Cancel
             </button>
-            <button className="btn btn--danger" onClick={submit} disabled={busy}>
+            <button className="btn btn--danger" onClick={submit} disabled={busy} style={{ flex: '1 1 auto' }}>
               {busy ? 'Transmitting…' : 'Submit Report'}
             </button>
           </div>
         )
       }
     >
-      <div style={{ animation: 'fade-in var(--dur-fast) var(--ease)' }}>
+      <div style={{ animation: 'fade-in var(--dur-fast) var(--ease)', width: '100%', overflowX: 'hidden' }}>
         {done ? (
           <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--success-bg)', color: 'var(--success)', display: 'grid', placeItems: 'center', margin: '0 auto 1rem' }}>
@@ -75,13 +75,13 @@ export function ReportModal({ reportableType, reportableId, onClose }: {
           <>
             {error && (
               <div className="banner banner--danger mb-3" style={{ borderRadius: 'var(--radius)' }}>
-                <AlertTriangle size={18} /> <span>{error}</span>
+                <AlertTriangle size={18} style={{ flexShrink: 0 }} /> <span>{error}</span>
               </div>
             )}
             
-            <div className="banner banner--info mb-3" style={{ borderRadius: 'var(--radius)' }}>
-              <ShieldAlert size={18} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: '0.88rem' }}>
+            <div className="banner banner--info mb-3" style={{ borderRadius: 'var(--radius)', alignItems: 'flex-start' }}>
+              <ShieldAlert size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span style={{ fontSize: '0.88rem', wordBreak: 'break-word' }}>
                 You are reporting {reportableType} #{reportableId}. Reports are confidential and reviewed strictly by staff.
               </span>
             </div>
