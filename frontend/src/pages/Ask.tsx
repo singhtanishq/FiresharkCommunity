@@ -5,7 +5,10 @@ import { useAuth } from '../context/AuthContext'
 import { RichTextEditor } from '../components/content/RichTextEditor'
 import { apiError } from '../api/client'
 import type { Category, Tag } from '../types'
-import { AlertTriangle } from 'lucide-react'
+import { 
+  AlertTriangle, X, Lock, Send, Save, 
+  HelpCircle, Hash, FolderOpen, BookOpen, PenLine 
+} from 'lucide-react'
 
 /**
  * Ask a question. Also handles edit mode via ?edit={id}.
@@ -45,7 +48,7 @@ export function Ask() {
 
   useEffect(() => {
     const term = tagInput.trim()
-    if (! term) {
+    if (!term) {
       setSuggestions([])
       return
     }
@@ -55,13 +58,26 @@ export function Ask() {
     return () => clearTimeout(t)
   }, [tagInput])
 
-  if (! user) {
+  // ------------------------------------------------------------------
+  // Unauthenticated State
+  // ------------------------------------------------------------------
+  if (!user) {
     return (
-      <div className="panel" style={{ maxWidth: 520, margin: '2rem auto' }}>
-        <div className="panel__body" style={{ textAlign: 'center' }}>
-          <h2>Log in to ask a question</h2>
-          <p className="muted">Join the FireShark Community to ask questions, answer and vote.</p>
-          <button className="btn btn--primary" onClick={() => navigate('/login', { state: { from: '/ask' } })}>Log in</button>
+      <div className="app-main" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh' }}>
+        <div className="panel" style={{ maxWidth: 480, width: '100%', padding: '3rem 2rem', textAlign: 'center', animation: 'modal-rise var(--dur-slow) var(--ease)' }}>
+          <div style={{ 
+            width: '64px', height: '64px', background: 'var(--brand-blue-50)', color: 'var(--brand-blue-600)', 
+            borderRadius: '50%', display: 'grid', placeItems: 'center', margin: '0 auto 1.5rem' 
+          }}>
+            <Lock size={32} strokeWidth={1.5} />
+          </div>
+          <h2 style={{ fontSize: '1.45rem', marginBottom: '0.75rem' }}>Authentication Required</h2>
+          <p className="muted mb-3" style={{ lineHeight: 1.6 }}>
+            Join the FireShark Community to ask questions, share your expertise, and build your technical reputation.
+          </p>
+          <button className="btn btn--primary btn--lg btn--block" onClick={() => navigate('/login', { state: { from: '/ask' } })}>
+            Log in to continue
+          </button>
         </div>
       </div>
     )
@@ -71,7 +87,7 @@ export function Ask() {
 
   const addTag = (tag: string) => {
     const slug = tag.trim().toLowerCase().replace(/\s+/g, '-')
-    if (slug && ! tags.includes(slug) && tags.length < 5) setTags([...tags, slug])
+    if (slug && !tags.includes(slug) && tags.length < 5) setTags([...tags, slug])
     setTagInput('')
     setSuggestions([])
   }
@@ -106,123 +122,199 @@ export function Ask() {
     }
   }
 
+  const titleLengthColor = title.length > 180 ? 'var(--danger)' : title.length > 0 && title.length < 15 ? 'var(--warning)' : 'var(--text-3)'
+
   return (
-    <div className="app-main--narrow" style={{ margin: '0 auto', maxWidth: 760 }}>
-      <h1>{editId ? 'Edit your question' : 'Ask a question'}</h1>
-      <p className="muted mb-2">
-        Be specific, include what you have tried, and share error output inside code blocks. Read the{' '}
-        <a href="/community-guidelines">community guidelines</a> before posting.
-      </p>
-
-      {errors && (
-        <div className="form-error">
-          <b>{errors.message}</b>
-          {Object.entries(errors.fields).map(([field, messages]) => (
-            <div key={field}>{messages.join(' ')}</div>
-          ))}
-        </div>
-      )}
-
-      <div className="field">
-        <label htmlFor="title">
-          Title <span className="counter" style={{ color: title.length > 180 ? 'var(--red-600)' : undefined }}>{title.length}/180</span>
-        </label>
-        <input
-          id="title"
-          className="input"
-          value={title}
-          maxLength={200}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g. How can I troubleshoot an Nmap scan that shows no open ports?"
-        />
-        <p className="hint">
-          {title.length >= 15
-            ? 'Good — a clear title helps others find your question.'
-            : 'Minimum 15 characters. Describe the problem, not your goal only.'}
+    <div className="app-main--narrow" style={{ margin: '0 auto', maxWidth: 840, paddingBottom: '4rem' }}>
+      
+      {/* Page Header */}
+      <div style={{ marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '2.2rem', fontWeight: 800 }}>
+          <HelpCircle size={32} color="var(--brand-blue-600)" strokeWidth={2.5} />
+          {editId ? 'Edit your question' : 'Ask a question'}
+        </h1>
+        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <BookOpen size={16} /> Be specific, share what you've tried, and review our <a href="/community-guidelines" style={{ fontWeight: 600 }}>community guidelines</a>.
         </p>
       </div>
 
-      <div className="field">
-        <label htmlFor="category">Category</label>
-        <select id="category" className="select" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-          <option value="">Select a category…</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>{category.name}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="field">
-        <label htmlFor="tags">Tags (up to 5)</label>
-        <div className="row" style={{ marginBottom: '0.4rem' }}>
-          {tags.map((tag) => (
-            <span key={tag} className="tag-chip">
-              {tag}{' '}
-              <button
-                type="button"
-                style={{ all: 'unset', cursor: 'pointer', marginLeft: 4 }}
-                onClick={() => setTags(tags.filter((t) => t !== tag))}
-                aria-label={`Remove tag ${tag}`}
-              >×</button>
-            </span>
-          ))}
-        </div>
-        <input
-          id="tags"
-          className="input"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ',') {
-              e.preventDefault()
-              addTag(tagInput)
-            }
-          }}
-          placeholder="Type a tag and press Enter — e.g. nmap, wireshark, kali-linux"
-        />
-        {suggestions.length > 0 && (
-          <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {suggestions.filter((s) => ! tags.includes(s.slug)).map((s) => (
-              <button key={s.id} type="button" className="tag-chip" style={{ cursor: 'pointer', border: 'none' }} onClick={() => addTag(s.slug)}>
-                {s.name} · {s.questions_count}
-              </button>
+      {errors && (
+        <div className="banner banner--danger mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
+          <AlertTriangle size={20} style={{ flexShrink: 0 }} />
+          <div>
+            <b style={{ display: 'block', marginBottom: '0.2rem' }}>{errors.message}</b>
+            {Object.entries(errors.fields).map(([field, messages]) => (
+              <div key={field} style={{ fontSize: '0.85rem' }}>• {messages.join(' ')}</div>
             ))}
           </div>
-        )}
-        <p className="hint">Existing tags are suggested as you type. New tags are reviewed by moderators.</p>
-      </div>
+        </div>
+      )}
 
-      <div className="field">
-        <label>What are you trying to accomplish?</label>
-        <RichTextEditor
-          value={body}
-          onChange={setBody}
-          placeholder={'Describe your question in detail:\n\n- What are you trying to accomplish?\n- What have you already tried?\n- What error do you receive? Include the exact output in a code block.\n- What is your environment (OS, tool version)?'}
-        />
-      </div>
+      {/* Authoring Panel */}
+      <div className="panel" style={{ padding: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' }}>
+        
+        {/* Title Field */}
+        <div className="field mb-3">
+          <div className="row row--between mb-1">
+            <label htmlFor="title" style={{ fontSize: '1rem', color: 'var(--ink-900)', margin: 0 }}>
+              Question Title
+            </label>
+            <span className="font-mono text-3" style={{ color: titleLengthColor, fontWeight: 600 }}>
+              {title.length} / 180
+            </span>
+          </div>
+          <input
+            id="title"
+            className={`input input--lg ${title.length > 180 ? 'input--error' : ''}`}
+            style={{ fontWeight: 500 }}
+            value={title}
+            maxLength={200}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. How can I troubleshoot an Nmap scan that shows no open ports?"
+          />
+          <div className="row row--between mt-1">
+            <p className="hint" style={{ margin: 0, color: title.length >= 15 ? 'var(--success)' : 'var(--text-3)' }}>
+              {title.length >= 15 ? '✓ Good — a clear title helps others find your question.' : 'Minimum 15 characters. Describe the problem, not just your goal.'}
+            </p>
+          </div>
+        </div>
 
-      <div className="banner banner--info">
-        <AlertTriangle size={18} strokeWidth={2} style={{ marginRight: 8 }} aria-hidden="true" />
-        Never publish passwords, API keys, tokens or personal data — including inside screenshots.
-      </div>
+        <div className="grid-2 mb-3">
+          {/* Category Field */}
+          <div className="field" style={{ marginBottom: 0 }}>
+            <label htmlFor="category" style={{ fontSize: '0.95rem', color: 'var(--ink-900)' }}>Ecosystem / Category</label>
+            <div className="input-affix mt-1">
+              <FolderOpen className="input-affix__icon" size={16} />
+              <select 
+                id="category" 
+                className="select input--with-affix" 
+                value={categoryId} 
+                onChange={(e) => setCategoryId(e.target.value)}
+                style={{ appearance: 'none', cursor: 'pointer' }}
+              >
+                <option value="" disabled>Select a category…</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-      <div className="row" style={{ justifyContent: 'flex-end' }}>
-        {! editing && (
-          <button
-            className="btn btn--ghost"
-            disabled={busy || ! title.trim() || ! body.trim()}
-            onClick={() => void submit(true)}
-          >
-            Save draft
-          </button>
-        )}
-        <button
-          className="btn btn--fire btn--lg"
-          disabled={busy || title.length < 15 || title.length > 180 || body.trim().length < 30 || ! categoryId}
-          onClick={() => void submit(false)}
-        >
-          {busy ? 'Publishing…' : 'Publish question'}
-        </button>
+          {/* Tags Field */}
+          <div className="field" style={{ marginBottom: 0 }}>
+            <div className="row row--between mb-1">
+              <label htmlFor="tags" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', margin: 0 }}>Tags</label>
+              <span className="text-3 muted">{tags.length} / 5</span>
+            </div>
+            
+            <div className="input-affix" style={{ position: 'relative' }}>
+              <Hash className="input-affix__icon" size={16} />
+              <input
+                id="tags"
+                className="input input--with-affix"
+                value={tagInput}
+                disabled={tags.length >= 5}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault()
+                    addTag(tagInput)
+                  }
+                }}
+                placeholder={tags.length >= 5 ? "Tag limit reached" : "Type and press Enter..."}
+              />
+            </div>
+
+            {/* Tag Suggestions Dropdown */}
+            {suggestions.length > 0 && (
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.6rem' }}>
+                {suggestions.filter((s) => !tags.includes(s.slug)).map((s) => (
+                  <button 
+                    key={s.id} type="button" 
+                    className="chip chip--ghost" 
+                    style={{ cursor: 'pointer', fontSize: '0.75rem', padding: '0.15rem 0.5rem' }} 
+                    onClick={() => addTag(s.slug)}
+                  >
+                    {s.name} <span className="muted ml-1" style={{ marginLeft: 4 }}>({formatNumber(s.questions_count)})</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {/* Selected Tags */}
+            {tags.length > 0 && (
+              <div className="row mt-1" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
+                {tags.map((tag) => (
+                  <span key={tag} className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', paddingRight: '0.3rem' }}>
+                    {tag}
+                    <button
+                      type="button"
+                      style={{ all: 'unset', cursor: 'pointer', display: 'grid', placeItems: 'center', marginLeft: 4, opacity: 0.6 }}
+                      onClick={() => setTags(tags.filter((t) => t !== tag))}
+                      aria-label={`Remove tag ${tag}`}
+                      onMouseOver={e => e.currentTarget.style.opacity = '1'}
+                      onMouseOut={e => e.currentTarget.style.opacity = '0.6'}
+                    >
+                      <X size={14} strokeWidth={2.5} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Body / Rich Text */}
+        <div className="field mb-4">
+          <label style={{ fontSize: '1rem', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <PenLine size={16} color="var(--text-3)" />
+            Problem Description
+          </label>
+          <div style={{ marginTop: '0.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', overflow: 'hidden' }}>
+            <RichTextEditor
+              value={body}
+              onChange={setBody}
+              placeholder={'Describe your question in detail:\n\n- What are you trying to accomplish?\n- What have you already tried?\n- What error do you receive? Include the exact output in a code block.\n- What is your environment (OS, tool version)?'}
+            />
+          </div>
+        </div>
+
+        {/* Security Banner */}
+        <div className="banner banner--warn" style={{ borderRadius: 'var(--radius-lg)', alignItems: 'center' }}>
+          <AlertTriangle size={20} strokeWidth={2} style={{ color: '#b45309', flexShrink: 0 }} aria-hidden="true" />
+          <span style={{ fontSize: '0.9rem', color: '#92400e' }}>
+            <strong>Security Check:</strong> Never publish passwords, API keys, tokens, or personal data — including inside screenshots or console outputs.
+          </span>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="row row--between" style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px dashed var(--border)' }}>
+          <button className="btn btn--quiet btn--sm" onClick={() => navigate(-1)}>Cancel</button>
+          
+          <div className="row" style={{ gap: '0.75rem' }}>
+            {!editing && (
+              <button
+                className="btn btn--ghost"
+                disabled={busy || !title.trim() || !body.trim()}
+                onClick={() => void submit(true)}
+              >
+                <Save size={16} /> Save draft
+              </button>
+            )}
+            <button
+              className="btn btn--fire btn--lg"
+              disabled={busy || title.length < 15 || title.length > 180 || body.trim().length < 30 || !categoryId}
+              onClick={() => void submit(false)}
+            >
+              {busy ? (
+                'Publishing…'
+              ) : (
+                <><Send size={16} /> Publish question</>
+              )}
+            </button>
+          </div>
+        </div>
+        
       </div>
     </div>
   )
