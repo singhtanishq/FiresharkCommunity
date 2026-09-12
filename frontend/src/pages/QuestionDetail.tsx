@@ -243,7 +243,14 @@ export function QuestionDetail() {
 
           <div className="post__meta mt-3" style={{ flexWrap: 'wrap', gap: '0.75rem', width: '100%', boxSizing: 'border-box' }}>
             <AuthorLine user={question.user} prefix="asked" date={formatDate(question.created_at)} />
-            <span className="muted" style={{ paddingLeft: '0', sm: { paddingLeft: '1rem' }, borderLeft: 'none', sm: { borderLeft: '1px solid var(--border)' }, flexShrink: 0 }}>
+            <span
+              className="muted"
+              style={{
+                paddingLeft: '0',
+                borderLeft: 'none',
+                flexShrink: 0,
+              }}
+            >
               {formatNumber(question.views)} views
             </span>
             
