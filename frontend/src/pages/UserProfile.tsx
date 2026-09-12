@@ -62,7 +62,7 @@ export function UserProfile() {
       {/* Premium Profile Header */}
       <div className="panel" style={{ padding: 0, overflow: 'hidden', marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
         {/* Top Banner Gradient */}
-        <div style={{ height: '110px', background: 'linear-gradient(135deg, var(--brand-blue-600), var(--brand-blue-700))' }} />
+        <div style={{ height: '110px', margin, background: 'linear-gradient(135deg, var(--brand-blue-600), var(--brand-blue-700))' }} />
         
         <div style={{ padding: '0 2rem 2rem', display: 'flex', flexDirection: 'column' }}>
           
