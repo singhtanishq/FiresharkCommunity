@@ -73,7 +73,7 @@ export function UserProfile() {
               </div>
             </div>
             
-            <div style={{ flex: 1, minWidth: '300px', paddingBottom: '0.2rem' }}>
+            <div style={{ flex: 1, minWidth: '300px', paddingBottom: '0.4rem' }}>
               <h1 className="row" style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.4rem', color: '#fff', gap: '0.6rem', flexWrap: 'wrap', textShadow: '0 2px 4px rgba(0,0,0,0.15)' }}>
                 {profile.name}
                 {profile.verification && (
