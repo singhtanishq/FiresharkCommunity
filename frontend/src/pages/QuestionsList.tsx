@@ -53,7 +53,7 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
   return (
     <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
       
-      {/* Premium Header */}
+      {/* Premium Header with improved vertical spacing */}
       <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
         <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
           <div 
@@ -68,8 +68,8 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
           >
             {unansweredOnly ? <Inbox size={32} strokeWidth={2} /> : <Activity size={32} strokeWidth={2} />}
           </div>
-          <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em', color: 'var(--ink-900)', lineHeight: 1.1 }}>
               {unansweredOnly ? 'Unanswered Intel' : 'Live Global Feed'}
             </h1>
             <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
@@ -86,9 +86,9 @@ export function QuestionsList({ unansweredOnly = false }: { unansweredOnly?: boo
         </Link>
       </div>
 
-      {/* Segmented Control Sorting */}
+      {/* Segmented Control Sorting with proper top separation */}
       {!unansweredOnly && (
-        <div className="row" style={{ marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap' }}>
+        <div className="row" style={{ marginTop: '1.5rem', marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap' }}>
           <div 
             style={{ 
               background: 'var(--surface-2)', 
