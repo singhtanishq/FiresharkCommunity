@@ -31,7 +31,7 @@ export function VoteControl({ votableType, votableId, authorId, score, myVote, o
   }
 
   return (
-    <div className="vote-control" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
+    <div className="vote-control" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
       
       {/* Upvote Button */}
       <button
@@ -54,7 +54,8 @@ export function VoteControl({ votableType, votableId, authorId, score, myVote, o
           cursor: isOwn ? 'not-allowed' : 'pointer',
           opacity: isOwn ? 0.4 : 1,
           transition: 'all var(--dur-fast) var(--ease)',
-          boxShadow: myVote === 1 ? '0 4px 12px rgba(22, 122, 201, 0.25)' : 'var(--shadow-xs)'
+          boxShadow: myVote === 1 ? '0 4px 12px rgba(22, 122, 201, 0.25)' : 'var(--shadow-xs)',
+          flexShrink: 0
         }}
       >
         <ChevronUp size={20} strokeWidth={2.5} />
@@ -97,7 +98,8 @@ export function VoteControl({ votableType, votableId, authorId, score, myVote, o
           cursor: isOwn ? 'not-allowed' : 'pointer',
           opacity: isOwn ? 0.4 : 1,
           transition: 'all var(--dur-fast) var(--ease)',
-          boxShadow: myVote === -1 ? '0 4px 12px rgba(220, 38, 38, 0.25)' : 'var(--shadow-xs)'
+          boxShadow: myVote === -1 ? '0 4px 12px rgba(220, 38, 38, 0.25)' : 'var(--shadow-xs)',
+          flexShrink: 0
         }}
       >
         <ChevronDown size={20} strokeWidth={2.5} />
