@@ -71,7 +71,7 @@ export function Header() {
 
   return (
     <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''}`}>
-      <div className="site-header__top" style={{ gap: '2rem' }}>
+      <div className="site-header__top" style={{ gap: '1rem', flexWrap: 'wrap' }}>
         
         {/* Brand Logo */}
         <Link to="/" className="brand" aria-label="FireShark Community home" onClick={closeMenu}>
@@ -95,7 +95,7 @@ export function Header() {
         </nav>
 
         {/* Search Bar */}
-        <form className="header-search" role="search" onSubmit={submitSearch}>
+        <form className="header-search" role="search" onSubmit={submitSearch} style={{ flex: '1 1 200px' }}>
           <Search className="header-search__icon" aria-hidden="true" size={16} strokeWidth={2.5} />
           <input
             className="header-search__input"
@@ -108,9 +108,9 @@ export function Header() {
         </form>
 
         {/* Actions & Profile Dropdown */}
-        <div className="header-actions" style={{ gap: '0.75rem' }}>
+        <div className="header-actions" style={{ gap: '0.75rem', flexShrink: 0 }}>
           <Link to="/ask" className="btn btn--fire btn--sm" style={{ padding: '0.5rem 1rem', borderRadius: '99px' }}>
-            <Plus size={16} strokeWidth={2.5} /> Ask Question
+            <Plus size={16} strokeWidth={2.5} /> <span style={{ display: 'inline' }}>Ask Question</span>
           </Link>
           
           {user ? (
