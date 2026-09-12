@@ -114,7 +114,7 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
       {tab === 'write' && (
         <div style={{ animation: 'fade-in var(--dur-fast) var(--ease)' }}>
           
-          {/* Outer wrapper box with explicit border and bottom radius to enclose everything */}
+          {/* Outer wrapper box to seamlessly bind toolbar and textarea */}
           <div style={{ border: '1px solid var(--border-strong)', borderRadius: 'var(--radius)', overflow: 'hidden', background: 'var(--surface)' }}>
             
             {/* Formatting Toolbar */}
@@ -189,8 +189,7 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
                 boxShadow: 'none',
                 fontSize: '0.95rem',
                 lineHeight: 1.6,
-                resize: 'vertical',
-                background: 'transparent'
+                resize: 'vertical'
               }}
               value={value}
               placeholder={placeholder}
@@ -201,6 +200,11 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 220 }
 
           {uploadError && <div className="form-error mt-1">{uploadError}</div>}
           
+          <div style={{ padding: '0.5rem 0.25rem 0' }}>
+            <p className="hint muted" style={{ margin: 0, lineHeight: 1.5 }}>
+              Markdown supported. Images up to 5 MB (PNG, JPG, WEBP) — remove personal or sensitive information from screenshots before uploading.
+            </p>
+          </div>
         </div>
       )}
 
