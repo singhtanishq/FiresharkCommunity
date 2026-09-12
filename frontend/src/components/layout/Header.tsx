@@ -375,7 +375,7 @@ export function Header() {
         <nav className={`main-nav ${navOpen ? 'is-open' : ''}`} aria-label="Main">
           <NavLink to="/" end onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Home</NavLink>
           <NavLink to="/questions" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Questions</NavLink>
-          <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Ecosystems</NavLink>
+          <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Categories</NavLink>
           <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Tags</NavLink>
           <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Hall of Fame</NavLink>
           
