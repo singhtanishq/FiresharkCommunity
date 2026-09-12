@@ -127,7 +127,7 @@ export function Ask() {
   return (
     <div className="app-main--narrow" style={{ margin: '2rem auto 4rem', maxWidth: 840, padding: '0 1rem' }}>
       
-      {/* Page Header with added top spacing */}
+      {/* Page Header */}
       <div style={{ marginBottom: '2.5rem', animation: 'fade-in var(--dur-slow) var(--ease)' }}>
         <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '2.2rem', fontWeight: 800 }}>
           <HelpCircle size={32} color="var(--brand-blue-600)" strokeWidth={2.5} />
@@ -188,7 +188,7 @@ export function Ask() {
         </div>
 
         <div className="grid-2 mb-3" style={{ gap: '1.5rem' }}>
-          {/* Category Field with Vertically Centered Icon */}
+          {/* Category Field */}
           <div className="field" style={{ marginBottom: 0 }}>
             <label htmlFor="category" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', display: 'block', marginBottom: '0.4rem' }}>Category</label>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -208,7 +208,7 @@ export function Ask() {
             </div>
           </div>
 
-          {/* Tags Field with Vertically Centered Icon */}
+          {/* Tags Field */}
           <div className="field" style={{ marginBottom: 0 }}>
             <div className="row row--between mb-1">
               <label htmlFor="tags" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', margin: 0 }}>Tags</label>
@@ -273,18 +273,23 @@ export function Ask() {
           </div>
         </div>
 
-        {/* Body / Rich Text with Refined Container Spacing */}
+        {/* Body / Rich Text with Clean, Non-Nested Spacing & Symmetrical Padding */}
         <div className="field mb-4">
           <label style={{ fontSize: '1rem', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
             <PenLine size={16} color="var(--text-3)" />
             Problem Description
           </label>
-          <div style={{ borderRadius: 'var(--radius)', border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--surface)' }}>
+          <div style={{ width: '100%' }}>
             <RichTextEditor
               value={body}
               onChange={setBody}
               placeholder={'Describe your question in detail:\n\n- What are you trying to accomplish?\n- What have you already tried?\n- What error do you receive? Include the exact output in a code block.\n- What is your environment (OS, tool version)?'}
             />
+          </div>
+          <div style={{ padding: '0.5rem 0.25rem 0' }}>
+            <p className="hint muted" style={{ margin: 0, lineHeight: 1.5 }}>
+              Markdown supported. Images up to 5 MB (PNG, JPG, WEBP) — remove personal or sensitive information from screenshots before uploading.
+            </p>
           </div>
         </div>
 
