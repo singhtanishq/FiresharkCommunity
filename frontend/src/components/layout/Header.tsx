@@ -252,7 +252,7 @@ export function Header() {
             <NavLink to="/questions" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Questions</NavLink>
             <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Categories</NavLink>
             <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Tags</NavLink>
-            <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Hall of Fame</NavLink>
+            <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => (isActive ? 'is-active' : '')}>Leaderboard</NavLink>
           </nav>
 
           {/* Search Bar */}
