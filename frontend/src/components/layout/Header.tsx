@@ -377,7 +377,7 @@ export function Header() {
           <NavLink to="/questions" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Questions</NavLink>
           <NavLink to="/categories" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Categories</NavLink>
           <NavLink to="/tags" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Tags</NavLink>
-          <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>Hall of Fame</NavLink>
+          <NavLink to="/leaderboard" onClick={closeMenu} className={({ isActive }) => `nav-link-item ${isActive ? 'is-active' : ''}`}>leaderboard</NavLink>
           
           {/* Appended Mobile Auth/User Menu */}
           <div className="mobile-nav-append">
