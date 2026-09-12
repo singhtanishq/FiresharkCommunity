@@ -157,8 +157,8 @@ export function Header() {
                     <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Saved Intel
                   </Link>
                   <Link to="/notifications" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="row" style={{ gap: '8px' }}>
-                      <Bell size={16} strokeWidth={2} style={{ color: 'var(--brand-blue-600)' }} /> Notifications
+                    <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <Bell size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)' }} /> Notifications
                     </span>
                     {unreadCount > 0 && (
                       <span style={{ background: '#f2600c', color: '#fff', borderRadius: 999, fontSize: '0.75rem', padding: '0.1rem 0.5rem', fontWeight: 700 }}>
