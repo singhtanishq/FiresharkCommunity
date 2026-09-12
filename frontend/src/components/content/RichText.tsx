@@ -26,7 +26,7 @@ marked.setOptions({
  * Markdown is sanitised with DOMPurify before rendering — user content is
  * never trusted as raw HTML.
  */
-export function RichText({ markdown, className = '' }: { markdown: string; className?: string }) {
+export function RichText({ markdown, className = '' }: { markdown: string; className = '' }) {
   const raw = marked.parse(markdown ?? '', { async: false }) as string
   const clean = DOMPurify.sanitize(raw, {
     ALLOWED_TAGS: [
@@ -42,10 +42,19 @@ export function RichText({ markdown, className = '' }: { markdown: string; class
       className={`rich-text ${className}`}
       // Content is sanitised above with a strict allowlist.
       dangerouslySetInnerHTML={{ __html: clean }}
+      style={{ animation: 'fade-in var(--dur-fast) var(--ease)' }}
       ref={(el) => {
-        if (! el) return
+        if (!el) return
         el.querySelectorAll('pre code').forEach((block) => {
           hljs.highlightElement(block as HTMLElement)
+        })
+        
+        // Ensure all external links open securely in a new tab
+        el.querySelectorAll('a').forEach((link) => {
+          if (link.hostname !== window.location.hostname) {
+            link.setAttribute('target', '_blank')
+            link.setAttribute('rel', 'noopener noreferrer')
+          }
         })
       }}
     />
