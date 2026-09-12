@@ -56,18 +56,18 @@ export function CategoryDetail() {
   const { category, stats, related_tags, questions } = data
 
   return (
-    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Breadcrumbs */}
-      <nav className="breadcrumb row" style={{ gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.88rem' }} aria-label="Breadcrumb">
+      <nav className="breadcrumb row" style={{ gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.88rem', flexWrap: 'wrap' }} aria-label="Breadcrumb">
         <Link to="/categories" style={{ color: 'var(--text-3)', fontWeight: 500 }}>Ecosystems</Link>
-        <ChevronRight size={14} color="var(--border-strong)" />
-        <span style={{ color: 'var(--ink-900)', fontWeight: 700 }}>{category.name}</span>
+        <ChevronRight size={14} color="var(--border-strong)" style={{ flexShrink: 0 }} />
+        <span style={{ color: 'var(--ink-900)', fontWeight: 700, wordBreak: 'break-word' }}>{category.name}</span>
       </nav>
 
       {/* Premium Header */}
-      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
-        <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
+      <div className="row row--between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both', width: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ gap: '1.25rem', flex: '1 1 280px', minWidth: 0, flexWrap: 'wrap' }}>
           <div 
             style={{ 
               width: '64px', height: '64px', 
@@ -75,17 +75,18 @@ export function CategoryDetail() {
               background: 'var(--brand-blue-50)', 
               color: 'var(--brand-blue-600)', 
               display: 'grid', placeItems: 'center',
-              boxShadow: '0 4px 12px rgba(22, 122, 201, 0.1)'
+              boxShadow: '0 4px 12px rgba(22, 122, 201, 0.1)',
+              flexShrink: 0
             }}
           >
             <CategoryIcon icon={category.icon} size={32} />
           </div>
-          <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)' }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)', wordBreak: 'break-word' }}>
               {category.name}
             </h1>
             {category.description && (
-              <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, maxWidth: '640px' }}>
+              <p style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, maxWidth: '640px', wordBreak: 'break-word' }}>
                 {category.description}
               </p>
             )}
@@ -94,33 +95,33 @@ export function CategoryDetail() {
         <Link 
           to="/ask" 
           className="btn btn--fire btn--lg" 
-          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem' }}
+          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem', flexShrink: 0 }}
         >
-          <Plus size={18} strokeWidth={2.5} /> Ignite Discussion
+          <Plus size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} /> Ignite Discussion
         </Link>
       </div>
 
       {/* Integrated Stats & Tags Control Bar */}
-      <div className="panel row row--between" style={{ padding: '1.1rem 1.5rem', marginBottom: '2rem', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both' }}>
+      <div className="panel row row--between" style={{ padding: '1.1rem 1.5rem', marginBottom: '2rem', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.1s both', width: '100%', boxSizing: 'border-box' }}>
         
         <div className="row" style={{ gap: '1.5rem', flexWrap: 'wrap' }}>
-          <div className="row" style={{ gap: '0.5rem' }}>
-            <FileText size={18} color="var(--brand-blue-500)" />
-            <span style={{ fontSize: '0.9rem', color: 'var(--text-2)' }}>
+          <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap' }}>
+            <FileText size={18} color="var(--brand-blue-500)" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
               <b style={{ color: 'var(--ink-900)', fontSize: '1.15rem', marginRight: '0.2rem' }}>{formatNumber(stats.total)}</b> 
               threads
             </span>
           </div>
-          <div className="row" style={{ gap: '0.5rem' }}>
-            <CheckCircle2 size={18} color="var(--success)" />
-            <span style={{ fontSize: '0.9rem', color: 'var(--text-2)' }}>
+          <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap' }}>
+            <CheckCircle2 size={18} color="var(--success)" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
               <b style={{ color: 'var(--success)', fontSize: '1.15rem', marginRight: '0.2rem' }}>{formatNumber(stats.solved)}</b> 
               solved
             </span>
           </div>
-          <div className="row" style={{ gap: '0.5rem' }}>
-            <HelpCircle size={18} color="#d97706" />
-            <span style={{ fontSize: '0.9rem', color: 'var(--text-2)' }}>
+          <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap' }}>
+            <HelpCircle size={18} color="#d97706" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
               <b style={{ color: '#d97706', fontSize: '1.15rem', marginRight: '0.2rem' }}>{formatNumber(stats.unanswered)}</b> 
               unanswered
             </span>
@@ -128,11 +129,11 @@ export function CategoryDetail() {
         </div>
 
         {related_tags.length > 0 && (
-          <div className="row" style={{ gap: '0.5rem', paddingLeft: '1.5rem', borderLeft: '1px solid var(--border)' }}>
-            <Tag size={16} color="var(--text-3)" />
+          <div className="row" style={{ gap: '0.5rem', paddingLeft: '0', sm: { paddingLeft: '1.5rem' }, borderLeft: 'none', sm: { borderLeft: '1px solid var(--border)' }, flexWrap: 'wrap', width: '100%', boxSizing: 'border-box' }}>
+            <Tag size={16} color="var(--text-3)" style={{ flexShrink: 0 }} />
             <div className="row" style={{ gap: '0.4rem', flexWrap: 'wrap' }}>
               {related_tags.map((tag) => (
-                <Link key={tag.id} className="chip chip--ghost" style={{ fontSize: '0.78rem', padding: '0.15rem 0.6rem' }} to={`/tags/${tag.slug}`}>
+                <Link key={tag.id} className="chip chip--ghost" style={{ fontSize: '0.78rem', padding: '0.15rem 0.6rem', flexShrink: 0 }} to={`/tags/${tag.slug}`}>
                   {tag.name}
                 </Link>
               ))}
@@ -142,7 +143,7 @@ export function CategoryDetail() {
       </div>
 
       {/* Segmented Control Sorting */}
-      <div className="row" style={{ marginBottom: '1.5rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both' }}>
+      <div className="row" style={{ marginBottom: '1.5rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', width: '100%', overflowX: 'auto', boxSizing: 'border-box' }}>
         <div 
           style={{ 
             background: 'var(--surface-2)', 
@@ -150,7 +151,9 @@ export function CategoryDetail() {
             borderRadius: 'var(--radius)', 
             display: 'inline-flex', 
             gap: '0.2rem',
-            border: '1px solid var(--border)' 
+            border: '1px solid var(--border)',
+            flexWrap: 'nowrap',
+            boxSizing: 'border-box'
           }}
         >
           {SORTS.map(([value, label]) => {
@@ -168,7 +171,9 @@ export function CategoryDetail() {
                   background: isActive ? '#fff' : 'transparent',
                   boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
                   textDecoration: 'none',
-                  transition: 'all var(--dur-fast) var(--ease)'
+                  transition: 'all var(--dur-fast) var(--ease)',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
                 }}
               >
                 {label}
@@ -179,7 +184,7 @@ export function CategoryDetail() {
       </div>
 
       {/* Question Feed */}
-      <div className="question-list" style={{ gap: '1rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both' }}>
+      <div className="question-list" style={{ gap: '1rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both', width: '100%', boxSizing: 'border-box' }}>
         {questions.data.length === 0 ? (
           <div className="panel" style={{ padding: '3rem 2rem' }}>
             <EmptyState
@@ -190,7 +195,7 @@ export function CategoryDetail() {
           </div>
         ) : (
           questions.data.map((question) => (
-            <div key={question.id} style={{ transition: 'transform 0.3s ease' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.01)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
+            <div key={question.id} style={{ transition: 'transform 0.3s ease', width: '100%', boxSizing: 'border-box' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.01)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
               <QuestionCard question={question} />
             </div>
           ))
@@ -198,7 +203,7 @@ export function CategoryDetail() {
       </div>
 
       {questions.meta.last_page > 1 && (
-        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both' }}>
+        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both', width: '100%', boxSizing: 'border-box', flexWrap: 'wrap' }}>
           <Pagination meta={questions.meta} baseUrl={`/categories/${slug}?sort=${sort}`} />
         </div>
       )}
