@@ -96,9 +96,9 @@ export function Search() {
         </Link>
       </div>
 
-      {/* Segmented Control Sorting */}
+      {/* Segmented Control Sorting with added top margin for proper spacing */}
       {q && questions.length > 0 && !loading && (
-        <div className="row" style={{ marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap' }}>
+        <div className="row" style={{ marginTop: '1.5rem', marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap' }}>
           <div 
             style={{ 
               background: 'var(--surface-2)', 
