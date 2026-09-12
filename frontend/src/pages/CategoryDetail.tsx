@@ -6,6 +6,7 @@ import { QuestionCard } from '../components/content/QuestionCard'
 import { Pagination } from '../components/ui/Pagination'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { CategoryIcon } from './Categories'
+import { formatNumber } from '../lib/format'
 import { 
   MessageSquare, FolderOpen, ChevronRight, Plus, 
   FileText, CheckCircle2, HelpCircle, Tag 
