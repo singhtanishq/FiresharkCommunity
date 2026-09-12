@@ -56,6 +56,19 @@ export function Header() {
 
   const closeMenu = () => { setNavOpen(false); setMenuOpen(false) }
 
+  const dropdownItemStyle = {
+    borderRadius: 'var(--radius)',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0.5rem 0.75rem',
+    textDecoration: 'none',
+    color: 'var(--ink-900)',
+    fontSize: '0.9rem',
+    fontWeight: 500,
+    width: '100%',
+    boxSizing: 'border-box' as const
+  }
+
   return (
     <header className={`site-header ${scrolled ? 'site-header--scrolled' : ''}`}>
       <div className="site-header__top" style={{ gap: '2rem' }}>
@@ -145,37 +158,36 @@ export function Header() {
                     minWidth: '220px'
                   }}
                 >
-                  <div style={{ padding: '0.6rem 0.9rem', borderBottom: '1px solid var(--border)', marginBottom: '0.4rem' }}>
+                  <div style={{ padding: '0.6rem 0.75rem', borderBottom: '1px solid var(--border)', marginBottom: '0.4rem' }}>
                     <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--ink-900)' }}>{user.name}</div>
                     <div className="muted font-mono" style={{ fontSize: '0.75rem' }}>@{user.username}</div>
                   </div>
 
-                  <Link to={`/users/${user.username}`} onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center' }}>
-                    <User size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> My profile
+                  <Link to={`/users/${user.username}`} onClick={closeMenu} style={dropdownItemStyle}>
+                    <User size={16} strokeWidth={2} style={{ marginRight: '10px', color: 'var(--brand-blue-600)', flexShrink: 0 }} /> My profile
                   </Link>
-                  <Link to="/bookmarks" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center' }}>
-                    <Bookmark size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Saved Intel
+                  <Link to="/bookmarks" onClick={closeMenu} style={dropdownItemStyle}>
+                    <Bookmark size={16} strokeWidth={2} style={{ marginRight: '10px', color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Saved Intel
                   </Link>
-                  <Link to="/notifications" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Link to="/notifications" onClick={closeMenu} style={{ ...dropdownItemStyle, justifyContent: 'space-between' }}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
-                      <Bell size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> 
-                      <span>Notifications</span>
+                      <Bell size={16} strokeWidth={2} style={{ marginRight: '10px', color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Notifications
                     </span>
                     {unreadCount > 0 && (
-                      <span style={{ background: '#f2600c', color: '#fff', borderRadius: 999, fontSize: '0.75rem', padding: '0.1rem 0.5rem', fontWeight: 700 }}>
+                      <span style={{ background: '#f2600c', color: '#fff', borderRadius: 999, fontSize: '0.75rem', padding: '0.1rem 0.5rem', fontWeight: 700, marginLeft: '8px' }}>
                         {unreadCount}
                       </span>
                     )}
                   </Link>
-                  <Link to="/settings" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', display: 'flex', alignItems: 'center' }}>
-                    <Settings size={16} strokeWidth={2} style={{ marginRight: 8, color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Settings
+                  <Link to="/settings" onClick={closeMenu} style={dropdownItemStyle}>
+                    <Settings size={16} strokeWidth={2} style={{ marginRight: '10px', color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Settings
                   </Link>
 
                   {(user.role === 'admin' || user.role === 'moderator') && (
                     <>
                       <div style={{ height: '1px', background: 'var(--border)', margin: '0.4rem 0' }} />
-                      <Link to="/admin" onClick={closeMenu} style={{ borderRadius: 'var(--radius)', color: 'var(--brand-blue-700)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
-                        <ShieldCheck size={16} strokeWidth={2} style={{ marginRight: 8, flexShrink: 0 }} /> Admin Console
+                      <Link to="/admin" onClick={closeMenu} style={{ ...dropdownItemStyle, color: 'var(--brand-blue-700)', fontWeight: 600 }}>
+                        <ShieldCheck size={16} strokeWidth={2} style={{ marginRight: '10px', flexShrink: 0 }} /> Admin Console
                       </Link>
                     </>
                   )}
@@ -184,9 +196,9 @@ export function Header() {
                   
                   <button 
                     onClick={() => { closeMenu(); void logout().then(() => navigate('/')) }}
-                    style={{ borderRadius: 'var(--radius)', color: 'var(--danger)', width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center' }}
+                    style={{ ...dropdownItemStyle, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--danger)', textAlign: 'left', fontFamily: 'inherit' }}
                   >
-                    <LogOut size={16} strokeWidth={2} style={{ marginRight: 8, flexShrink: 0 }} /> Log out
+                    <LogOut size={16} strokeWidth={2} style={{ marginRight: '10px', flexShrink: 0 }} /> Log out
                   </button>
                 </div>
               )}
