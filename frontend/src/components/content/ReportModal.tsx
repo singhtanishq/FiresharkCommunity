@@ -3,6 +3,10 @@ import { Modal } from '../ui/Modal'
 import { reportsApi } from '../../api/endpoints'
 import { reportReasonLabels } from '../../lib/format'
 import { apiError } from '../../api/client'
+import { 
+  Flag, AlertTriangle, CheckCircle2, ShieldAlert, 
+  MessageSquare, FileText, HelpCircle 
+} from 'lucide-react'
 
 export function ReportModal({ reportableType, reportableId, onClose }: {
   reportableType: 'question' | 'answer' | 'comment'
@@ -28,49 +32,91 @@ export function ReportModal({ reportableType, reportableId, onClose }: {
     }
   }
 
+  const typeLabel = reportableType === 'question' ? 'Question' : reportableType === 'answer' ? 'Answer' : 'Comment'
+
   return (
     <Modal
-      title={done ? 'Report submitted' : 'Report content'}
+      title={
+        <div className="row" style={{ gap: '0.5rem' }}>
+          <Flag size={20} color="var(--danger)" />
+          <span>{done ? 'Report Transmitted' : `Report ${typeLabel}`}</span>
+        </div>
+      }
       onClose={onClose}
-      footer={done
-        ? <button className="btn btn--primary" onClick={onClose}>Close</button>
-        : (
-          <>
-            <button className="btn btn--ghost" onClick={onClose}>Cancel</button>
-            <button className="btn btn--primary" onClick={submit} disabled={busy}>
-              {busy ? 'Submitting…' : 'Submit report'}
+      footer={
+        done ? (
+          <button className="btn btn--primary btn--block" onClick={onClose}>
+            Close Dialog
+          </button>
+        ) : (
+          <div className="row row--between" style={{ width: '100%' }}>
+            <button className="btn btn--quiet" onClick={onClose} disabled={busy}>
+              Cancel
             </button>
-          </>
-        )}
+            <button className="btn btn--danger" onClick={submit} disabled={busy}>
+              {busy ? 'Transmitting…' : 'Submit Report'}
+            </button>
+          </div>
+        )
+      }
     >
-      {done
-        ? <p style={{ marginTop: 0 }}>Thank you — a moderator will review this content soon.</p>
-        : (
+      <div style={{ animation: 'fade-in var(--dur-fast) var(--ease)' }}>
+        {done ? (
+          <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--success-bg)', color: 'var(--success)', display: 'grid', placeItems: 'center', margin: '0 auto 1rem' }}>
+              <CheckCircle2 size={32} strokeWidth={2.5} />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink-900)' }}>Report Received</h3>
+            <p className="muted" style={{ margin: 0, lineHeight: 1.6, fontSize: '0.95rem' }}>
+              Thank you for helping keep the network secure. A human moderator will review this {reportableType} shortly.
+            </p>
+          </div>
+        ) : (
           <>
-            {error && <div className="form-error">{error}</div>}
+            {error && (
+              <div className="banner banner--danger mb-3" style={{ borderRadius: 'var(--radius)' }}>
+                <AlertTriangle size={18} /> <span>{error}</span>
+              </div>
+            )}
+            
+            <div className="banner banner--info mb-3" style={{ borderRadius: 'var(--radius)' }}>
+              <ShieldAlert size={18} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '0.88rem' }}>
+                You are reporting {reportableType} #{reportableId}. Reports are confidential and reviewed strictly by staff.
+              </span>
+            </div>
+
             <div className="field">
-              <label htmlFor="report-reason">Reason</label>
-              <select id="report-reason" className="select" value={reason} onChange={(e) => setReason(e.target.value)}>
+              <label htmlFor="report-reason">Violation Category</label>
+              <select 
+                id="report-reason" 
+                className="select input--lg" 
+                value={reason} 
+                onChange={(e) => setReason(e.target.value)}
+                style={{ cursor: 'pointer', fontWeight: 500 }}
+              >
                 {Object.entries(reportReasonLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
             </div>
-            <div className="field">
-              <label htmlFor="report-description">Details (optional)</label>
+
+            <div className="field" style={{ marginBottom: '1rem' }}>
+              <label htmlFor="report-description">Additional Context (Optional)</label>
               <textarea
                 id="report-description"
                 className="textarea"
-                style={{ minHeight: 90 }}
+                style={{ minHeight: 110, fontSize: '0.95rem' }}
                 value={description}
                 maxLength={2000}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Anything that helps moderators understand the problem."
+                placeholder="Provide specific details or references that help moderators understand the breach..."
               />
+              <span className="hint">Maximum 2,000 characters. Please do not report simple disagreements about technical opinions.</span>
             </div>
-            <p className="muted">Reports are reviewed by moderators. Please do not report disagreements about technical opinions.</p>
           </>
         )}
+      </div>
     </Modal>
   )
 }
