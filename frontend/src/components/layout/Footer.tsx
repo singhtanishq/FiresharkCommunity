@@ -80,8 +80,8 @@ export function Footer() {
             <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               Academy <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              Learn <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
+            <a href="https://courses.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              Courses <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
             <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               Our Services <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
