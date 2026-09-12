@@ -75,17 +75,17 @@ export function AdminTaxonomy() {
   if (loading && categories.length === 0) return <Spinner />
 
   return (
-    <div style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+    <div style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader title="Taxonomy Management" />
 
-      <section className="panel mb-3">
+      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
         <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FolderTree size={18} color="var(--brand-blue-600)" /> Categories
+            <FolderTree size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Categories
           </h2>
         </div>
-        <div className="panel__body" style={{ padding: 0, overflowX: 'auto' }}>
-          <table className="data-table">
+        <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: '600px' }}>
             <thead>
               <tr>
                 <th>Category Name</th>
@@ -106,21 +106,21 @@ export function AdminTaxonomy() {
                       aria-label="Category name"
                     />
                   </td>
-                  <td className="muted font-mono text-3">{category.slug}</td>
-                  <td style={{ fontWeight: 600 }}>{formatNumber(category.questions_count)}</td>
-                  <td>
-                    <label className="row" style={{ gap: '0.4rem', cursor: 'pointer', fontSize: '0.82rem', userSelect: 'none' }}>
+                  <td className="muted font-mono text-3" style={{ whiteSpace: 'nowrap' }}>{category.slug}</td>
+                  <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatNumber(category.questions_count)}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <label className="row" style={{ gap: '0.4rem', cursor: 'pointer', fontSize: '0.82rem', userSelect: 'none', flexWrap: 'nowrap' }}>
                       <input
                         type="checkbox"
                         checked={category.is_active}
                         onChange={(e) => setCategories(categories.map((c) => (c.id === category.id ? { ...c, is_active: e.target.checked } : c)))}
-                        style={{ accentColor: 'var(--brand-blue-600)', width: '16px', height: '16px', cursor: 'pointer' }}
+                        style={{ accentColor: 'var(--brand-blue-600)', width: '16px', height: '16px', cursor: 'pointer', flexShrink: 0 }}
                       />
                       <span className={category.is_active ? 'text-primary' : 'muted'}>{category.is_active ? 'Active' : 'Hidden'}</span>
                     </label>
                   </td>
                   <td>
-                    <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end' }}>
+                    <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                       <button className="btn btn--ghost btn--sm" onClick={() => saveCategory(category)} title="Save changes"><Save size={14} /></button>
                       <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => { if (window.confirm('Delete this category?')) deleteCategory(category) }} title="Delete"><Trash2 size={14} /></button>
                     </div>
@@ -129,27 +129,27 @@ export function AdminTaxonomy() {
               ))}
             </tbody>
           </table>
-          <div className="row" style={{ padding: '1rem 1.15rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)' }}>
-            <input className="input input--sm" style={{ maxWidth: '260px' }} placeholder="New category name..." value={newCategory} onChange={(e) => setNewCategory(e.target.value)} />
-            <button className="btn btn--primary btn--sm" onClick={createCategory} disabled={!newCategory.trim()}>
+          <div className="row" style={{ padding: '1rem 1.15rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <input className="input input--sm" style={{ flex: '1 1 200px', maxWidth: '260px' }} placeholder="New category name..." value={newCategory} onChange={(e) => setNewCategory(e.target.value)} />
+            <button className="btn btn--primary btn--sm" onClick={createCategory} disabled={!newCategory.trim()} style={{ flexShrink: 0 }}>
               <Plus size={14} /> Add Category
             </button>
           </div>
         </div>
       </section>
 
-      <section className="panel mb-3">
-        <div className="panel__header">
+      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+        <div className="panel__header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Tags size={18} color="var(--brand-blue-600)" /> System Tags
+            <Tags size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> System Tags
           </h2>
-          <div className="input-affix" style={{ width: '220px' }}>
+          <div className="input-affix" style={{ width: '100%', maxWidth: '220px' }}>
             <Search className="input-affix__icon" size={14} />
             <input className="input input--with-affix" style={{ padding: '0.4rem 0.6rem 0.4rem 2rem', fontSize: '0.85rem' }} placeholder="Search tags…" value={tagQ} onChange={(e) => setTagQ(e.target.value)} />
           </div>
         </div>
-        <div className="panel__body" style={{ padding: 0, overflowX: 'auto' }}>
-          <table className="data-table">
+        <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: '500px' }}>
             <thead>
               <tr>
                 <th style={{ width: '60px' }}>ID</th>
@@ -161,7 +161,7 @@ export function AdminTaxonomy() {
             <tbody>
               {tags.map((tag) => (
                 <tr key={tag.id} style={{ transition: 'background var(--dur) var(--ease)' }} onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                  <td className="muted font-mono text-3">#{tag.id}</td>
+                  <td className="muted font-mono text-3" style={{ whiteSpace: 'nowrap' }}>#{tag.id}</td>
                   <td>
                     <input
                       className="input" style={{ width: '200px', padding: '0.4rem 0.6rem', fontSize: '0.85rem' }}
@@ -172,9 +172,9 @@ export function AdminTaxonomy() {
                       aria-label="Tag name"
                     />
                   </td>
-                  <td style={{ fontWeight: 600 }}>{formatNumber(tag.questions_count)}</td>
+                  <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatNumber(tag.questions_count)}</td>
                   <td>
-                    <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end' }}>
+                    <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                       <button className="btn btn--ghost btn--sm" onClick={() => mergeTag(tag)}>Merge Into…</button>
                       <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => { if (window.confirm('Delete this tag permanently?')) api.delete(`/admin/tags/${tag.id}`).then(load).catch((e) => alert(apiError(e).message)) }}><Trash2 size={14} /></button>
                     </div>
@@ -227,17 +227,17 @@ export function AdminGamification() {
   if (loading) return <Spinner />
 
   return (
-    <div style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+    <div style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader title="Gamification Engine" />
 
-      <section className="panel mb-3">
+      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
         <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Award size={18} color="var(--brand-blue-600)" /> Community Badges
+            <Award size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Community Badges
           </h2>
         </div>
-        <div className="panel__body" style={{ padding: 0, overflowX: 'auto' }}>
-          <table className="data-table">
+        <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: '700px' }}>
             <thead>
               <tr>
                 <th>Badge Details</th>
@@ -253,9 +253,9 @@ export function AdminGamification() {
                 <tr key={badge.id} style={{ transition: 'background var(--dur) var(--ease)' }} onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
                   <td>
                     <b style={{ color: 'var(--ink-900)' }}>{badge.name}</b>
-                    <div className="muted" style={{ fontSize: '0.8rem', marginTop: '0.2rem' }}>{badge.description}</div>
+                    <div className="muted" style={{ fontSize: '0.8rem', marginTop: '0.2rem', wordBreak: 'break-word' }}>{badge.description}</div>
                   </td>
-                  <td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
                     <span className="chip" style={{ 
                       background: badge.tier === 'gold' ? '#fef3c7' : badge.tier === 'silver' ? '#f1f5f9' : '#ffedd5',
                       color: badge.tier === 'gold' ? '#b45309' : badge.tier === 'silver' ? '#475569' : '#9a3412',
@@ -264,10 +264,10 @@ export function AdminGamification() {
                       {badge.tier}
                     </span>
                   </td>
-                  <td style={{ textTransform: 'capitalize', fontSize: '0.85rem' }}>{badge.award_type}</td>
-                  <td className="muted font-mono text-3">{badge.criteria ? `${badge.criteria.type} ≥ ${badge.criteria.count}` : 'Manual'}</td>
-                  <td style={{ fontWeight: 600 }}>{formatNumber(badge.awarded_count)}</td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td style={{ textTransform: 'capitalize', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{badge.award_type}</td>
+                  <td className="muted font-mono text-3" style={{ whiteSpace: 'nowrap' }}>{badge.criteria ? `${badge.criteria.type} ≥ ${badge.criteria.count}` : 'Manual'}</td>
+                  <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatNumber(badge.awarded_count)}</td>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <button className="btn btn--ghost btn--sm" onClick={() => awardBadge(badge)}>Award Manually…</button>
                   </td>
                 </tr>
@@ -277,14 +277,14 @@ export function AdminGamification() {
         </div>
       </section>
 
-      <section className="panel mb-3">
+      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
         <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <TrendingUp size={18} color="var(--brand-blue-600)" /> Reputation Rules
+            <TrendingUp size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Reputation Rules
           </h2>
         </div>
-        <div className="panel__body" style={{ padding: 0, overflowX: 'auto' }}>
-          <table className="data-table">
+        <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: '500px' }}>
             <thead>
               <tr>
                 <th>Action Trigger</th>
@@ -308,18 +308,18 @@ export function AdminGamification() {
                       aria-label="Points"
                     />
                   </td>
-                  <td>
-                    <label className="row" style={{ gap: '0.4rem', cursor: 'pointer', fontSize: '0.82rem', userSelect: 'none' }}>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <label className="row" style={{ gap: '0.4rem', cursor: 'pointer', fontSize: '0.82rem', userSelect: 'none', flexWrap: 'nowrap' }}>
                       <input
                         type="checkbox"
                         checked={rule.is_enabled}
                         onChange={(e) => setRules(rules.map((r) => (r.id === rule.id ? { ...r, is_enabled: e.target.checked } : r)))}
-                        style={{ accentColor: 'var(--brand-blue-600)', width: '16px', height: '16px', cursor: 'pointer' }}
+                        style={{ accentColor: 'var(--brand-blue-600)', width: '16px', height: '16px', cursor: 'pointer', flexShrink: 0 }}
                       />
                       <span className={rule.is_enabled ? 'text-primary' : 'muted'}>{rule.is_enabled ? 'Enabled' : 'Disabled'}</span>
                     </label>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <button className="btn btn--ghost btn--sm" onClick={() => saveRule(rule)}><Save size={14} /> Save</button>
                   </td>
                 </tr>
@@ -365,21 +365,21 @@ export function AdminSettings() {
   }
 
   return (
-    <div className="grid-3" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
-      <div style={{ gridColumn: 'span 2' }}>
+    <div className="grid-3" style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ width: '100%', minWidth: 0 }}>
         <AdminHeader title="Platform Settings" />
 
-        <section className="panel mb-3">
+        <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
           <div className="panel__header">
             <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Settings size={18} color="var(--brand-blue-600)" /> Core Configuration
+              <Settings size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Core Configuration
             </h2>
           </div>
-          <div className="panel__body">
+          <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box' }}>
             {saved && (
               <div className="banner banner--success mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
-                <CheckCircle2 size={18} />
-                <span>Global configuration updated successfully.</span>
+                <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+                <span style={{ wordBreak: 'break-word' }}>Global configuration updated successfully.</span>
               </div>
             )}
             
@@ -424,14 +424,14 @@ export function AdminSettings() {
         </section>
       </div>
 
-      <aside>
-        <section className="panel">
+      <aside style={{ width: '100%', minWidth: 0 }}>
+        <section className="panel" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
           <div className="panel__header">
             <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Trophy size={18} color="var(--brand-blue-600)" /> Leaderboard Engine
+              <Trophy size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Leaderboard Engine
             </h2>
           </div>
-          <div className="panel__body" style={{ padding: 0 }}>
+          <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
             {!leaderboard ? (
               <Spinner />
             ) : leaderboard.periods.length === 0 ? (
@@ -439,7 +439,7 @@ export function AdminSettings() {
                 <EmptyState icon={<Trophy size={32} strokeWidth={1.5} />} title="No finalized periods." />
               </div>
             ) : (
-              <table className="data-table">
+              <table className="data-table" style={{ width: '100%', minWidth: '280px' }}>
                 <thead>
                   <tr>
                     <th>Period Cycle</th>
@@ -453,7 +453,7 @@ export function AdminSettings() {
                         <b style={{ color: 'var(--ink-900)' }}>{p.period_key}</b>
                         <div className="chip chip--ghost mt-1" style={{ fontSize: '0.7rem' }}>{p.status}</div>
                       </td>
-                      <td className="muted text-3" style={{ textAlign: 'right', verticalAlign: 'middle' }}>
+                      <td className="muted text-3" style={{ textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
                         {p.finalized_at ? new Date(p.finalized_at).toLocaleDateString() : '—'}
                       </td>
                     </tr>
@@ -463,8 +463,8 @@ export function AdminSettings() {
             )}
             
             {leaderboard?.period && leaderboard.period.is_current && (
-              <div style={{ padding: '1.25rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)' }}>
-                <div className="row row--between mb-1" style={{ fontSize: '0.85rem' }}>
+              <div style={{ padding: '1.25rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)', boxSizing: 'border-box' }}>
+                <div className="row row--between mb-1" style={{ fontSize: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <b>Active Cycle:</b>
                   <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)' }}>{leaderboard.period.period_key}</span>
                 </div>
