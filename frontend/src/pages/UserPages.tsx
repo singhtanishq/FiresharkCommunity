@@ -478,7 +478,7 @@ export function Settings() {
                 </p>
               </div>
               <button className="btn btn--danger" onClick={() => setShowDelete(true)}>
-                Deactivate account...
+                Deactivate Account
               </button>
             </div>
           ) : (
