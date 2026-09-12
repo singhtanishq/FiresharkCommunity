@@ -45,22 +45,23 @@ export function Categories() {
   if (loading) return <Spinner />
 
   return (
-    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Premium Page Header */}
-      <div style={{ marginBottom: '3rem', maxWidth: '800px' }}>
-        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '2.4rem', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.75rem' }}>
+      <div style={{ marginBottom: '2.5rem', maxWidth: '800px', width: '100%', boxSizing: 'border-box' }}>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.75rem', flexWrap: 'wrap', wordBreak: 'break-word' }}>
           <div style={{ 
             display: 'grid', placeItems: 'center', 
             width: '48px', height: '48px', 
             background: 'var(--brand-blue-50)', color: 'var(--brand-blue-600)', 
-            borderRadius: 'var(--radius-lg)' 
+            borderRadius: 'var(--radius-lg)',
+            flexShrink: 0
           }}>
             <Layers size={28} strokeWidth={2.5} />
           </div>
-          Categories
+          <span>Categories</span>
         </h1>
-        <p style={{ fontSize: '1rem', color: 'var(--text-2)', lineHeight: 1.6, margin: 0 }}>
+        <p style={{ fontSize: '1rem', color: 'var(--text-2)', lineHeight: 1.6, margin: 0, wordBreak: 'break-word' }}>
           Browse specialized technical topics, discover deep-dives, and find the exact security expertise you need across our organized domains.
         </p>
       </div>
@@ -72,8 +73,10 @@ export function Categories() {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '1.5rem'
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: '1.5rem',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           {categories.map((category, i) => (
             <Link 
@@ -86,7 +89,10 @@ export function Categories() {
                 padding: '1.6rem',
                 textDecoration: 'none',
                 transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                animation: `modal-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.05}s both` // Staggered entrance
+                animation: `modal-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.05}s both`,
+                boxSizing: 'border-box',
+                overflowX: 'hidden',
+                minWidth: 0
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'translateY(-6px)'
@@ -105,7 +111,7 @@ export function Categories() {
                 if (iconWrap) iconWrap.style.color = 'var(--brand-blue-600)';
               }}
             >
-              <div className="row row--between" style={{ alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+              <div className="row row--between" style={{ alignItems: 'flex-start', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div 
                   className="icon-wrapper"
                   style={{
@@ -114,21 +120,22 @@ export function Categories() {
                     background: 'var(--brand-blue-50)', 
                     color: 'var(--brand-blue-600)',
                     display: 'grid', placeItems: 'center',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    flexShrink: 0
                   }}
                 >
                   <CategoryIcon icon={category.icon} size={24} />
                 </div>
-                <span className="chip chip--ghost" style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem' }}>
+                <span className="chip chip--ghost" style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', flexShrink: 0 }}>
                   {formatNumber(category.questions_count)} Threads
                 </span>
               </div>
               
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--ink-900)', margin: '0 0 0.5rem' }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--ink-900)', margin: '0 0 0.5rem', wordBreak: 'break-word' }}>
                 {category.name}
               </h3>
               
-              <p style={{ color: 'var(--text-2)', fontSize: '0.92rem', lineHeight: 1.55, margin: '0 0 1.5rem', flex: 1 }}>
+              <p style={{ color: 'var(--text-2)', fontSize: '0.92rem', lineHeight: 1.55, margin: '0 0 1.5rem', flex: 1, wordBreak: 'break-word' }}>
                 {category.description || 'Explore active questions, peer-reviewed discussions, and expert insights within this domain.'}
               </p>
               
@@ -139,10 +146,11 @@ export function Categories() {
                   fontSize: '0.88rem', 
                   fontWeight: 700, 
                   gap: '0.25rem',
-                  marginTop: 'auto'
+                  marginTop: 'auto',
+                  flexWrap: 'nowrap'
                 }}
               >
-                Explore category <ChevronRight size={16} strokeWidth={2.5} />
+                <span>Explore category</span> <ChevronRight size={16} strokeWidth={2.5} style={{ flexShrink: 0 }} />
               </div>
             </Link>
           ))}
