@@ -11,7 +11,7 @@ import { ReportModal } from '../components/content/ReportModal'
 import { ConfirmDialog } from '../components/ui/Modal'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { apiError } from '../api/client'
-import { closedReasonLabels, formatDate, timeAgo } from '../lib/format'
+import { closedReasonLabels, formatDate, timeAgo, formatNumber } from '../lib/format'
 import { 
   Lock, Lightbulb, Search, CheckCircle2, Share2, 
   Bookmark, Flag, Trash2, Edit3, EyeOff, ChevronRight, MessageSquare
