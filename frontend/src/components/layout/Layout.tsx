@@ -7,24 +7,49 @@ export function Layout() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    window.scrollTo({ top: 0 })
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [pathname])
 
   return (
-    <div className="app-shell">
-      <a href="#main-content" className="btn btn--ghost btn--sm" style={{
-        position: 'absolute', left: -9999, top: 0,
-      }}
-      onFocus={(e) => { e.currentTarget.style.left = '8px'; e.currentTarget.style.top = '70px'; e.currentTarget.style.zIndex = '200'; e.currentTarget.style.background = '#fff' }}
-      onBlur={(e) => { e.currentTarget.style.left = '-9999px' }}
+    <div className="app-shell" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      
+      {/* High-Accessibility Skip to Content Button */}
+      <a 
+        href="#main-content" 
+        className="btn btn--primary" 
+        style={{
+          position: 'absolute', 
+          left: '-9999px', 
+          top: '0',
+          transition: 'none'
+        }}
+        onFocus={(e) => { 
+          e.currentTarget.style.left = '16px'
+          e.currentTarget.style.top = '16px'
+          e.currentTarget.style.zIndex = '9999'
+          e.currentTarget.style.boxShadow = 'var(--shadow-lg)'
+        }}
+        onBlur={(e) => { 
+          e.currentTarget.style.left = '-9999px' 
+        }}
       >
-        Skip to content
+        Skip to main content
       </a>
+
+      {/* Global Navigation Header */}
       <Header />
-      <main className="app-main" id="main-content">
+
+      {/* Main Dynamic View Outlet */}
+      <main 
+        id="main-content" 
+        style={{ flex: '1 1 auto', width: '100%', display: 'flex', flexDirection: 'column' }}
+      >
         <Outlet />
       </main>
+
+      {/* Global Dark-Mode Footer */}
       <Footer />
+      
     </div>
   )
 }
