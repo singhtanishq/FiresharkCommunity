@@ -194,9 +194,15 @@ export function Leaderboard() {
                   const isSilver = index === 1
                   const isBronze = index === 2
                   
+                  // SAFETY FALLBACKS: Handle nested user objects or deleted users securely
+                  const safeName = row.name || (row as any).user?.name || 'Unknown Member'
+                  const safeUsername = row.username || (row as any).user?.username || `unknown-${index}`
+                  const safeAvatar = row.avatar_path || (row as any).user?.avatar_path || undefined
+                  const safeReputation = row.all_time_reputation ?? (row as any).user?.all_time_reputation
+
                   return (
                     <tr 
-                      key={row.username} 
+                      key={safeUsername} 
                       style={{ 
                         borderBottom: '1px solid var(--border)',
                         background: isGold ? 'linear-gradient(90deg, rgba(251, 191, 36, 0.05) 0%, transparent 100%)' : 'transparent',
@@ -228,17 +234,17 @@ export function Leaderboard() {
 
                       {/* User Column */}
                       <td style={{ padding: '1rem 1.5rem' }}>
-                        <Link to={`/users/${row.username}`} style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
+                        <Link to={`/users/${safeUsername}`} style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
                           <div style={{ border: isGold ? '2px solid #fbbf24' : isSilver ? '2px solid #cbd5e1' : isBronze ? '2px solid #fdba74' : 'none', borderRadius: '50%', padding: '2px' }}>
-                            <Avatar name={row.name} path={row.avatar_path} size="md" />
+                            <Avatar name={safeName} path={safeAvatar} size="md" />
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <span style={{ fontWeight: 700, fontSize: '1.05rem', color: isGold ? '#b45309' : 'var(--ink-900)' }}>
-                              {row.name}
+                              {safeName}
                             </span>
-                            {row.all_time_reputation !== undefined && (
+                            {safeReputation !== undefined && (
                               <span className="muted" style={{ fontSize: '0.8rem', fontWeight: 500 }}>
-                                {formatNumber(row.all_time_reputation)} all-time rep
+                                {formatNumber(safeReputation)} all-time rep
                               </span>
                             )}
                           </div>
