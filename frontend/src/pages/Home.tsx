@@ -9,7 +9,7 @@ import {
   Shield, Terminal, Crosshair, Bug, Network, Cloud, 
   Radar, Target, Globe, Cpu, Search, AlertTriangle, 
   Wrench, Award, Briefcase, FlaskConical, MessageSquare,
-  FolderOpen, ChevronRight, Activity, ArrowRight
+  FolderOpen, ChevronRight, Activity
 } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
@@ -80,55 +80,18 @@ export function Home() {
           enthusiasts — peer-reviewed answers, an active monthly leaderboard, and a knowledge base that
           keeps growing.
         </p>
-
-        {/* Refactored Hero Search Bar with perfectly matching button integration */}
-        <form 
-          className="hero__search" 
-          role="search" 
-          onSubmit={submit} 
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            background: '#fff', 
-            borderRadius: '99px', 
-            padding: '0.35rem 0.35rem 0.35rem 1rem',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.25)',
-            maxWidth: '640px',
-            margin: '0 auto 1.5rem',
-            border: '1px solid rgba(255, 255, 255, 0.2)'
-          }}
-        >
-          <Search style={{ color: 'var(--text-3)', flexShrink: 0, marginRight: '0.5rem' }} aria-hidden="true" size={20} strokeWidth={2} />
+        <form className="hero__search" role="search" onSubmit={submit}>
+          <Search style={{ color: 'rgba(255, 255, 255, 0.55)', marginLeft: '0.8rem' }} aria-hidden="true" size={20} strokeWidth={2} />
           <input
             value={heroQ}
             onChange={(e) => setHeroQ(e.target.value)}
             placeholder="Search Nmap, Burp, AWS IAM, incident response…"
             aria-label="Search the community"
-            style={{ 
-              border: 'none', 
-              outline: 'none', 
-              background: 'transparent', 
-              flex: 1, 
-              fontSize: '1rem', 
-              color: 'var(--ink-900)',
-              padding: '0.5rem 0'
-            }}
           />
-          <button 
-            className="btn btn--fire" 
-            type="submit" 
-            disabled={!heroQ.trim()}
-            style={{ 
-              borderRadius: '99px', 
-              padding: '0.6rem 1.5rem',
-              fontWeight: 700,
-              boxShadow: 'none'
-            }}
-          >
+          <button className="btn btn--primary btn--sm" type="submit" disabled={!heroQ.trim()}>
             Search
           </button>
         </form>
-
         <div className="hero__actions">
           <Link to="/ask" className="btn btn--fire">Ask a Question</Link>
           <Link to="/questions" className="btn btn--ghost">Explore Questions</Link>
@@ -168,20 +131,10 @@ export function Home() {
               />
             </div>
           ) : (
-            <div>
-              <div className="question-list" style={{ marginBottom: '1.5rem' }}>
-                {questions.map((question) => (
-                  <QuestionCard key={question.id} question={question} />
-                ))}
-              </div>
-              
-              {/* Bottom View All CTA Bar */}
-              <div className="panel" style={{ textAlign: 'center', padding: '1.5rem', background: 'var(--surface-2)', borderStyle: 'dashed' }}>
-                <p className="muted" style={{ margin: '0 0 1rem', fontSize: '0.95rem' }}>Looking for more discussions or need to filter by specific tags?</p>
-                <Link to="/questions" className="btn btn--primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', borderRadius: '99px', padding: '0.6rem 1.5rem' }}>
-                  Browse Full Questions Feed <ArrowRight size={16} />
-                </Link>
-              </div>
+            <div className="question-list">
+              {questions.map((question) => (
+                <QuestionCard key={question.id} question={question} />
+              ))}
             </div>
           )}
         </section>
