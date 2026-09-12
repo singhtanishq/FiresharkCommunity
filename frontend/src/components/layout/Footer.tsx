@@ -4,8 +4,8 @@ import { ExternalLink, ShieldCheck, Heart } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="site-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-      <div className="site-footer__inner" style={{ padding: '4rem 1.5rem 3rem' }}>
+    <footer className="site-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', width: '100%', overflowX: 'hidden' }}>
+      <div className="site-footer__inner" style={{ padding: '3rem 1rem 2rem', width: '100%', boxSizing: 'border-box' }}>
         
         {/* Brand Column */}
         <div>
@@ -18,11 +18,11 @@ export function Footer() {
               <img src={logo} alt="FireShark Community" style={{ height: '32px', width: 'auto' }} />
             </span>
           </Link>
-          <p className="site-footer__brandline" style={{ color: 'rgba(230, 237, 247, 0.65)', lineHeight: 1.6, fontSize: '0.9rem' }}>
+          <p className="site-footer__brandline" style={{ color: 'rgba(230, 237, 247, 0.65)', lineHeight: 1.6, fontSize: '0.9rem', wordBreak: 'break-word' }}>
             Ask questions. Share knowledge. Build expertise. A public intelligence network for cybersecurity professionals, ethical hackers, and technology enthusiasts.
           </p>
-          <div className="row mt-2" style={{ gap: '0.5rem', color: 'rgba(230, 237, 247, 0.4)', fontSize: '0.8rem' }}>
-            <ShieldCheck size={14} color="#34d399" /> Peer-reviewed ecosystem
+          <div className="row mt-2" style={{ gap: '0.5rem', color: 'rgba(230, 237, 247, 0.4)', fontSize: '0.8rem', flexWrap: 'wrap' }}>
+            <ShieldCheck size={14} color="#34d399" style={{ flexShrink: 0 }} /> Peer-reviewed ecosystem
           </div>
         </div>
 
@@ -56,17 +56,17 @@ export function Footer() {
             FireShark Ecosystem
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              fireshark.in <ExternalLink size={12} opacity={0.6} />
+            <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              fireshark.in <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              Academy <ExternalLink size={12} opacity={0.6} />
+            <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              Academy <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              Learn <ExternalLink size={12} opacity={0.6} />
+            <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              Learn <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
-              fireshark.ai <ExternalLink size={12} opacity={0.6} />
+            <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              fireshark.ai <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
           </div>
         </div>
@@ -74,11 +74,11 @@ export function Footer() {
       </div>
       
       {/* Legal Footer Bottom Bar */}
-      <div className="site-footer__legal" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', maxWidth: 'var(--container)', margin: '0 auto', padding: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+      <div className="site-footer__legal" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', maxWidth: 'var(--container)', margin: '0 auto', padding: '1.25rem 1rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', boxSizing: 'border-box' }}>
         <div>
           © {new Date().getFullYear()} FireShark Technologies. All rights reserved.
         </div>
-        <div className="row" style={{ gap: '1rem', color: 'rgba(230, 237, 247, 0.55)' }}>
+        <div className="row" style={{ gap: '1rem', color: 'rgba(230, 237, 247, 0.55)', flexWrap: 'wrap' }}>
           <span>Secure Knowledge Network</span>
           <span>•</span>
           <Link to="/community-guidelines" style={{ color: 'inherit' }}>Guidelines</Link>
