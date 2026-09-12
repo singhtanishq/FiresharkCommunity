@@ -1,44 +1,88 @@
 import { Link } from 'react-router-dom'
 import logo from '../../assets/fireshark_community.png'
+import { ExternalLink, ShieldCheck, Heart } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="site-footer">
-      <div className="site-footer__inner">
+    <footer className="site-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+      <div className="site-footer__inner" style={{ padding: '4rem 1.5rem 3rem' }}>
+        
+        {/* Brand Column */}
         <div>
-          <div className="brand" style={{ color: '#fff' }}>
-            <span className="brand__mark"><img src={logo} alt="FireShark Community" /></span>
-          </div>
-          <p className="site-footer__brandline">
-            Ask questions. Share knowledge. Build expertise. A community for cybersecurity professionals, learners
-            and technology enthusiasts.
+          <Link 
+            to="/" 
+            className="brand" 
+            style={{ color: '#fff', display: 'inline-flex', marginBottom: '1rem', textDecoration: 'none' }}
+          >
+            <span className="brand__mark">
+              <img src={logo} alt="FireShark Community" style={{ height: '32px', width: 'auto' }} />
+            </span>
+          </Link>
+          <p className="site-footer__brandline" style={{ color: 'rgba(230, 237, 247, 0.65)', lineHeight: 1.6, fontSize: '0.9rem' }}>
+            Ask questions. Share knowledge. Build expertise. A public intelligence network for cybersecurity professionals, ethical hackers, and technology enthusiasts.
           </p>
+          <div className="row mt-2" style={{ gap: '0.5rem', color: 'rgba(230, 237, 247, 0.4)', fontSize: '0.8rem' }}>
+            <ShieldCheck size={14} color="#34d399" /> Peer-reviewed ecosystem
+          </div>
         </div>
 
+        {/* Community Links */}
         <div>
-          <h4>Community</h4>
-          <Link to="/questions">Questions</Link>
-          <Link to="/categories">Categories</Link>
-          <Link to="/tags">Tags</Link>
-          <Link to="/leaderboard">Leaderboard</Link>
+          <h4 style={{ color: '#fff', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem', fontWeight: 700 }}>
+            Community
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <Link to="/questions" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Questions Feed</Link>
+            <Link to="/categories" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Ecosystems</Link>
+            <Link to="/tags" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>System Tags</Link>
+            <Link to="/leaderboard" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Hall of Fame</Link>
+          </div>
         </div>
 
+        {/* About Links */}
         <div>
-          <h4>About</h4>
-          <Link to="/community-guidelines">Community guidelines</Link>
-          <Link to="/about">About this community</Link>
+          <h4 style={{ color: '#fff', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem', fontWeight: 700 }}>
+            Governance
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <Link to="/community-guidelines" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Community Guidelines</Link>
+            <Link to="/about" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>About This Platform</Link>
+          </div>
         </div>
 
+        {/* FireShark Ecosystem Links */}
         <div>
-          <h4>FireShark</h4>
-          <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer">fireshark.in</a>
-          <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer">Academy</a>
-          <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer">Learn</a>
-          <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer">fireshark.ai</a>
+          <h4 style={{ color: '#fff', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem', fontWeight: 700 }}>
+            FireShark Ecosystem
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              fireshark.in <ExternalLink size={12} opacity={0.6} />
+            </a>
+            <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              Academy <ExternalLink size={12} opacity={0.6} />
+            </a>
+            <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              Learn <ExternalLink size={12} opacity={0.6} />
+            </a>
+            <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+              fireshark.ai <ExternalLink size={12} opacity={0.6} />
+            </a>
+          </div>
         </div>
+
       </div>
-      <div className="site-footer__legal">
-        © {new Date().getFullYear()} FireShark. All rights reserved. Use of this site is subject to the community guidelines.
+      
+      {/* Legal Footer Bottom Bar */}
+      <div className="site-footer__legal" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', maxWidth: 'var(--container)', margin: '0 auto', padding: '1.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <div>
+          © {new Date().getFullYear()} FireShark Technologies. All rights reserved.
+        </div>
+        <div className="row" style={{ gap: '1rem', color: 'rgba(230, 237, 247, 0.55)' }}>
+          <span>Secure Knowledge Network</span>
+          <span>•</span>
+          <Link to="/community-guidelines" style={{ color: 'inherit' }}>Guidelines</Link>
+        </div>
       </div>
     </footer>
   )
