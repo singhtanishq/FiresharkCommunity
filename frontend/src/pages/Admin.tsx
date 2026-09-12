@@ -9,7 +9,7 @@ import { formatNumber, reportReasonLabels, timeAgo, verificationLabels } from '.
 import { 
   LayoutDashboard, Flag, MessageSquare, FileText, Users, 
   FolderOpen, Award, Settings, CheckCircle2, 
-  EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock
+  EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock, Search
 } from 'lucide-react'
 
 // ------------------------------------------------------------------ shell
@@ -33,30 +33,33 @@ export function AdminLayout() {
   if (user.role !== 'admin' && user.role !== 'moderator') return <Navigate to="/" replace />
 
   return (
-    <div className="admin-layout" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
-      <nav className="admin-nav panel" style={{ padding: '0.75rem', position: 'sticky', top: 'calc(var(--header-h) + 1.5rem)' }} aria-label="Admin">
+    <div className="admin-layout" style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
+      <nav className="admin-nav panel" style={{ padding: '0.75rem', position: 'sticky', top: 'calc(var(--header-h) + 1.5rem)', boxSizing: 'border-box' }} aria-label="Admin">
         <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Administration
         </div>
-        {ADMIN_NAV.map(([to, icon, label]) => (
-          <NavLink 
-            key={to} 
-            to={to} 
-            end={to === '/admin'} 
-            className={({ isActive }) => `row ${isActive ? 'is-active' : ''}`}
-            style={{ 
-              padding: '0.6rem 0.85rem', 
-              borderRadius: 'var(--radius)', 
-              marginBottom: '2px',
-              textDecoration: 'none',
-              transition: 'background var(--dur) var(--ease), color var(--dur) var(--ease)'
-            }}
-          >
-            {icon} <span style={{ fontWeight: 500 }}>{label}</span>
-          </NavLink>
-        ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          {ADMIN_NAV.map(([to, icon, label]) => (
+            <NavLink 
+              key={to} 
+              to={to} 
+              end={to === '/admin'} 
+              className={({ isActive }) => `row ${isActive ? 'is-active' : ''}`}
+              style={{ 
+                padding: '0.6rem 0.85rem', 
+                borderRadius: 'var(--radius)', 
+                textDecoration: 'none',
+                transition: 'background var(--dur) var(--ease), color var(--dur) var(--ease)',
+                width: '100%',
+                boxSizing: 'border-box'
+              }}
+            >
+              {icon} <span style={{ fontWeight: 500 }}>{label}</span>
+            </NavLink>
+          ))}
+        </div>
       </nav>
-      <div style={{ minWidth: 0 }}>
+      <div style={{ minWidth: 0, width: '100%', overflowX: 'hidden' }}>
         <Outlet />
       </div>
     </div>
@@ -65,11 +68,11 @@ export function AdminLayout() {
 
 export function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="page-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
-      <h1 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <div className="page-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <h1 style={{ fontSize: '1.5rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', wordBreak: 'break-word' }}>
         {title}
       </h1>
-      <div className="row" style={{ gap: '0.75rem' }}>
+      <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', width: '100%', maxWidth: '100%' }}>
         {children}
       </div>
     </div>
@@ -95,7 +98,8 @@ export function AdminDashboard() {
       style={{ 
         border: warn ? '1px solid var(--danger)' : undefined,
         background: warn ? 'var(--danger-bg)' : 'var(--surface)',
-        transition: 'transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease)' 
+        transition: 'transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease)',
+        boxSizing: 'border-box'
       }}
       onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
       onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-xs)'; }}
@@ -106,7 +110,7 @@ export function AdminDashboard() {
   )
 
   return (
-    <div>
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader title="Dashboard Overview" />
 
       <div className="stat-grid mb-3">
@@ -119,7 +123,7 @@ export function AdminDashboard() {
       </div>
 
       <div className="grid-2">
-        <div className="panel">
+        <div className="panel" style={{ overflowX: 'hidden' }}>
           <div className="panel__header">
             <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Recent questions</h2>
             <NavLink to="/admin/questions" className="muted text-3">View all →</NavLink>
@@ -129,24 +133,24 @@ export function AdminDashboard() {
               <div 
                 key={q.id} 
                 className="row row--between" 
-                style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)' }}
+                style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'wrap', gap: '0.5rem' }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'}
                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}
               >
                 <div className="row" style={{ gap: '0.5rem', flex: 1, minWidth: 0 }}>
-                  {q.status === 'hidden' && <EyeOff size={14} color="var(--text-3)" />}
-                  {q.status === 'closed' && <Lock size={14} color="var(--warning)" />}
-                  <span style={{ fontSize: '0.88rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {q.status === 'hidden' && <EyeOff size={14} color="var(--text-3)" style={{ flexShrink: 0 }} />}
+                  {q.status === 'closed' && <Lock size={14} color="var(--warning)" style={{ flexShrink: 0 }} />}
+                  <span style={{ fontSize: '0.88rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                     {q.title}
                   </span>
                 </div>
-                <span className="muted" style={{ fontSize: '0.78rem', whiteSpace: 'nowrap' }}>{timeAgo(q.created_at)}</span>
+                <span className="muted" style={{ fontSize: '0.78rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{timeAgo(q.created_at)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="panel">
+        <div className="panel" style={{ overflowX: 'hidden' }}>
           <div className="panel__header">
             <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Latest reports</h2>
             <NavLink to="/admin/reports" className="muted text-3">Review queue →</NavLink>
@@ -157,18 +161,18 @@ export function AdminDashboard() {
               <div 
                 key={report.id} 
                 className="row row--between" 
-                style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)' }}
+                style={{ padding: '0.75rem 1.25rem', borderBottom: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'wrap', gap: '0.5rem' }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'}
                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}
               >
-                <div className="row" style={{ gap: '0.5rem' }}>
-                  <AlertCircle size={14} color="var(--danger)" /> 
-                  <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>
+                <div className="row" style={{ gap: '0.5rem', flexWrap: 'wrap', minWidth: 0 }}>
+                  <AlertCircle size={14} color="var(--danger)" style={{ flexShrink: 0 }} /> 
+                  <span style={{ fontSize: '0.88rem', fontWeight: 500, wordBreak: 'break-word' }}>
                     {reportReasonLabels[report.reason] ?? report.reason}
                   </span>
-                  <span className="chip chip--ghost" style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem' }}>{report.status}</span>
+                  <span className="chip chip--ghost" style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem', flexShrink: 0 }}>{report.status}</span>
                 </div>
-                <span className="muted" style={{ fontSize: '0.78rem' }}>{timeAgo(report.created_at)}</span>
+                <span className="muted" style={{ fontSize: '0.78rem', flexShrink: 0 }}>{timeAgo(report.created_at)}</span>
               </div>
             ))}
           </div>
@@ -210,9 +214,9 @@ export function AdminReports() {
   }
 
   return (
-    <div>
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader title="Moderation Queue">
-        <select className="select" style={{ width: '180px' }} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter reports">
+        <select className="select" style={{ width: '100%', maxWidth: '180px' }} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter reports">
           <option value="">All statuses</option>
           <option value="pending">Pending</option>
           <option value="reviewing">Reviewing</option>
@@ -230,45 +234,45 @@ export function AdminReports() {
       ) : (
         <div className="question-list">
           {reports.map((report) => (
-            <div key={report.id} className="panel" style={{ padding: '1.25rem' }}>
-              <div className="row row--between mb-1">
-                <div className="row" style={{ gap: '0.6rem' }}>
-                  <span className={`chip ${report.status === 'pending' ? '' : 'chip--ghost'}`}>
+            <div key={report.id} className="panel" style={{ padding: '1.25rem', boxSizing: 'border-box', overflowX: 'hidden' }}>
+              <div className="row row--between mb-1" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div className="row" style={{ gap: '0.6rem', flexWrap: 'wrap' }}>
+                  <span className={`chip ${report.status === 'pending' ? '' : 'chip--ghost'}`} style={{ flexShrink: 0 }}>
                     {reportReasonLabels[report.reason] ?? report.reason}
                   </span>
-                  <span className="text-3 muted row" style={{ gap: '0.3rem' }}>
+                  <span className="text-3 muted row" style={{ gap: '0.3rem', flexShrink: 0 }}>
                     <Clock size={12} /> {timeAgo(report.created_at)}
                   </span>
                 </div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: report.status === 'pending' ? 'var(--warning)' : 'var(--text-3)' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: report.status === 'pending' ? 'var(--warning)' : 'var(--text-3)', flexShrink: 0 }}>
                   {report.status}
                 </span>
               </div>
               
-              <div style={{ background: 'var(--surface-3)', padding: '0.75rem 1rem', borderRadius: 'var(--radius)', borderLeft: '3px solid var(--brand-blue-400)', margin: '0.75rem 0', fontSize: '0.9rem', color: 'var(--ink-800)' }}>
+              <div style={{ background: 'var(--surface-3)', padding: '0.75rem 1rem', borderRadius: 'var(--radius)', borderLeft: '3px solid var(--brand-blue-400)', margin: '0.75rem 0', fontSize: '0.9rem', color: 'var(--ink-800)', wordBreak: 'break-word' }}>
                 {report.target_excerpt ?? <span className="muted"><i>(Content already deleted)</i></span>}
               </div>
               
-              <p className="text-3 mb-2">
+              <p className="text-3 mb-2" style={{ wordBreak: 'break-word' }}>
                 {report.description && <span><b>Context:</b> “{report.description}” — </span>}
                 Reported by <b>{report.reporter?.name ?? 'Unknown user'}</b> on {report.reportable_type} #{report.reportable_id}
               </p>
 
               {report.status === 'pending' || report.status === 'reviewing' ? (
-                <div className="row" style={{ background: 'var(--surface-2)', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
-                  <input className="input input--sm" style={{ flex: 1, minWidth: 200 }} placeholder="Resolution note (optional)..." value={note} onChange={(e) => setNote(e.target.value)} />
-                  <div className="row" style={{ gap: '0.4rem' }}>
-                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'reviewing', 'none')}>Reviewing</button>
-                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'dismissed', 'none')}>Dismiss</button>
-                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'hide')}><EyeOff size={14} /> Hide</button>
-                    <button className="btn btn--danger btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'delete')}><Trash2 size={14} /> Delete</button>
+                <div className="row" style={{ background: 'var(--surface-2)', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <input className="input input--sm" style={{ flex: '1 1 200px', minWidth: '160px' }} placeholder="Resolution note (optional)..." value={note} onChange={(e) => setNote(e.target.value)} />
+                  <div className="row" style={{ gap: '0.4rem', flexWrap: 'wrap', width: '100%', justifyContent: 'flex-start' }}>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'reviewing', 'none')} style={{ flex: '1 1 auto' }}>Reviewing</button>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'dismissed', 'none')} style={{ flex: '1 1 auto' }}>Dismiss</button>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'hide')} style={{ flex: '1 1 auto' }}><EyeOff size={14} /> Hide</button>
+                    <button className="btn btn--danger btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'delete')} style={{ flex: '1 1 auto' }}><Trash2 size={14} /> Delete</button>
                   </div>
                 </div>
               ) : (
-                <div className="row" style={{ fontSize: '0.82rem', color: 'var(--text-2)', background: 'var(--surface-2)', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius)' }}>
-                  <CheckCircle2 size={14} color="var(--success)" />
+                <div className="row" style={{ fontSize: '0.82rem', color: 'var(--text-2)', background: 'var(--surface-2)', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius)', flexWrap: 'wrap', gap: '0.3rem' }}>
+                  <CheckCircle2 size={14} color="var(--success)" style={{ flexShrink: 0 }} />
                   {report.handled_by && <span>Handled by <b>{report.handled_by.name}</b>:</span>}
-                  <span>{report.resolution_note || 'No resolution note provided.'}</span>
+                  <span style={{ wordBreak: 'break-word' }}>{report.resolution_note || 'No resolution note provided.'}</span>
                 </div>
               )}
             </div>
@@ -309,15 +313,15 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
   }
 
   return (
-    <div>
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader title={kind === 'questions' ? 'Questions Library' : 'Answers Library'}>
-        <select className="select" style={{ width: '160px' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status filter">
+        <select className="select" style={{ width: '100%', maxWidth: '160px' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status filter">
           <option value="">All statuses</option>
           <option value="published">Published</option>
           <option value="hidden">Hidden</option>
           <option value="closed">Closed</option>
         </select>
-        <div className="input-affix" style={{ width: '260px' }}>
+        <div className="input-affix" style={{ width: '100%', maxWidth: '260px' }}>
           <Search className="input-affix__icon" size={16} />
           <input className="input input--with-affix" placeholder="Search content..." value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
@@ -328,8 +332,8 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
       ) : items.length === 0 ? (
         <div className="panel"><EmptyState icon={<FolderOpen size={32} strokeWidth={1.5} />} title="No content found." /></div>
       ) : (
-        <div className="panel" style={{ overflowX: 'auto' }}>
-          <table className="data-table">
+        <div className="panel" style={{ overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
+          <table className="data-table" style={{ width: '100%', minWidth: '600px' }}>
             <thead>
               <tr>
                 <th>Content Details</th>
@@ -354,21 +358,21 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
                       {kind === 'answers' && <div className="muted" style={{ fontSize: '0.82rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.2rem' }}>{item.excerpt}</div>}
                     </td>
                     <td>
-                      <div className="row" style={{ gap: '0.5rem' }}>
+                      <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap' }}>
                         <Avatar name={item.user?.name ?? '?'} size="sm" />
-                        <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>{item.user?.name ?? '—'}</span>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{item.user?.name ?? '—'}</span>
                       </div>
                     </td>
                     {kind === 'questions' && (
                       <td>
-                        <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.1rem 0.5rem', fontSize: '0.75rem' }}>
+                        <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.1rem 0.5rem', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
                           {item.status}
                         </span>
                       </td>
                     )}
-                    <td className="muted" style={{ fontSize: '0.85rem' }}>{timeAgo(item.created_at)}</td>
+                    <td className="muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>{timeAgo(item.created_at)}</td>
                     <td>
-                      <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end' }}>
+                      <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                         {isHidden ? (
                           <button className="btn btn--ghost btn--sm" onClick={() => act('restore', { type, id: item.id })}>Restore</button>
                         ) : (
@@ -424,9 +428,9 @@ export function AdminUsers() {
   }
 
   return (
-    <div>
+    <div style={{ width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader title="User Directory">
-        <div className="input-affix" style={{ width: '280px' }}>
+        <div className="input-affix" style={{ width: '100%', maxWidth: '280px' }}>
           <Search className="input-affix__icon" size={16} />
           <input className="input input--with-affix" placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
@@ -436,8 +440,8 @@ export function AdminUsers() {
         <Spinner />
       ) : (
         <>
-          <div className="panel" style={{ overflowX: 'auto' }}>
-            <table className="data-table">
+          <div className="panel" style={{ overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
+            <table className="data-table" style={{ width: '100%', minWidth: '700px' }}>
               <thead>
                 <tr>
                   <th>Profile</th>
@@ -452,11 +456,11 @@ export function AdminUsers() {
                 {users.map((u) => (
                   <tr key={u.id}>
                     <td>
-                      <div className="row" style={{ gap: '0.75rem' }}>
+                      <div className="row" style={{ gap: '0.75rem', flexWrap: 'nowrap' }}>
                         <Avatar name={u.name} path={u.avatar_path} size="md" />
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <a href={`/users/${u.username}`} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: 'var(--ink-900)', fontSize: '0.92rem' }}>{u.name}</a>
-                          <span className="muted" style={{ fontSize: '0.78rem' }}>{u.email}</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                          <a href={`/users/${u.username}`} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: 'var(--ink-900)', fontSize: '0.92rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.name}</a>
+                          <span className="muted" style={{ fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.email}</span>
                         </div>
                       </div>
                     </td>
@@ -471,9 +475,9 @@ export function AdminUsers() {
                         <span className="chip chip--ghost">{u.role}</span>
                       )}
                     </td>
-                    <td style={{ fontWeight: 700, color: 'var(--brand-blue-600)' }}>{formatNumber(u.reputation)}</td>
-                    <td className="muted" style={{ fontSize: '0.85rem', fontWeight: 500 }}>{u.questions_count} <span style={{ opacity: 0.5 }}>/</span> {u.answers_count}</td>
-                    <td>
+                    <td style={{ fontWeight: 700, color: 'var(--brand-blue-600)', whiteSpace: 'nowrap' }}>{formatNumber(u.reputation)}</td>
+                    <td className="muted" style={{ fontSize: '0.85rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{u.questions_count} <span style={{ opacity: 0.5 }}>/</span> {u.answers_count}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
                       {u.is_suspended ? (
                         <span className="chip" style={{ background: 'var(--danger-bg)', color: 'var(--danger)' }}><Lock size={12} /> Suspended</span>
                       ) : u.verification ? (
@@ -483,7 +487,7 @@ export function AdminUsers() {
                       )}
                     </td>
                     <td>
-                      <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end' }}>
+                      <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                         {me?.role === 'admin' && (
                           <>
                             <button className="btn btn--ghost btn--sm" onClick={() => {
@@ -510,7 +514,7 @@ export function AdminUsers() {
               </tbody>
             </table>
           </div>
-          <div className="mt-2">
+          <div className="mt-2" style={{ width: '100%', boxSizing: 'border-box' }}>
             <Pagination meta={meta} baseUrl="/admin/users" />
           </div>
         </>
