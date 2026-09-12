@@ -68,6 +68,28 @@ export function Home() {
 
   return (
     <div className="app-main" style={{ width: '100%', boxSizing: 'border-box' }}>
+      
+      {/* Dynamic Mobile Styles for Stats Grid */}
+      <style>{`
+        @media (max-width: 650px) {
+          .stat-grid-responsive {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+          }
+          .stat-grid-responsive .stat-card {
+            padding: 1.25rem 0.75rem !important;
+          }
+          .stat-grid-responsive .stat-card b {
+            font-size: 1.35rem !important;
+          }
+          .stat-grid-responsive .stat-card span {
+            font-size: 0.75rem !important;
+            text-align: center;
+          }
+        }
+      `}</style>
+
       <section className="hero" style={{ alignItems: 'flex-start', textAlign: 'left', width: '100%', boxSizing: 'border-box' }}>
         <div className="hero__eyebrow">
           <Award size={14} strokeWidth={2.5} style={{ flexShrink: 0 }} /> FireShark Community
@@ -100,20 +122,20 @@ export function Home() {
             margin: '0 0 1.5rem',
             border: '1px solid rgba(255, 255, 255, 0.2)',
             boxSizing: 'border-box',
-            flexWrap: 'wrap'
+            flexWrap: 'nowrap' /* Ensures button stays on the same line */
           }}
         >
           <Search style={{ color: 'rgba(255, 255, 255, 0.7)', flexShrink: 0, marginRight: '0.5rem' }} aria-hidden="true" size={20} strokeWidth={2} />
           <input
             value={heroQ}
             onChange={(e) => setHeroQ(e.target.value)}
-            placeholder="Search Nmap, Burp, AWS IAM, incident response…"
+            placeholder="Search Nmap, AWS IAM..."
             aria-label="Search the community"
             style={{ 
               border: 'none', 
               outline: 'none', 
               background: 'transparent', 
-              flex: '1 1 180px', 
+              flex: '1 1 0%', /* Allows aggressive shrinking to fit container */
               fontSize: '1rem', 
               color: '#fff',
               padding: '0.5rem 0',
@@ -126,24 +148,24 @@ export function Home() {
             disabled={!heroQ.trim()}
             style={{ 
               borderRadius: '99px', 
-              padding: '0.6rem 1.5rem',
+              padding: '0.6rem 1.2rem',
               fontWeight: 700,
               boxShadow: 'none',
-              flexShrink: 0
+              flexShrink: 0 /* Prevents button from being crushed */
             }}
           >
             Search
           </button>
         </form>
 
-        <div className="hero__actions" style={{ justifyContent: 'flex-start', flexWrap: 'wrap', width: '100%', boxSizing: 'border-box' }}>
-          <Link to="/ask" className="btn btn--fire" style={{ flex: '1 1 auto' }}>Ask a Question</Link>
-          <Link to="/questions" className="btn btn--ghost" style={{ flex: '1 1 auto' }}>Explore Questions</Link>
+        <div className="hero__actions" style={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
+          <Link to="/ask" className="btn btn--fire">Ask a Question</Link>
+          <Link to="/questions" className="btn btn--ghost">Explore Questions</Link>
         </div>
       </section>
 
       {stats && (
-        <section aria-label="Community at a glance" className="stat-grid mb-3" style={{ width: '100%', boxSizing: 'border-box' }}>
+        <section aria-label="Community at a glance" className="stat-grid stat-grid-responsive mb-3" style={{ width: '100%', boxSizing: 'border-box' }}>
           <Stat value={formatNumber(stats.total)} label="Questions" accent />
           <Stat value={formatNumber(stats.totalAnswers)} label="Answers" />
           <Stat value={formatNumber(stats.users)} label="Contributors" />
