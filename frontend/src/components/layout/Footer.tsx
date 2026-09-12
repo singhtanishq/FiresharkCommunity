@@ -1,10 +1,28 @@
 import { Link } from 'react-router-dom'
 import logo from '../../assets/fireshark_community.png'
-import { ExternalLink, ShieldCheck, Heart } from 'lucide-react'
+import { ExternalLink, ShieldCheck } from 'lucide-react'
 
 export function Footer() {
   return (
     <footer className="site-footer" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', width: '100%', overflowX: 'hidden' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .site-footer__inner {
+            text-align: center !important;
+            align-items: center !important;
+          }
+          .site-footer__inner > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center !important;
+          }
+          .site-footer__legal {
+            text-align: center !important;
+            justify-content: center !important;
+          }
+        }
+      `}</style>
+
       <div className="site-footer__inner" style={{ padding: '3rem 1rem 2rem', width: '100%', boxSizing: 'border-box' }}>
         
         {/* Brand Column */}
@@ -21,7 +39,7 @@ export function Footer() {
           <p className="site-footer__brandline" style={{ color: 'rgba(230, 237, 247, 0.65)', lineHeight: 1.6, fontSize: '0.9rem', wordBreak: 'break-word' }}>
             Ask questions. Share knowledge. Build expertise. A public intelligence network for cybersecurity professionals, ethical hackers, and technology enthusiasts.
           </p>
-          <div className="row mt-2" style={{ gap: '0.5rem', color: 'rgba(230, 237, 247, 0.4)', fontSize: '0.8rem', flexWrap: 'wrap' }}>
+          <div className="row mt-2" style={{ gap: '0.5rem', color: 'rgba(230, 237, 247, 0.4)', fontSize: '0.8rem', flexWrap: 'wrap', justifyContent: 'inherit' }}>
             <ShieldCheck size={14} color="#34d399" style={{ flexShrink: 0 }} /> Peer-reviewed ecosystem
           </div>
         </div>
@@ -31,7 +49,7 @@ export function Footer() {
           <h4 style={{ color: '#fff', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem', fontWeight: 700 }}>
             Community
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'inherit' }}>
             <Link to="/questions" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Questions Feed</Link>
             <Link to="/categories" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Ecosystems</Link>
             <Link to="/tags" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>System Tags</Link>
@@ -44,7 +62,7 @@ export function Footer() {
           <h4 style={{ color: '#fff', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem', fontWeight: 700 }}>
             Governance
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'inherit' }}>
             <Link to="/community-guidelines" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>Community Guidelines</Link>
             <Link to="/about" style={{ transition: 'color var(--dur-fast) var(--ease)' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>About This Platform</Link>
           </div>
@@ -55,17 +73,17 @@ export function Footer() {
           <h4 style={{ color: '#fff', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem', fontWeight: 700 }}>
             FireShark Ecosystem
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'inherit' }}>
+            <a href="https://fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               fireshark.in <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+            <a href="https://academy.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               Academy <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+            <a href="https://learn.fireshark.in/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               Learn <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
-            <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
+            <a href="https://fireshark.ai/" target="_blank" rel="noopener noreferrer" className="row" style={{ gap: '0.3rem', alignItems: 'center', transition: 'color var(--dur-fast) var(--ease)', flexWrap: 'wrap', justifyContent: 'inherit' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(230, 237, 247, 0.78)'}>
               fireshark.ai <ExternalLink size={12} opacity={0.6} style={{ flexShrink: 0 }} />
             </a>
           </div>
@@ -78,7 +96,7 @@ export function Footer() {
         <div>
           © {new Date().getFullYear()} FireShark Technologies. All rights reserved.
         </div>
-        <div className="row" style={{ gap: '1rem', color: 'rgba(230, 237, 247, 0.55)', flexWrap: 'wrap' }}>
+        <div className="row" style={{ gap: '1rem', color: 'rgba(230, 237, 247, 0.55)', flexWrap: 'wrap', justifyContent: 'center' }}>
           <span>Secure Knowledge Network</span>
           <span>•</span>
           <Link to="/community-guidelines" style={{ color: 'inherit' }}>Guidelines</Link>
