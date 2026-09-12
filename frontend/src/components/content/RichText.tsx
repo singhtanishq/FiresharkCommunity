@@ -26,7 +26,7 @@ marked.setOptions({
  * Markdown is sanitised with DOMPurify before rendering — user content is
  * never trusted as raw HTML.
  */
-export function RichText({ markdown, className = '' }: { markdown: string; className = '' }) {
+export function RichText({ markdown, className = '' }: { markdown: string; className?: string }) {
   const raw = marked.parse(markdown ?? '', { async: false }) as string
   const clean = DOMPurify.sanitize(raw, {
     ALLOWED_TAGS: [
