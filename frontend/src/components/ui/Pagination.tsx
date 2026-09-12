@@ -28,7 +28,10 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
         justifyContent: 'center', 
         gap: '0.4rem', 
         margin: '2.5rem 0 1rem',
-        animation: 'fade-in var(--dur-slow) var(--ease)'
+        flexWrap: 'wrap',
+        animation: 'fade-in var(--dur-slow) var(--ease)',
+        width: '100%',
+        boxSizing: 'border-box'
       }}
     >
       {/* Previous Page Link */}
@@ -47,7 +50,8 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
             fontWeight: 600,
             fontSize: '0.88rem',
             textDecoration: 'none',
-            transition: 'all var(--dur-fast) var(--ease)'
+            transition: 'all var(--dur-fast) var(--ease)',
+            flexShrink: 0
           }}
           onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--brand-blue-500)'; e.currentTarget.style.color = 'var(--brand-blue-600)' }}
           onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--ink-900)' }}
@@ -70,14 +74,15 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
               fontWeight: 600,
               fontSize: '0.88rem',
               textDecoration: 'none',
-              transition: 'all var(--dur-fast) var(--ease)'
+              transition: 'all var(--dur-fast) var(--ease)',
+              flexShrink: 0
             }}
             onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--brand-blue-500)'; e.currentTarget.style.color = 'var(--brand-blue-600)' }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--ink-900)' }}
           >
             1
           </Link>
-          {start > 2 && <span className="is-disabled" style={{ padding: '0 0.25rem', color: 'var(--text-3)' }}>…</span>}
+          {start > 2 && <span className="is-disabled" style={{ padding: '0 0.25rem', color: 'var(--text-3)', flexShrink: 0 }}>…</span>}
         </>
       )}
 
@@ -100,7 +105,8 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
               fontSize: '0.88rem',
               textDecoration: 'none',
               boxShadow: isActive ? '0 4px 12px rgba(22, 122, 201, 0.25)' : 'none',
-              transition: 'all var(--dur-fast) var(--ease)'
+              transition: 'all var(--dur-fast) var(--ease)',
+              flexShrink: 0
             }}
             onMouseOver={e => {
               if (!isActive) {
@@ -123,7 +129,7 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
       {/* End Ellipsis & Last Page */}
       {end < meta.last_page && (
         <>
-          <span className="is-disabled" style={{ padding: '0 0.25rem', color: 'var(--text-3)' }}>…</span>
+          <span className="is-disabled" style={{ padding: '0 0.25rem', color: 'var(--text-3)', flexShrink: 0 }}>…</span>
           <Link 
             to={join(meta.last_page)}
             style={{
@@ -135,7 +141,8 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
               fontWeight: 600,
               fontSize: '0.88rem',
               textDecoration: 'none',
-              transition: 'all var(--dur-fast) var(--ease)'
+              transition: 'all var(--dur-fast) var(--ease)',
+              flexShrink: 0
             }}
             onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--brand-blue-500)'; e.currentTarget.style.color = 'var(--brand-blue-600)' }}
             onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--ink-900)' }}
@@ -161,7 +168,8 @@ export function Pagination({ meta, baseUrl, pageParam = 'page' }: {
             fontWeight: 600,
             fontSize: '0.88rem',
             textDecoration: 'none',
-            transition: 'all var(--dur-fast) var(--ease)'
+            transition: 'all var(--dur-fast) var(--ease)',
+            flexShrink: 0
           }}
           onMouseOver={e => { e.currentTarget.style.borderColor = 'var(--brand-blue-500)'; e.currentTarget.style.color = 'var(--brand-blue-600)' }}
           onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--ink-900)' }}
