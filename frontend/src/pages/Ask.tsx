@@ -4,7 +4,9 @@ import { categoriesApi, tagsApi, questionsApi } from '../api/endpoints'
 import { useAuth } from '../context/AuthContext'
 import { RichTextEditor } from '../components/content/RichTextEditor'
 import { apiError } from '../api/client'
+import { formatNumber } from '../lib/format'
 import type { Category, Tag } from '../types'
+
 import { 
   AlertTriangle, X, Lock, Send, Save, 
   HelpCircle, Hash, FolderOpen, BookOpen, PenLine 
