@@ -171,7 +171,7 @@ export function Header() {
                   </Link>
                   <Link to="/notifications" onClick={closeMenu} style={{ ...dropdownItemStyle, justifyContent: 'space-between' }}>
                     <span style={{ display: 'flex', alignItems: 'center' }}>
-                      <Bell size={16} strokeWidth={2} style={{ marginRight: '20px', color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Notifications
+                      <Bell size={16} strokeWidth={2} style={{ marginRight: '18px', color: 'var(--brand-blue-600)', flexShrink: 0 }} /> Notifications
                     </span>
                     {unreadCount > 0 && (
                       <span style={{ background: '#f2600c', color: '#fff', borderRadius: 999, fontSize: '0.75rem', padding: '0.1rem 0.5rem', fontWeight: 700, marginLeft: '8px' }}>
