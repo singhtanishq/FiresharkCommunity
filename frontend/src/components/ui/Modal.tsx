@@ -38,7 +38,7 @@ export function Modal({ title, onClose, children, footer }: {
         backdropFilter: 'blur(4px)',
         display: 'grid',
         placeItems: 'center',
-        padding: '1.5rem',
+        padding: '1rem',
         animation: 'fade-in var(--dur-fast) var(--ease)',
         zIndex: 1000
       }}
@@ -52,6 +52,9 @@ export function Modal({ title, onClose, children, footer }: {
           border: '1px solid var(--border)',
           width: '100%',
           maxWidth: '560px',
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column',
           overflow: 'hidden',
           animation: 'modal-rise var(--dur) var(--ease)'
         }}
@@ -64,10 +67,11 @@ export function Modal({ title, onClose, children, footer }: {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'var(--surface-2)'
+            background: 'var(--surface-2)',
+            flexShrink: 0
           }}
         >
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--ink-900)' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--ink-900)', wordBreak: 'break-word' }}>
             {title}
           </h3>
           <button 
@@ -83,7 +87,8 @@ export function Modal({ title, onClose, children, footer }: {
               padding: '0.3rem',
               display: 'grid',
               placeItems: 'center',
-              transition: 'all var(--dur-fast) var(--ease)'
+              transition: 'all var(--dur-fast) var(--ease)',
+              flexShrink: 0
             }}
             onMouseOver={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--ink-900)' }}
             onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-3)' }}
@@ -92,7 +97,7 @@ export function Modal({ title, onClose, children, footer }: {
           </button>
         </div>
 
-        <div className="modal__body" style={{ padding: '1.5rem' }}>
+        <div className="modal__body" style={{ padding: '1.5rem', overflowY: 'auto', flex: '1 1 auto' }}>
           {children}
         </div>
 
@@ -106,7 +111,9 @@ export function Modal({ title, onClose, children, footer }: {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
-              gap: '0.75rem'
+              gap: '0.75rem',
+              flexWrap: 'wrap',
+              flexShrink: 0
             }}
           >
             {footer}
@@ -128,24 +135,24 @@ export function ConfirmDialog({ title, message, confirmLabel, danger, onConfirm,
   return (
     <Modal
       title={
-        <div className="row" style={{ gap: '0.5rem', color: danger ? 'var(--danger)' : 'inherit' }}>
-          {danger && <AlertTriangle size={20} />}
-          <span>{title}</span>
+        <div className="row" style={{ gap: '0.5rem', color: danger ? 'var(--danger)' : 'inherit', flexWrap: 'wrap' }}>
+          {danger && <AlertTriangle size={20} style={{ flexShrink: 0 }} />}
+          <span style={{ wordBreak: 'break-word' }}>{title}</span>
         </div>
       }
       onClose={onCancel}
       footer={(
-        <>
-          <button className="btn btn--quiet" onClick={onCancel}>
+        <div style={{ display: 'flex', gap: '0.75rem', width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+          <button className="btn btn--quiet" onClick={onCancel} style={{ flex: '1 1 auto' }}>
             Cancel
           </button>
-          <button className={`btn ${danger ? 'btn--danger' : 'btn--primary'}`} onClick={onConfirm}>
+          <button className={`btn ${danger ? 'btn--danger' : 'btn--primary'}`} onClick={onConfirm} style={{ flex: '1 1 auto' }}>
             {confirmLabel ?? 'Confirm'}
           </button>
-        </>
+        </div>
       )}
     >
-      <p style={{ marginTop: 0, fontSize: '1.05rem', color: 'var(--ink-800)', lineHeight: 1.6 }}>
+      <p style={{ marginTop: 0, fontSize: '1.05rem', color: 'var(--ink-800)', lineHeight: 1.6, wordBreak: 'break-word' }}>
         {message}
       </p>
     </Modal>
