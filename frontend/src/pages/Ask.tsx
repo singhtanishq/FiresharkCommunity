@@ -63,7 +63,7 @@ export function Ask() {
   // ------------------------------------------------------------------
   if (!user) {
     return (
-      <div className="app-main" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh' }}>
+      <div className="app-main" style={{ display: 'grid', placeItems: 'center', minHeight: '60vh', marginTop: '2rem' }}>
         <div className="panel" style={{ maxWidth: 480, width: '100%', padding: '3rem 2rem', textAlign: 'center', animation: 'modal-rise var(--dur-slow) var(--ease)' }}>
           <div style={{ 
             width: '64px', height: '64px', background: 'var(--brand-blue-50)', color: 'var(--brand-blue-600)', 
@@ -125,16 +125,24 @@ export function Ask() {
   const titleLengthColor = title.length > 180 ? 'var(--danger)' : title.length > 0 && title.length < 15 ? 'var(--warning)' : 'var(--text-3)'
 
   return (
-    <div className="app-main--narrow" style={{ margin: '0 auto', maxWidth: 840, paddingBottom: '4rem' }}>
+    <div className="app-main--narrow" style={{ margin: '2rem auto 4rem', maxWidth: 840, padding: '0 1rem' }}>
       
-      {/* Page Header */}
-      <div style={{ marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+      {/* Page Header with added top spacing */}
+      <div style={{ marginBottom: '2.5rem', animation: 'fade-in var(--dur-slow) var(--ease)' }}>
         <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '2.2rem', fontWeight: 800 }}>
           <HelpCircle size={32} color="var(--brand-blue-600)" strokeWidth={2.5} />
           {editId ? 'Edit your question' : 'Ask a question'}
         </h1>
-        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <BookOpen size={16} /> Be specific, share what you've tried, and review our <a href="/community-guidelines" style={{ fontWeight: 600 }}>community guidelines</a>.
+        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <BookOpen size={16} /> Be specific, share what you've tried, and review our{' '}
+          <a 
+            href="/community-guidelines" 
+            style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
+            onMouseOver={e => e.currentTarget.style.color = 'var(--brand-blue-800)'}
+            onMouseOut={e => e.currentTarget.style.color = 'var(--brand-blue-600)'}
+          >
+            community guidelines
+          </a>.
         </p>
       </div>
 
@@ -179,18 +187,18 @@ export function Ask() {
           </div>
         </div>
 
-        <div className="grid-2 mb-3">
-          {/* Category Field */}
+        <div className="grid-2 mb-3" style={{ gap: '1.5rem' }}>
+          {/* Category Field with Vertically Centered Icon */}
           <div className="field" style={{ marginBottom: 0 }}>
-            <label htmlFor="category" style={{ fontSize: '0.95rem', color: 'var(--ink-900)' }}>Ecosystem / Category</label>
-            <div className="input-affix mt-1">
-              <FolderOpen className="input-affix__icon" size={16} />
+            <label htmlFor="category" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', display: 'block', marginBottom: '0.4rem' }}>Category</label>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <FolderOpen size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
               <select 
                 id="category" 
                 className="select input--with-affix" 
                 value={categoryId} 
                 onChange={(e) => setCategoryId(e.target.value)}
-                style={{ appearance: 'none', cursor: 'pointer' }}
+                style={{ appearance: 'none', cursor: 'pointer', width: '100%', paddingLeft: '40px' }}
               >
                 <option value="" disabled>Select a category…</option>
                 {categories.map((category) => (
@@ -200,15 +208,15 @@ export function Ask() {
             </div>
           </div>
 
-          {/* Tags Field */}
+          {/* Tags Field with Vertically Centered Icon */}
           <div className="field" style={{ marginBottom: 0 }}>
             <div className="row row--between mb-1">
               <label htmlFor="tags" style={{ fontSize: '0.95rem', color: 'var(--ink-900)', margin: 0 }}>Tags</label>
               <span className="text-3 muted">{tags.length} / 5</span>
             </div>
             
-            <div className="input-affix" style={{ position: 'relative' }}>
-              <Hash className="input-affix__icon" size={16} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Hash size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-3)' }} />
               <input
                 id="tags"
                 className="input input--with-affix"
@@ -222,6 +230,7 @@ export function Ask() {
                   }
                 }}
                 placeholder={tags.length >= 5 ? "Tag limit reached" : "Type and press Enter..."}
+                style={{ width: '100%', paddingLeft: '40px' }}
               />
             </div>
 
@@ -264,13 +273,13 @@ export function Ask() {
           </div>
         </div>
 
-        {/* Body / Rich Text */}
+        {/* Body / Rich Text with Refined Container Spacing */}
         <div className="field mb-4">
-          <label style={{ fontSize: '1rem', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <label style={{ fontSize: '1rem', color: 'var(--ink-900)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
             <PenLine size={16} color="var(--text-3)" />
             Problem Description
           </label>
-          <div style={{ marginTop: '0.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', overflow: 'hidden' }}>
+          <div style={{ borderRadius: 'var(--radius)', border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--surface)' }}>
             <RichTextEditor
               value={body}
               onChange={setBody}
@@ -280,18 +289,18 @@ export function Ask() {
         </div>
 
         {/* Security Banner */}
-        <div className="banner banner--warn" style={{ borderRadius: 'var(--radius-lg)', alignItems: 'center' }}>
+        <div className="banner banner--warn" style={{ borderRadius: 'var(--radius-lg)', alignItems: 'center', marginBottom: '1.5rem', padding: '1rem 1.25rem' }}>
           <AlertTriangle size={20} strokeWidth={2} style={{ color: '#b45309', flexShrink: 0 }} aria-hidden="true" />
-          <span style={{ fontSize: '0.9rem', color: '#92400e' }}>
+          <span style={{ fontSize: '0.9rem', color: '#92400e', lineHeight: 1.5 }}>
             <strong>Security Check:</strong> Never publish passwords, API keys, tokens, or personal data — including inside screenshots or console outputs.
           </span>
         </div>
 
         {/* Footer Actions */}
-        <div className="row row--between" style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px dashed var(--border)' }}>
+        <div className="row row--between" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--border)', flexWrap: 'wrap', gap: '1rem' }}>
           <button className="btn btn--quiet btn--sm" onClick={() => navigate(-1)}>Cancel</button>
           
-          <div className="row" style={{ gap: '0.75rem' }}>
+          <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap' }}>
             {!editing && (
               <button
                 className="btn btn--ghost"
