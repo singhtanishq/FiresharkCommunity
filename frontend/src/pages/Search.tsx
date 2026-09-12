@@ -50,11 +50,11 @@ export function Search() {
   const baseUrl = `/search?q=${encodeURIComponent(q)}${sort !== 'relevance' ? `&sort=${sort}` : ''}`
 
   return (
-    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)' }}>
+    <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Premium Header */}
-      <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both' }}>
-        <div className="row" style={{ gap: '1.25rem', flex: 1, minWidth: '300px' }}>
+      <div className="row row--between mb-4" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both', width: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ gap: '1.25rem', flex: '1 1 280px', minWidth: 0, flexWrap: 'wrap' }}>
           <div 
             style={{ 
               width: '64px', height: '64px', 
@@ -62,21 +62,22 @@ export function Search() {
               background: 'var(--brand-blue-50)', 
               color: 'var(--brand-blue-600)', 
               display: 'grid', placeItems: 'center',
-              boxShadow: '0 4px 12px rgba(22, 122, 201, 0.1)'
+              boxShadow: '0 4px 12px rgba(22, 122, 201, 0.1)',
+              flexShrink: 0
             }}
           >
-            <SearchIcon size={32} strokeWidth={2.5} />
+            <SearchIcon size={32} strokeWidth={2.5} style={{ flexShrink: 0 }} />
           </div>
-          <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)' }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 900, margin: '0 0 0.3rem', letterSpacing: '-0.02em', color: 'var(--ink-900)', wordBreak: 'break-word' }}>
               Global Search
             </h1>
-            <div style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ fontSize: '1.05rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', wordBreak: 'break-word' }}>
               {q ? (
                 <>
-                  Scanning intelligence for <span className="chip" style={{ background: 'var(--ink-100)', color: 'var(--ink-900)', fontWeight: 700, fontSize: '0.9rem' }}>"{q}"</span>
+                  <span>Scanning intelligence for</span> <span className="chip" style={{ background: 'var(--ink-100)', color: 'var(--ink-900)', fontWeight: 700, fontSize: '0.9rem', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'middle' }}>"{q}"</span>
                   {!loading && (
-                    <span className="muted" style={{ marginLeft: '0.2rem' }}>
+                    <span className="muted" style={{ marginLeft: '0.2rem', whiteSpace: 'nowrap' }}>
                       — {formatNumber(meta.total)} {meta.total === 1 ? 'match' : 'matches'} found
                     </span>
                   )}
@@ -90,15 +91,15 @@ export function Search() {
         <Link 
           to="/ask" 
           className="btn btn--fire btn--lg" 
-          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem' }}
+          style={{ boxShadow: '0 8px 16px -4px rgba(242, 96, 12, 0.3)', borderRadius: '99px', padding: '0.8rem 1.6rem', flexShrink: 0 }}
         >
-          <Plus size={18} strokeWidth={2.5} /> Ask a Question
+          <Plus size={18} strokeWidth={2.5} style={{ flexShrink: 0 }} /> <span>Ask a Question</span>
         </Link>
       </div>
 
       {/* Segmented Control Sorting with added top margin for proper spacing */}
       {q && questions.length > 0 && !loading && (
-        <div className="row" style={{ marginTop: '1.5rem', marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap' }}>
+        <div className="row" style={{ marginTop: '1.5rem', marginBottom: '2rem', animation: 'fade-in var(--dur-slow) var(--ease) 0.15s both', flexWrap: 'wrap', width: '100%', overflowX: 'auto', boxSizing: 'border-box' }}>
           <div 
             style={{ 
               background: 'var(--surface-2)', 
@@ -107,10 +108,12 @@ export function Search() {
               display: 'inline-flex', 
               gap: '0.2rem',
               border: '1px solid var(--border)',
-              alignItems: 'center'
+              alignItems: 'center',
+              flexWrap: 'nowrap',
+              boxSizing: 'border-box'
             }}
           >
-            <div style={{ padding: '0 0.5rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center' }}>
+            <div style={{ padding: '0 0.5rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
               <Filter size={16} />
             </div>
             {SORTS.map(([value, label]) => {
@@ -129,7 +132,9 @@ export function Search() {
                     color: isActive ? 'var(--brand-blue-700)' : 'var(--text-2)',
                     background: isActive ? '#fff' : 'transparent',
                     boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
-                    transition: 'all var(--dur-fast) var(--ease)'
+                    transition: 'all var(--dur-fast) var(--ease)',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
                   }}
                 >
                   {label}
@@ -141,13 +146,13 @@ export function Search() {
       )}
 
       {/* Results Feed */}
-      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both' }}>
+      <div style={{ animation: 'modal-rise var(--dur-slow) var(--ease) 0.2s both', width: '100%', boxSizing: 'border-box' }}>
         {!q ? (
-          <div className="panel" style={{ padding: '5rem 2rem', background: 'var(--surface-2)', borderStyle: 'dashed' }}>
+          <div className="panel" style={{ padding: '5rem 2rem', background: 'var(--surface-2)', borderStyle: 'dashed', boxSizing: 'border-box' }}>
             <EmptyState
               icon={<SearchIcon size={48} color="var(--brand-blue-300)" strokeWidth={1.5} />}
               title="Awaiting search parameters."
-              action={<Link to="/questions" className="btn btn--primary"><FileQuestion size={16} /> Browse all questions instead</Link>}
+              action={<Link to="/questions" className="btn btn--primary" style={{ flexWrap: 'wrap', justifyContent: 'center' }}><FileQuestion size={16} style={{ flexShrink: 0 }} /> <span>Browse all questions instead</span></Link>}
             />
           </div>
         ) : loading ? (
@@ -155,23 +160,23 @@ export function Search() {
             <Spinner />
           </div>
         ) : questions.length === 0 ? (
-          <div className="panel" style={{ padding: '4rem 2rem' }}>
+          <div className="panel" style={{ padding: '4rem 2rem', boxSizing: 'border-box' }}>
             <EmptyState
               icon={<SearchX size={48} color="var(--text-3)" strokeWidth={1.5} />}
               title="No intelligence found for that query."
               action={
-                <Link to={`/ask?title=${encodeURIComponent(q)}`} className="btn btn--fire">
-                  <Plus size={16} /> Ask the community about "{q}"
+                <Link to={`/ask?title=${encodeURIComponent(q)}`} className="btn btn--fire" style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <Plus size={16} style={{ flexShrink: 0 }} /> <span>Ask the community about "{q}"</span>
                 </Link>
               }
             />
           </div>
         ) : (
-          <div className="question-list" style={{ gap: '1rem' }}>
+          <div className="question-list" style={{ gap: '1rem', width: '100%', boxSizing: 'border-box' }}>
             {questions.map((question) => (
               <div 
                 key={question.id} 
-                style={{ transition: 'transform 0.3s ease' }} 
+                style={{ transition: 'transform 0.3s ease', width: '100%', boxSizing: 'border-box' }} 
                 onMouseOver={e => e.currentTarget.style.transform = 'scale(1.01)'} 
                 onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
               >
@@ -184,7 +189,7 @@ export function Search() {
 
       {/* Pagination */}
       {!loading && meta.last_page > 1 && (
-        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both' }}>
+        <div className="mt-4 row row--between" style={{ animation: 'fade-in var(--dur-slow) var(--ease) 0.3s both', width: '100%', boxSizing: 'border-box', flexWrap: 'wrap' }}>
           <Pagination meta={meta} baseUrl={baseUrl} />
         </div>
       )}
