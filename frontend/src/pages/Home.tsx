@@ -68,7 +68,7 @@ export function Home() {
 
   return (
     <div className="app-main">
-      <section className="hero">
+      <section className="hero" style={{ alignItems: 'flex-start', textAlign: 'left' }}>
         <div className="hero__eyebrow">
           <Award size={14} strokeWidth={2.5} /> FireShark Community
         </div>
@@ -81,7 +81,7 @@ export function Home() {
           keeps growing.
         </p>
 
-        {/* Refactored Hero Search Bar with perfectly matching button integration */}
+        {/* Left-aligned Glassmorphism Search Bar */}
         <form 
           className="hero__search" 
           role="search" 
@@ -89,16 +89,19 @@ export function Home() {
           style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            background: '#fff', 
+            background: 'rgba(255, 255, 255, 0.1)', 
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
             borderRadius: '99px', 
-            padding: '0.35rem 0.35rem 0.35rem 1rem',
+            padding: '0.35rem 0.35rem 0.35rem 1.2rem',
             boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.25)',
+            width: '100%',
             maxWidth: '640px',
-            margin: '0 auto 1.5rem',
+            margin: '0 0 1.5rem',
             border: '1px solid rgba(255, 255, 255, 0.2)'
           }}
         >
-          <Search style={{ color: 'var(--text-3)', flexShrink: 0, marginRight: '0.5rem' }} aria-hidden="true" size={20} strokeWidth={2} />
+          <Search style={{ color: 'rgba(255, 255, 255, 0.7)', flexShrink: 0, marginRight: '0.5rem' }} aria-hidden="true" size={20} strokeWidth={2} />
           <input
             value={heroQ}
             onChange={(e) => setHeroQ(e.target.value)}
@@ -110,7 +113,7 @@ export function Home() {
               background: 'transparent', 
               flex: 1, 
               fontSize: '1rem', 
-              color: 'var(--ink-900)',
+              color: '#fff',
               padding: '0.5rem 0'
             }}
           />
@@ -129,7 +132,7 @@ export function Home() {
           </button>
         </form>
 
-        <div className="hero__actions">
+        <div className="hero__actions" style={{ justifyContent: 'flex-start' }}>
           <Link to="/ask" className="btn btn--fire">Ask a Question</Link>
           <Link to="/questions" className="btn btn--ghost">Explore Questions</Link>
         </div>
@@ -240,7 +243,7 @@ export function Home() {
                 {top.map((person, index) => (
                   <Link 
                     key={person.id} 
-                    to={`/profile/${person.username}`}
+                    to={`/users/${person.username}`}
                     className="row row--between" 
                     style={{ 
                       textDecoration: 'none', 
