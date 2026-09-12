@@ -10,8 +10,10 @@ export function EmptyState({ icon = <FolderOpen size={40} strokeWidth={1.5} />, 
         flexDirection: 'column', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        padding: '3.5rem 2rem', 
+        padding: '3rem 1rem', 
         textAlign: 'center',
+        width: '100%',
+        boxSizing: 'border-box',
         animation: 'fade-in var(--dur-slow) var(--ease)'
       }}
     >
@@ -22,16 +24,17 @@ export function EmptyState({ icon = <FolderOpen size={40} strokeWidth={1.5} />, 
           color: 'var(--brand-blue-400)', 
           marginBottom: '1rem',
           display: 'grid',
-          placeItems: 'center'
+          placeItems: 'center',
+          flexShrink: 0
         }}
       >
         {icon}
       </div>
-      <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--ink-800)', maxWidth: '420px', lineHeight: 1.5, margin: '0 0 1.25rem' }}>
+      <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--ink-800)', maxWidth: '420px', lineHeight: 1.5, margin: '0 0 1.25rem', wordBreak: 'break-word' }}>
         {title}
       </p>
       {action && (
-        <div style={{ animation: 'modal-rise var(--dur-fast) var(--ease)' }}>
+        <div style={{ animation: 'modal-rise var(--dur-fast) var(--ease)', width: '100%', display: 'flex', justifyContent: 'center' }}>
           {action}
         </div>
       )}
@@ -46,8 +49,9 @@ export function Spinner() {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        padding: '4rem 0',
+        padding: '4rem 1rem',
         width: '100%',
+        boxSizing: 'border-box',
         animation: 'fade-in var(--dur-fast) var(--ease)'
       }}
       role="status" 
@@ -57,7 +61,8 @@ export function Spinner() {
         className="spinner" 
         style={{ 
           color: 'var(--brand-blue-600)',
-          animation: 'spin 0.8s linear infinite'
+          animation: 'spin 0.8s linear infinite',
+          flexShrink: 0
         }} 
       >
         <Loader2 size={36} strokeWidth={2.5} />
@@ -82,8 +87,10 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
         flexDirection: 'column', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        padding: '3.5rem 2rem', 
+        padding: '3rem 1rem', 
         textAlign: 'center',
+        width: '100%',
+        boxSizing: 'border-box',
         animation: 'fade-in var(--dur-slow) var(--ease)'
       }}
     >
@@ -94,12 +101,13 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
           color: 'var(--danger)', 
           marginBottom: '1rem',
           display: 'grid',
-          placeItems: 'center'
+          placeItems: 'center',
+          flexShrink: 0
         }}
       >
         <AlertTriangle size={40} strokeWidth={1.5} />
       </div>
-      <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--ink-900)', maxWidth: '420px', lineHeight: 1.5, margin: '0 0 1.25rem' }}>
+      <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--ink-900)', maxWidth: '420px', lineHeight: 1.5, margin: '0 0 1.25rem', wordBreak: 'break-word' }}>
         {message}
       </p>
       {onRetry && (
