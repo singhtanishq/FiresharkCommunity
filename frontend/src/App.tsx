@@ -84,6 +84,8 @@ export function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
             </AuthGuard>
           </Suspense>}>
+            </AuthGuard>
+          </Suspense>}>
 
         <Route path="/notifications" element={<Suspense fallback={<Spinner />}><Notifications /></Suspense>} />
         <Route path="/bookmarks" element={<Suspense fallback={<Spinner />}><Bookmarks /></Suspense>} />
