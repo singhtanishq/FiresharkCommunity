@@ -85,7 +85,7 @@ class DevelopmentSeeder extends Seeder
 
         // Convenience aliases: some content seeds reference users by username.
         $created['tanishq'] = $created['admin'];
-        $created['arjun'] = $created['instructor'];
+        $created['arjun'] = $created['expert'];
 
         return $created;
     }
