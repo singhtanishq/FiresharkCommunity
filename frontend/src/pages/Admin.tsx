@@ -10,7 +10,7 @@ import {
   LayoutDashboard, Flag, MessageSquare, FileText, Users, 
   FolderOpen, Award, Settings, CheckCircle2, 
   EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock, Search,
-  Menu, X, Tag, Trophy, ListChecks
+  Menu, X, Tag, Trophy
 } from 'lucide-react'
 
 // ------------------------------------------------------------------ shell
