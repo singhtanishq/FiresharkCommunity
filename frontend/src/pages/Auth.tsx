@@ -186,7 +186,7 @@ export function Login() {
     setError(null)
     try {
       await authApi.verifyLoginOtp({ identifier: email, code: otp }, otpToken)
-      window.location.href = from
+      navigate(from, { replace: true })
     } catch (err) {
       setError(apiError(err).message)
       setOtp('')
