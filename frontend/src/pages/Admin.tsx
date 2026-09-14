@@ -270,8 +270,11 @@ export function AdminReports() {
   }
 
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box' }}>
-      <AdminHeader title="Moderation Queue">
+    <div className="admin-content">
+      <AdminHeader 
+        title="Moderation Queue" 
+        subtitle="Review and take action on reported content"
+      >
         <select className="select" style={{ width: '100%', maxWidth: '200px', padding: '0.5rem 1rem' }} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter reports">
           <option value="">All statuses</option>
           <option value="pending">Pending</option>
@@ -288,10 +291,10 @@ export function AdminReports() {
           <EmptyState icon={<ShieldCheck size={48} color="var(--success)" strokeWidth={1.5} />} title="Queue is empty. Great job." />
         </div>
       ) : (
-        <div className="question-list" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div className="panel" style={{ overflow: 'hidden' }}>
           {reports.map((report) => (
-            <div key={report.id} className="panel" style={{ padding: '1.5rem', boxSizing: 'border-box', overflowX: 'hidden' }}>
-              <div className="row row--between mb-2" style={{ flexWrap: 'wrap', gap: '1rem' }}>
+            <div key={report.id} style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+              <div className="row row--between" style={{ flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
                 <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap' }}>
                   <span className={`chip ${report.status === 'pending' ? '' : 'chip--ghost'}`} style={{ flexShrink: 0, padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
                     {reportReasonLabels[report.reason] ?? report.reason}
@@ -305,11 +308,11 @@ export function AdminReports() {
                 </span>
               </div>
               
-              <div style={{ background: 'var(--surface-3)', padding: '1rem 1.25rem', borderRadius: 'var(--radius)', borderLeft: '4px solid var(--brand-blue-400)', margin: '1rem 0', fontSize: '0.95rem', color: 'var(--ink-800)', wordBreak: 'break-word', lineHeight: 1.5 }}>
+              <div style={{ background: 'var(--surface-3)', padding: '1rem 1.25rem', borderRadius: 'var(--radius)', borderLeft: '4px solid var(--brand-blue-400)', marginBottom: '1rem', fontSize: '0.95rem', color: 'var(--ink-800)', wordBreak: 'break-word', lineHeight: 1.5 }}>
                 {report.target_excerpt ?? <span className="muted"><i>(Content already deleted)</i></span>}
               </div>
               
-              <p className="text-3 mb-3" style={{ wordBreak: 'break-word', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              <p className="text-3" style={{ wordBreak: 'break-word', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1rem' }}>
                 {report.description && <span><b>Context:</b> “{report.description}” — </span>}
                 Reported by <b style={{ color: 'var(--ink-900)' }}>{report.reporter?.name ?? 'Unknown user'}</b> on {report.reportable_type} #{report.reportable_id}
               </p>
