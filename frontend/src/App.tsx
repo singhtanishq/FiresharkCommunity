@@ -77,11 +77,13 @@ export function App() {
         <Route path="/users/:username" element={<Suspense fallback={<Spinner />}><UserProfile /></Suspense>} />
         <Route path="/leaderboard" element={<Suspense fallback={<Spinner />}><Leaderboard /></Suspense>} />
 
-        <Route element={<Suspense fallback={<Spinner />}}><AuthGuard>}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        </Route>
+        <Route element={<Suspense fallback={<Spinner />}>
+            <AuthGuard>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+            </AuthGuard>
+          </Suspense>}>
 
         <Route path="/notifications" element={<Suspense fallback={<Spinner />}><Notifications /></Suspense>} />
         <Route path="/bookmarks" element={<Suspense fallback={<Spinner />}><Bookmarks /></Suspense>} />
