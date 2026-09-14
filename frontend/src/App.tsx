@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { Spinner } from './components/ui/States'
 import { Home } from './pages/Home'
@@ -7,6 +7,7 @@ import { QuestionsList } from './pages/QuestionsList'
 import { QuestionDetail } from './pages/QuestionDetail'
 import { Ask } from './pages/Ask'
 import { NotFound } from './pages/Static'
+import { useAuth } from './context/AuthContext'
 
 // Secondary routes are code-split to keep the initial bundle small.
 const Categories = lazy(() => import('./pages/Categories').then((m) => ({ default: m.Categories })))
@@ -40,6 +41,24 @@ const AdminBadges = lazy(() => import('./pages/AdminMore').then((m) => ({ defaul
 const AdminReputation = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminReputation })))
 const AdminSettings = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminSettings })))
 
+// Auth guard for login/register pages - redirects authenticated users to home
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth()
+  const location = useLocation()
+
+  if (loading) {
+    return <Spinner />
+  }
+
+  if (user) {
+    // Redirect to the intended destination or home
+    const from = (location.state as { from?: string } | null)?.from ?? '/'
+    return <Navigate to={from} replace />
+  }
+
+  return <>{children}</>
+}
+
 export function App() {
   return (
     <Routes>
@@ -58,9 +77,11 @@ export function App() {
         <Route path="/users/:username" element={<Suspense fallback={<Spinner />}><UserProfile /></Suspense>} />
         <Route path="/leaderboard" element={<Suspense fallback={<Spinner />}><Leaderboard /></Suspense>} />
 
-        <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
-        <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
-        <Route path="/forgot-password" element={<Suspense fallback={<Spinner />}><ForgotPassword /></Suspense>} />
+        <Route element={<Suspense fallback={<Spinner />}}><AuthGuard>}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Route>
 
         <Route path="/notifications" element={<Suspense fallback={<Spinner />}><Notifications /></Suspense>} />
         <Route path="/bookmarks" element={<Suspense fallback={<Spinner />}><Bookmarks /></Suspense>} />
