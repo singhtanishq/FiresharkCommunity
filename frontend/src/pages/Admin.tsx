@@ -156,31 +156,20 @@ export function AdminDashboard() {
   const { stats, recent_activity: activity } = data
 
   const StatCard = ({ value, label, warn = false }: { value: string | number, label: string, warn?: boolean }) => (
-    <div 
-      className="panel stat-card" 
-      style={{ 
-        padding: '1.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.5rem',
-        border: warn ? '1px solid var(--danger)' : '1px solid var(--border)',
-        background: warn ? 'var(--danger-bg)' : 'var(--surface)',
-        transition: 'transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease)',
-        boxSizing: 'border-box'
-      }}
-      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
-      onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-xs)'; }}
-    >
-      <b style={{ color: warn ? 'var(--danger)' : 'var(--ink-900)', fontSize: '2rem', lineHeight: 1 }}>{value}</b>
-      <span style={{ color: warn ? '#991b1b' : 'var(--text-3)', fontSize: '0.9rem', fontWeight: 500 }}>{label}</span>
+    <div className={`stat-card ${warn ? 'warn' : ''}`}>
+      <b>{value}</b>
+      <span>{label}</span>
     </div>
   )
 
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box' }}>
-      <AdminHeader title="Dashboard Overview" />
+    <div className="admin-content">
+      <AdminHeader 
+        title="Dashboard Overview" 
+        subtitle="Platform statistics and recent activity"
+      />
 
-      <div className="stat-grid mb-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+      <div className="stat-grid">
         <StatCard value={formatNumber(stats.users.total)} label="Total users" />
         <StatCard value={formatNumber(stats.users.active_month)} label="Active this month" />
         <StatCard value={formatNumber(stats.questions.published)} label="Published questions" />
@@ -189,10 +178,10 @@ export function AdminDashboard() {
         <StatCard value={formatNumber(stats.reports.pending)} label="Open reports" warn={stats.reports.pending > 0} />
       </div>
 
-      <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1.5rem' }}>
-        <div className="panel" style={{ overflowX: 'hidden' }}>
-          <div className="panel__header" style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ fontSize: '1.15rem', margin: 0, fontWeight: 600 }}>Recent questions</h2>
+      <div className="grid-2">
+        <div className="panel">
+          <div className="panel__header">
+            <h2>Recent questions</h2>
             <NavLink to="/admin/questions" className="muted text-3" style={{ fontSize: '0.9rem' }}>View all →</NavLink>
           </div>
           <div className="panel__body" style={{ padding: 0 }}>
@@ -217,9 +206,9 @@ export function AdminDashboard() {
           </div>
         </div>
 
-        <div className="panel" style={{ overflowX: 'hidden' }}>
-          <div className="panel__header" style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 style={{ fontSize: '1.15rem', margin: 0, fontWeight: 600 }}>Latest reports</h2>
+        <div className="panel">
+          <div className="panel__header">
+            <h2>Latest reports</h2>
             <NavLink to="/admin/reports" className="muted text-3" style={{ fontSize: '0.9rem' }}>Review queue →</NavLink>
           </div>
           <div className="panel__body" style={{ padding: 0 }}>
