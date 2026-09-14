@@ -49,7 +49,6 @@ export function renderMentions(text: string): (string | React.ReactElement)[] {
 
 export const verificationLabels: Record<string, string> = {
   team: 'FireShark Team',
-  instructor: 'FireShark Instructor',
   expert: 'FireShark Expert',
   alumni: 'FireShark Alumni',
   professional: 'Industry Professional',
