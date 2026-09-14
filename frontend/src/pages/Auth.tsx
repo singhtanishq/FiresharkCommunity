@@ -31,7 +31,7 @@ function AuthShell({ title, subtitle, children }: { title: string; subtitle?: st
               <Award size={18} color="#fbbf24" style={{ flexShrink: 0 }} /> Monthly leaderboard &amp; reputation badges
             </li>
             <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
-              <ShieldCheck size={18} color="#34d399" style={{ flexShrink: 0 }} /> Verified instructors and professionals
+              <ShieldCheck size={18} color="#34d399" style={{ flexShrink: 0 }} /> Verified experts and professionals
             </li>
             <li className="row" style={{ gap: '0.75rem', fontSize: '0.95rem', opacity: 0.9 }}>
               <Search size={18} color="#a78bfa" style={{ flexShrink: 0 }} /> Searchable knowledge that grows with you
