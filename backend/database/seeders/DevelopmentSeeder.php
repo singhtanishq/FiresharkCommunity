@@ -153,7 +153,7 @@ class DevelopmentSeeder extends Seeder
                 'tags' => ['laravel', 'api-security', 'authentication'],
                 'answers' => [
                     ['author' => 'arjun', 'body' => "For a same-origin SPA, honestly evaluate whether you need refresh tokens at all — ** Sanctum's SPA cookie mode** gives you httpOnly session cookies with CSRF protection and zero token storage in JavaScript. That is the simplest secure baseline.\n\nIf you genuinely need tokens (mobile clients, third-party APIs):\n\n1. **Access tokens**: 5–15 minutes, carry only the user id + scopes, never roles you cannot afford to go stale\n2. **Refresh tokens**: opaque random strings stored hashed in the DB, one row per session\n3. **Rotation with replay detection**: every refresh issues a new token and invalidates the old one. If a *revoked* token is ever presented, treat the whole chain as compromised and revoke the family\n4. Shared hosting is fine — this is all just MySQL rows and indexed lookups\n\nKeep the access token *dumb* and the server authoritative; do not encode permissions into JWT claims and then trust them."],
-                    ['author' => 'instructor', 'body' => "Agreed on rotation. One more thing: rate-limit the refresh endpoint hard (we use 10/min) and alert on refresh failures — a spike in invalid refresh attempts is usually replay or theft."],
+                    ['author' => 'expert', 'body' => "Agreed on rotation. One more thing: rate-limit the refresh endpoint hard (we use 10/min) and alert on refresh failures — a spike in invalid refresh attempts is usually replay or theft."],
                 ],
                 'accept' => 0,
                 'comments' => [
