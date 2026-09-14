@@ -28,14 +28,17 @@ const Settings = lazy(() => import('./pages/UserPages').then((m) => ({ default: 
 const CommunityGuidelines = lazy(() => import('./pages/Static').then((m) => ({ default: m.CommunityGuidelines })))
 const About = lazy(() => import('./pages/Static').then((m) => ({ default: m.About })))
 
-const AdminLayout = lazy(() => import('./pages/Admin.tsx').then((m) => ({ default: m.AdminLayout })))
-const AdminDashboard = lazy(() => import('./pages/Admin.tsx').then((m) => ({ default: m.AdminDashboard })))
-const AdminReports = lazy(() => import('./pages/Admin.tsx').then((m) => ({ default: m.AdminReports })))
-const AdminContent = lazy(() => import('./pages/Admin.tsx').then((m) => ({ default: m.AdminContent })))
-const AdminUsers = lazy(() => import('./pages/Admin.tsx').then((m) => ({ default: m.AdminUsers })))
-const AdminTaxonomy = lazy(() => import('./pages/AdminMore.tsx').then((m) => ({ default: m.AdminTaxonomy })))
-const AdminGamification = lazy(() => import('./pages/AdminMore.tsx').then((m) => ({ default: m.AdminGamification })))
-const AdminSettings = lazy(() => import('./pages/AdminMore.tsx').then((m) => ({ default: m.AdminSettings })))
+// Admin routes - each page is now separate
+const AdminLayout = lazy(() => import('./pages/Admin').then((m) => ({ default: m.AdminLayout })))
+const AdminDashboard = lazy(() => import('./pages/Admin').then((m) => ({ default: m.AdminDashboard })))
+const AdminReports = lazy(() => import('./pages/Admin').then((m) => ({ default: m.AdminReports })))
+const AdminContent = lazy(() => import('./pages/Admin').then((m) => ({ default: m.AdminContent })))
+const AdminUsers = lazy(() => import('./pages/Admin').then((m) => ({ default: m.AdminUsers })))
+const AdminCategories = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminCategories })))
+const AdminTags = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminTags })))
+const AdminBadges = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminBadges })))
+const AdminReputation = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminReputation })))
+const AdminSettings = lazy(() => import('./pages/AdminMore').then((m) => ({ default: m.AdminSettings })))
 
 export function App() {
   return (
@@ -72,8 +75,10 @@ export function App() {
           <Route path="questions" element={<AdminContent kind="questions" />} />
           <Route path="answers" element={<AdminContent kind="answers" />} />
           <Route path="users" element={<AdminUsers />} />
-          <Route path="categories" element={<AdminTaxonomy />} />
-          <Route path="badges" element={<AdminGamification />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="tags" element={<AdminTags />} />
+          <Route path="badges" element={<AdminBadges />} />
+          <Route path="reputation" element={<AdminReputation />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
 
