@@ -4,32 +4,24 @@ import { AdminHeader } from './Admin'
 import { EmptyState, Spinner } from '../components/ui/States'
 import { formatNumber } from '../lib/format'
 import { 
-  Trophy, FolderTree, Tags, Search, Plus, Save, 
+  FolderTree, Tags, Search, Plus, Save, 
   Trash2, Award, TrendingUp, Settings, CheckCircle2,
-  AlertTriangle, Check
+  AlertTriangle, Check, X, ArrowRight
 } from 'lucide-react'
 
-// ---------------------------------------------------- categories & tags
+// ---------------------------------------------------- Categories
 
-export function AdminTaxonomy() {
+export function AdminCategories() {
   const [categories, setCategories] = useState<any[]>([])
-  const [tags, setTags] = useState<any[]>([])
-  const [tagQ, setTagQ] = useState('')
   const [newCategory, setNewCategory] = useState('')
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
     setLoading(true)
-    Promise.all([
-      api.get('/categories'),
-      api.get('/admin/tags', { params: { per_page: 40, q: tagQ || undefined } }),
-    ])
-      .then(([c, t]) => {
-        setCategories(c.data.data)
-        setTags(t.data.data)
-      })
+    api.get('/categories')
+      .then((c) => setCategories(c.data.data))
       .finally(() => setLoading(false))
-  }, [tagQ])
+  }, [])
 
   useEffect(load, [load])
 
@@ -56,29 +48,16 @@ export function AdminTaxonomy() {
     } catch (e) { alert(apiError(e).message) }
   }
 
-  const saveTag = async (tag: any) => {
-    try {
-      await api.put(`/admin/tags/${tag.id}`, { name: tag.name, description: tag.description })
-      load()
-    } catch (e) { alert(apiError(e).message) }
-  }
-
-  const mergeTag = async (tag: any) => {
-    const targetId = window.prompt(`Merge "${tag.name}" into which tag id? (see ids in the table)`)
-    if (!targetId) return
-    try {
-      await api.post(`/admin/tags/${tag.id}/merge`, { target_id: Number(targetId) })
-      load()
-    } catch (e) { alert(apiError(e).message) }
-  }
-
   if (loading && categories.length === 0) return <Spinner />
 
   return (
-    <div style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-      <AdminHeader title="Taxonomy Management" />
+    <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      <AdminHeader 
+        title="Categories" 
+        subtitle="Manage question categories and their visibility"
+      />
 
-      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+      <section className="panel mb-3">
         <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <FolderTree size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Categories
@@ -137,16 +116,61 @@ export function AdminTaxonomy() {
           </div>
         </div>
       </section>
+    </div>
+  )
+}
 
-      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
-        <div className="panel__header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
+// ---------------------------------------------------- Tags
+
+export function AdminTags() {
+  const [tags, setTags] = useState<any[]>([])
+  const [tagQ, setTagQ] = useState('')
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(() => {
+    setLoading(true)
+    api.get('/admin/tags', { params: { per_page: 40, q: tagQ || undefined } })
+      .then((t) => setTags(t.data.data))
+      .finally(() => setLoading(false))
+  }, [tagQ])
+
+  useEffect(load, [load])
+
+  const saveTag = async (tag: any) => {
+    try {
+      await api.put(`/admin/tags/${tag.id}`, { name: tag.name, description: tag.description })
+      load()
+    } catch (e) { alert(apiError(e).message) }
+  }
+
+  const mergeTag = async (tag: any) => {
+    const targetId = window.prompt(`Merge "${tag.name}" into which tag id? (see ids in the table)`)
+    if (!targetId) return
+    try {
+      await api.post(`/admin/tags/${tag.id}/merge`, { target_id: Number(targetId) })
+      load()
+    } catch (e) { alert(apiError(e).message) }
+  }
+
+  if (loading && tags.length === 0) return <Spinner />
+
+  return (
+    <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      <AdminHeader 
+        title="Tags" 
+        subtitle="Manage system tags and their usage"
+      >
+        <div className="input-affix" style={{ width: '100%', maxWidth: '220px' }}>
+          <Search className="input-affix__icon" size={14} />
+          <input className="input input--with-affix" style={{ padding: '0.4rem 0.6rem 0.4rem 2rem', fontSize: '0.85rem' }} placeholder="Search tags…" value={tagQ} onChange={(e) => setTagQ(e.target.value)} />
+        </div>
+      </AdminHeader>
+
+      <section className="panel mb-3">
+        <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Tags size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> System Tags
           </h2>
-          <div className="input-affix" style={{ width: '100%', maxWidth: '220px' }}>
-            <Search className="input-affix__icon" size={14} />
-            <input className="input input--with-affix" style={{ padding: '0.4rem 0.6rem 0.4rem 2rem', fontSize: '0.85rem' }} placeholder="Search tags…" value={tagQ} onChange={(e) => setTagQ(e.target.value)} />
-          </div>
         </div>
         <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
           <table className="data-table" style={{ width: '100%', minWidth: '500px' }}>
@@ -154,6 +178,7 @@ export function AdminTaxonomy() {
               <tr>
                 <th style={{ width: '60px' }}>ID</th>
                 <th>Tag Name</th>
+                <th>Description</th>
                 <th>Usage Count</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
@@ -170,6 +195,17 @@ export function AdminTaxonomy() {
                         if (e.target.value !== tag.name) saveTag({ ...tag, name: e.target.value })
                       }}
                       aria-label="Tag name"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      className="input" style={{ width: '300px', padding: '0.4rem 0.6rem', fontSize: '0.85rem' }}
+                      defaultValue={tag.description ?? ''}
+                      onBlur={(e) => {
+                        if (e.target.value !== (tag.description ?? '')) saveTag({ ...tag, description: e.target.value })
+                      }}
+                      aria-label="Tag description"
+                      placeholder="Add description..."
                     />
                   </td>
                   <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatNumber(tag.questions_count)}</td>
@@ -189,20 +225,16 @@ export function AdminTaxonomy() {
   )
 }
 
-// ------------------------------------------------- badges & reputation
+// ---------------------------------------------------- Badges
 
-export function AdminGamification() {
+export function AdminBadges() {
   const [badges, setBadges] = useState<any[]>([])
-  const [rules, setRules] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(() => {
     setLoading(true)
-    Promise.all([api.get('/admin/badges'), api.get('/admin/reputation-rules')])
-      .then(([b, r]) => {
-        setBadges(b.data.data)
-        setRules(r.data.data)
-      })
+    api.get('/admin/badges')
+      .then((b) => setBadges(b.data.data))
       .finally(() => setLoading(false))
   }, [])
 
@@ -217,20 +249,16 @@ export function AdminGamification() {
     } catch (e) { alert(apiError(e).message) }
   }
 
-  const saveRule = async (rule: any) => {
-    try {
-      await api.put(`/admin/reputation-rules/${rule.id}`, { points: Number(rule.points), is_enabled: rule.is_enabled })
-      load()
-    } catch (e) { alert(apiError(e).message) }
-  }
-
   if (loading) return <Spinner />
 
   return (
-    <div style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-      <AdminHeader title="Gamification Engine" />
+    <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      <AdminHeader 
+        title="Badges" 
+        subtitle="Manage community badges and manual awards"
+      />
 
-      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+      <section className="panel mb-3">
         <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Award size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Community Badges
@@ -276,8 +304,42 @@ export function AdminGamification() {
           </table>
         </div>
       </section>
+    </div>
+  )
+}
 
-      <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
+// ---------------------------------------------------- Reputation
+
+export function AdminReputation() {
+  const [rules, setRules] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const load = useCallback(() => {
+    setLoading(true)
+    api.get('/admin/reputation-rules')
+      .then((r) => setRules(r.data.data))
+      .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(load, [load])
+
+  const saveRule = async (rule: any) => {
+    try {
+      await api.put(`/admin/reputation-rules/${rule.id}`, { points: Number(rule.points), is_enabled: rule.is_enabled })
+      load()
+    } catch (e) { alert(apiError(e).message) }
+  }
+
+  if (loading) return <Spinner />
+
+  return (
+    <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      <AdminHeader 
+        title="Reputation Rules" 
+        subtitle="Configure reputation points for user actions"
+      />
+
+      <section className="panel mb-3">
         <div className="panel__header">
           <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <TrendingUp size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Reputation Rules
@@ -332,7 +394,7 @@ export function AdminGamification() {
   )
 }
 
-// -------------------------------------------------- settings & leaderboard
+// ---------------------------------------------------- Settings & Leaderboard
 
 export function AdminSettings() {
   const [settings, setSettings] = useState<Record<string, string>>({})
@@ -365,117 +427,122 @@ export function AdminSettings() {
   }
 
   return (
-    <div className="grid-3" style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-      <div style={{ width: '100%', minWidth: 0 }}>
-        <AdminHeader title="Platform Settings" />
+    <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      <AdminHeader 
+        title="Settings & Config" 
+        subtitle="Platform configuration and leaderboard management"
+      />
 
-        <section className="panel mb-3" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
-          <div className="panel__header">
-            <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Settings size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Core Configuration
-            </h2>
-          </div>
-          <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box' }}>
-            {saved && (
-              <div className="banner banner--success mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
-                <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
-                <span style={{ wordBreak: 'break-word' }}>Global configuration updated successfully.</span>
-              </div>
-            )}
-            
-            <div className="field">
-              <label htmlFor="cfg-site-name">Platform Name</label>
-              <input 
-                id="cfg-site-name" 
-                className="input input--lg" 
-                value={settings.site_name ?? ''} 
-                onChange={(e) => setSettings({ ...settings, site_name: e.target.value })} 
-              />
+      <div className="grid-3">
+        <div style={{ width: '100%', minWidth: 0 }}>
+          <section className="panel mb-3">
+            <div className="panel__header">
+              <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Settings size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Core Configuration
+              </h2>
             </div>
-            
-            <div className="field">
-              <label htmlFor="cfg-site-desc">Global SEO Description</label>
-              <textarea 
-                id="cfg-site-desc" 
-                className="textarea" 
-                style={{ minHeight: '90px' }} 
-                value={settings.site_description ?? ''} 
-                onChange={(e) => setSettings({ ...settings, site_description: e.target.value })} 
-              />
-              <span className="hint">Used for metadata and default opengraph descriptions.</span>
-            </div>
-            
-            <div className="field">
-              <label htmlFor="cfg-support">Support URL</label>
-              <input 
-                id="cfg-support" 
-                className="input" 
-                value={settings.support_url ?? ''} 
-                onChange={(e) => setSettings({ ...settings, support_url: e.target.value })} 
-              />
-            </div>
-            
-            <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-              <button className="btn btn--primary" onClick={save}>
-                <Check size={16} /> Save Configuration
-              </button>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <aside style={{ width: '100%', minWidth: 0 }}>
-        <section className="panel" style={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden' }}>
-          <div className="panel__header">
-            <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Trophy size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Leaderboard Engine
-            </h2>
-          </div>
-          <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
-            {!leaderboard ? (
-              <Spinner />
-            ) : leaderboard.periods.length === 0 ? (
-              <div style={{ padding: '2rem 1rem' }}>
-                <EmptyState icon={<Trophy size={32} strokeWidth={1.5} />} title="No finalized periods." />
-              </div>
-            ) : (
-              <table className="data-table" style={{ width: '100%', minWidth: '280px' }}>
-                <thead>
-                  <tr>
-                    <th>Period Cycle</th>
-                    <th style={{ textAlign: 'right' }}>Finalized Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leaderboard.periods.map((p: any) => (
-                    <tr key={p.period_key}>
-                      <td>
-                        <b style={{ color: 'var(--ink-900)' }}>{p.period_key}</b>
-                        <div className="chip chip--ghost mt-1" style={{ fontSize: '0.7rem' }}>{p.status}</div>
-                      </td>
-                      <td className="muted text-3" style={{ textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
-                        {p.finalized_at ? new Date(p.finalized_at).toLocaleDateString() : '—'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-            
-            {leaderboard?.period && leaderboard.period.is_current && (
-              <div style={{ padding: '1.25rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)', boxSizing: 'border-box' }}>
-                <div className="row row--between mb-1" style={{ fontSize: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <b>Active Cycle:</b>
-                  <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)' }}>{leaderboard.period.period_key}</span>
+            <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box' }}>
+              {saved && (
+                <div className="banner banner--success mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
+                  <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+                  <span style={{ wordBreak: 'break-word' }}>Global configuration updated successfully.</span>
                 </div>
-                <button className="btn btn--danger btn--block mt-2" onClick={() => finalize(leaderboard.period.period_key)}>
-                  <AlertTriangle size={16} /> Finalize Current Cycle
+              )}
+              
+              <div className="field">
+                <label htmlFor="cfg-site-name">Platform Name</label>
+                <input 
+                  id="cfg-site-name" 
+                  className="input input--lg" 
+                  value={settings.site_name ?? ''} 
+                  onChange={(e) => setSettings({ ...settings, site_name: e.target.value })} 
+                />
+              </div>
+              
+              <div className="field">
+                <label htmlFor="cfg-site-desc">Global SEO Description</label>
+                <textarea 
+                  id="cfg-site-desc" 
+                  className="textarea" 
+                  style={{ minHeight: '90px' }} 
+                  value={settings.site_description ?? ''} 
+                  onChange={(e) => setSettings({ ...settings, site_description: e.target.value })} 
+                />
+                <span className="hint">Used for metadata and default opengraph descriptions.</span>
+              </div>
+              
+              <div className="field">
+                <label htmlFor="cfg-support">Support URL</label>
+                <input 
+                  id="cfg-support" 
+                  className="input" 
+                  value={settings.support_url ?? ''} 
+                  onChange={(e) => setSettings({ ...settings, support_url: e.target.value })} 
+                />
+              </div>
+              
+              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+                <button className="btn btn--primary" onClick={save}>
+                  <Check size={16} /> Save Configuration
                 </button>
               </div>
-            )}
-          </div>
-        </section>
-      </aside>
+            </div>
+          </section>
+        </div>
+
+        <aside style={{ width: '100%', minWidth: 0 }}>
+          <section className="panel">
+            <div className="panel__header">
+              <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Trophy size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Leaderboard Engine
+              </h2>
+            </div>
+            <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
+              {!leaderboard ? (
+                <Spinner />
+              ) : leaderboard.periods.length === 0 ? (
+                <div style={{ padding: '2rem 1rem' }}>
+                  <EmptyState icon={<Trophy size={32} strokeWidth={1.5} />} title="No finalized periods." />
+                </div>
+              ) : (
+                <table className="data-table" style={{ width: '100%', minWidth: '280px' }}>
+                  <thead>
+                    <tr>
+                      <th>Period Cycle</th>
+                      <th style={{ textAlign: 'right' }}>Finalized Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboard.periods.map((p: any) => (
+                      <tr key={p.period_key}>
+                        <td>
+                          <b style={{ color: 'var(--ink-900)' }}>{p.period_key}</b>
+                          <div className="chip chip--ghost mt-1" style={{ fontSize: '0.7rem' }}>{p.status}</div>
+                        </td>
+                        <td className="muted text-3" style={{ textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap' }}>
+                          {p.finalized_at ? new Date(p.finalized_at).toLocaleDateString() : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              
+              {leaderboard?.period && leaderboard.period.is_current && (
+                <div style={{ padding: '1.25rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)', boxSizing: 'border-box' }}>
+                  <div className="row row--between mb-1" style={{ fontSize: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <b>Active Cycle:</b>
+                    <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)' }}>{leaderboard.period.period_key}</span>
+                  </div>
+                  <button className="btn btn--danger btn--block mt-2" onClick={() => finalize(leaderboard.period.period_key)}>
+                    <AlertTriangle size={16} /> Finalize Current Cycle
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        </aside>
+      </div>
     </div>
   )
 }
