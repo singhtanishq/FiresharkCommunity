@@ -503,8 +503,11 @@ export function AdminUsers() {
   }
 
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box' }}>
-      <AdminHeader title="User Directory">
+    <div className="admin-content">
+      <AdminHeader 
+        title="User Directory" 
+        subtitle="Manage user accounts, roles, and verifications"
+      >
         <div className="input-affix" style={{ width: '100%', maxWidth: '320px' }}>
           <Search className="input-affix__icon" size={18} />
           <input className="input input--with-affix" style={{ padding: '0.5rem 1rem 0.5rem 2.5rem' }} placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
@@ -515,22 +518,22 @@ export function AdminUsers() {
         <Spinner />
       ) : (
         <>
-          <div className="panel" style={{ overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
-            <table className="data-table" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse' }}>
+          <div className="table-wrapper">
+            <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Profile</th>
-                  <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Role</th>
-                  <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Reputation</th>
-                  <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Activity (Q/A)</th>
-                  <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Account Status</th>
-                  <th style={{ padding: '1rem', textAlign: 'right', borderBottom: '2px solid var(--border)' }}>Management</th>
+                  <th>Profile</th>
+                  <th>Role</th>
+                  <th>Reputation</th>
+                  <th>Activity (Q/A)</th>
+                  <th>Account Status</th>
+                  <th style={{ textAlign: 'right' }}>Management</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '1rem' }}>
+                  <tr key={u.id}>
+                    <td>
                       <div className="row" style={{ gap: '1rem', flexWrap: 'nowrap' }}>
                         <Avatar name={u.name} path={u.avatar_path} size="md" />
                         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, gap: '0.2rem' }}>
@@ -539,7 +542,7 @@ export function AdminUsers() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '1rem' }}>
+                    <td>
                       {me?.role === 'admin' ? (
                         <select className="select" style={{ width: '130px', padding: '0.4rem 0.5rem', fontSize: '0.9rem' }} value={u.role} onChange={(e) => action(`/admin/users/${u.id}/role`, { role: e.target.value })} aria-label={`Role for ${u.name}`}>
                           <option value="user">User</option>
@@ -550,9 +553,9 @@ export function AdminUsers() {
                         <span className="chip chip--ghost" style={{ padding: '0.2rem 0.6rem', fontSize: '0.85rem' }}>{u.role}</span>
                       )}
                     </td>
-                    <td style={{ fontWeight: 700, color: 'var(--brand-blue-600)', whiteSpace: 'nowrap', padding: '1rem', fontSize: '1rem' }}>{formatNumber(u.reputation)}</td>
-                    <td className="muted" style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap', padding: '1rem' }}>{u.questions_count} <span style={{ opacity: 0.5, margin: '0 0.25rem' }}>/</span> {u.answers_count}</td>
-                    <td style={{ whiteSpace: 'nowrap', padding: '1rem' }}>
+                    <td style={{ fontWeight: 700, color: 'var(--brand-blue-600)', whiteSpace: 'nowrap', fontSize: '1rem' }}>{formatNumber(u.reputation)}</td>
+                    <td className="muted" style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{u.questions_count} <span style={{ opacity: 0.5, margin: '0 0.25rem' }}>/</span> {u.answers_count}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
                       {u.is_suspended ? (
                         <span className="chip" style={{ background: 'var(--danger-bg)', color: 'var(--danger)', padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}><Lock size={14} style={{ marginRight: '4px' }} /> Suspended</span>
                       ) : u.verification ? (
@@ -561,12 +564,12 @@ export function AdminUsers() {
                         <span className="chip chip--ghost" style={{ fontSize: '0.85rem', padding: '0.3rem 0.6rem' }}>Active</span>
                       )}
                     </td>
-                    <td style={{ padding: '1rem' }}>
+                    <td style={{ textAlign: 'right' }}>
                       <div className="row" style={{ gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                         {me?.role === 'admin' && (
                           <>
                             <button className="btn btn--ghost btn--sm" onClick={() => {
-                              const type = window.prompt('Verification type: team, instructor, expert, alumni, professional')
+                              const type = window.prompt('Verification type: team, expert, alumni, professional')
                               if (type) action(`/admin/users/${u.id}/verify`, { type })
                             }}>Verify</button>
                             {u.verification && (
