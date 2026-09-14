@@ -49,7 +49,7 @@ class DevelopmentSeeder extends Seeder
         $definition = [
             'admin' => ['name' => 'Tanishq Singh', 'username' => 'tanishq', 'role' => 'admin', 'bio' => 'Full-stack developer. Building the FireShark Community.', 'expertise' => 'Web security, PHP, React'],
             'mod' => ['name' => 'Meera Kapoor', 'username' => 'meera', 'role' => 'moderator', 'bio' => 'Security analyst and community moderator.', 'expertise' => 'SOC, SIEM, incident response'],
-            'instructor' => ['name' => 'Arjun Mehta', 'username' => 'arjun', 'role' => 'user', 'bio' => 'Instructor at FireShark Academy. Networking and ethical hacking.', 'expertise' => 'CCNA, CEH, penetration testing', 'verification' => 'instructor'],
+            'expert' => ['name' => 'Arjun Mehta', 'username' => 'arjun', 'role' => 'user', 'bio' => 'Security expert at FireShark Academy. Networking and ethical hacking.', 'expertise' => 'CCNA, CEH, penetration testing', 'verification' => 'expert'],
             'riya' => ['name' => 'Riya Sharma', 'username' => 'riya', 'role' => 'user', 'bio' => 'Bug bounty hunter in training.', 'expertise' => 'Web security'],
             'dev' => ['name' => 'Dev Patel', 'username' => 'devp', 'role' => 'user', 'bio' => 'SOC analyst. Love log analysis.', 'expertise' => 'Splunk, ELK'],
             'karan' => ['name' => 'Karan Verma', 'username' => 'karan', 'role' => 'user', 'bio' => 'Networking student preparing for CCNA.', 'expertise' => 'Routing & switching'],
