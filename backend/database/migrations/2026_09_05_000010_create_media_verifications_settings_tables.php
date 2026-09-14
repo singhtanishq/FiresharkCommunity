@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::create('user_verifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['team', 'instructor', 'expert', 'alumni', 'professional']);
+            $table->enum('type', ['team', 'expert', 'alumni', 'professional']);
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('note')->nullable();
             $table->timestamp('created_at')->useCurrent();
