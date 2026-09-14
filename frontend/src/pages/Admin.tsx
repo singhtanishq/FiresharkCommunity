@@ -57,60 +57,21 @@ export function AdminLayout() {
   }, [location.pathname])
 
   return (
-    <div className="admin-layout" style={{ 
-      animation: 'fade-in var(--dur) var(--ease)', 
-      width: '100%', 
-      boxSizing: 'border-box', 
-      display: 'flex', 
-      minHeight: 'calc(100vh - var(--header-h))',
-    }}>
+    <div className="admin-layout" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
       {/* Mobile sidebar overlay */}
       {window.innerWidth < 1024 && sidebarOpen && (
         <div 
           className="admin-sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(11, 18, 32, 0.5)',
-            zIndex: 40,
-            animation: 'fade-in var(--dur) var(--ease)',
-          }}
         />
       )}
 
       <nav 
-        className="admin-nav panel" 
-        style={{ 
-          padding: '1rem', 
-          position: 'sticky', 
-          top: 'var(--header-h)',
-          height: 'calc(100vh - var(--header-h))',
-          boxSizing: 'border-box', 
-          minWidth: '260px',
-          maxWidth: '260px',
-          flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: window.innerWidth < 1024 ? 50 : undefined,
-          transform: window.innerWidth < 1024 && !sidebarOpen ? 'translateX(-100%)' : 'translateX(0)',
-          transition: 'transform var(--dur) var(--ease)',
-        }} 
+        className={`admin-nav ${window.innerWidth < 1024 && sidebarOpen ? 'is-open' : ''}`}
         aria-label="Admin navigation"
       >
-        <div style={{ 
-          padding: '0.5rem 0.75rem', 
-          marginBottom: '1rem', 
-          fontSize: '0.75rem', 
-          fontWeight: 700, 
-          color: 'var(--text-3)', 
-          textTransform: 'uppercase', 
-          letterSpacing: '0.08em',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          Administration
+        <div className="admin-nav-header">
+          <span>Administration</span>
           {window.innerWidth < 1024 && (
             <button
               onClick={() => setSidebarOpen(false)}
@@ -121,40 +82,19 @@ export function AdminLayout() {
             </button>
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1, overflowY: 'auto' }}>
+        <div className="admin-nav-list" role="navigation">
           {navItems.map(([to, icon, label]) => (
             <NavLink 
               key={to} 
               to={to} 
               end={to === '/admin'} 
               className={({ isActive }) => `row ${isActive ? 'is-active' : ''}`}
-              style={{ 
-                padding: '0.625rem 0.875rem', 
-                borderRadius: 'var(--radius)', 
-                textDecoration: 'none',
-                transition: 'background var(--dur) var(--ease), color var(--dur) var(--ease)',
-                width: '100%',
-                boxSizing: 'border-box',
-                gap: '0.625rem',
-                color: 'var(--ink-700)',
-                fontSize: '0.9rem',
-                fontWeight: 500,
-              }}
             >
               <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</span> 
               <span style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
             </NavLink>
           ))}
         </div>
-        
-        {/* Mobile menu toggle - only show on mobile */}
-        {window.innerWidth < 1024 && (
-          <div style={{ paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', marginBottom: '0.5rem' }}>
-              Menu
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* Mobile menu button */}
@@ -162,36 +102,13 @@ export function AdminLayout() {
         <button
           onClick={() => setSidebarOpen(true)}
           className="admin-mobile-menu-btn"
-          style={{
-            position: 'fixed',
-            bottom: '1.5rem',
-            right: '1.5rem',
-            zIndex: 45,
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'var(--brand-blue-600)',
-            color: '#fff',
-            border: 'none',
-            boxShadow: 'var(--shadow-lg)',
-            cursor: 'pointer',
-            display: 'grid',
-            placeItems: 'center',
-            animation: 'fade-in var(--dur) var(--ease)',
-          }}
           aria-label="Open admin menu"
         >
           <Menu size={24} />
         </button>
       )}
 
-      <main style={{ 
-        minWidth: 0, 
-        width: '100%', 
-        overflowX: 'hidden', 
-        paddingBottom: '3rem',
-        flex: 1,
-      }}>
+      <main className="admin-main">
         <Outlet />
       </main>
     </div>
