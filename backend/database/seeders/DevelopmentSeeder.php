@@ -208,7 +208,7 @@ class DevelopmentSeeder extends Seeder
                 'tags' => ['wireshark', 'tcp', 'troubleshooting'],
                 'answers' => [
                     ['author' => 'karan', 'body' => "Common causes in order of likelihood on a small network:\n\n1. **Packet loss** — bad cable, flaky switch port, bufferbloat on the router. Check `expert information` for congestion indicators\n2. **MTU/fragmentation issues** — VPNs or tunnels shrinking path MTU cause retransmits on large segments\n3. **Asymmetric routing** in more complex topologies\n4. **Failing NIC offload** — try disabling checksum offload on the capture host; what Wireshark reports as bad checksums is sometimes just the capturing NIC\n\nIn Wireshark: use `tcp.analysis.retransmission` as a display filter, then `Statistics → Conversations` to see whether retransmits cluster on one host/stream. One stream → application/socket issue. Everywhere → physical layer."],
-                    ['author' => 'instructor', 'body' => 'Nice summary. For labs, I would add: mirror the switch port properly (SPAN) — capturing through the router double-NATs and confuses everything.'],
+                    ['author' => 'expert', 'body' => 'Nice summary. For labs, I would add: mirror the switch port properly (SPAN) — capturing through the router double-NATs and confuses everything.'],
                 ],
                 'accept' => 0,
                 'comments' => [],
