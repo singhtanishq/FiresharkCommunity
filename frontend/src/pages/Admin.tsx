@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { api, apiError } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { EmptyState, Spinner } from '../components/ui/States'
@@ -9,7 +9,8 @@ import { formatNumber, reportReasonLabels, timeAgo, verificationLabels } from '.
 import { 
   LayoutDashboard, Flag, MessageSquare, FileText, Users, 
   FolderOpen, Award, Settings, CheckCircle2, 
-  EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock, Search
+  EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock, Search,
+  Menu, X, Tag, Trophy, ListChecks
 } from 'lucide-react'
 
 // ------------------------------------------------------------------ shell
@@ -20,49 +21,179 @@ const ADMIN_NAV = [
   ['/admin/questions', <MessageSquare size={18} strokeWidth={2} />, 'Questions'],
   ['/admin/answers', <FileText size={18} strokeWidth={2} />, 'Answers'],
   ['/admin/users', <Users size={18} strokeWidth={2} />, 'Users'],
-  ['/admin/categories', <FolderOpen size={18} strokeWidth={2} />, 'Categories & tags'],
-  ['/admin/badges', <Award size={18} strokeWidth={2} />, 'Badges & reputation'],
-  ['/admin/settings', <Settings size={18} strokeWidth={2} />, 'Settings & config'],
+  ['/admin/categories', <FolderOpen size={18} strokeWidth={2} />, 'Categories'],
+  ['/admin/tags', <Tag size={18} strokeWidth={2} />, 'Tags'],
+  ['/admin/badges', <Award size={18} strokeWidth={2} />, 'Badges'],
+  ['/admin/reputation', <Trophy size={18} strokeWidth={2} />, 'Reputation'],
+  ['/admin/settings', <Settings size={18} strokeWidth={2} />, 'Settings & Config'],
+] as const
+
+// Separate nav for moderators (no settings)
+const MODERATOR_NAV = [
+  ['/admin', <LayoutDashboard size={18} strokeWidth={2} />, 'Dashboard'],
+  ['/admin/reports', <Flag size={18} strokeWidth={2} />, 'Reports'],
+  ['/admin/questions', <MessageSquare size={18} strokeWidth={2} />, 'Questions'],
+  ['/admin/answers', <FileText size={18} strokeWidth={2} />, 'Answers'],
+  ['/admin/users', <Users size={18} strokeWidth={2} />, 'Users'],
 ] as const
 
 export function AdminLayout() {
   const { user, loading } = useAuth()
+  const location = useLocation()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   if (loading) return <Spinner />
   if (!user) return <Navigate to="/login" state={{ from: '/admin' }} replace />
   if (user.role !== 'admin' && user.role !== 'moderator') return <Navigate to="/" replace />
 
+  const isAdmin = user.role === 'admin'
+  const navItems = isAdmin ? ADMIN_NAV : MODERATOR_NAV
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  }, [location.pathname])
+
   return (
-    <div className="admin-layout" style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box', display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
-      <nav className="admin-nav panel" style={{ padding: '1rem', position: 'sticky', top: 'calc(var(--header-h) + 2rem)', boxSizing: 'border-box', minWidth: '240px' }} aria-label="Admin">
-        <div style={{ padding: '0.5rem 0.75rem', marginBottom: '1rem', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+    <div className="admin-layout" style={{ 
+      animation: 'fade-in var(--dur) var(--ease)', 
+      width: '100%', 
+      boxSizing: 'border-box', 
+      display: 'flex', 
+      minHeight: 'calc(100vh - var(--header-h))',
+    }}>
+      {/* Mobile sidebar overlay */}
+      {window.innerWidth < 1024 && sidebarOpen && (
+        <div 
+          className="admin-sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(11, 18, 32, 0.5)',
+            zIndex: 40,
+            animation: 'fade-in var(--dur) var(--ease)',
+          }}
+        />
+      )}
+
+      <nav 
+        className="admin-nav panel" 
+        style={{ 
+          padding: '1rem', 
+          position: 'sticky', 
+          top: 'var(--header-h)',
+          height: 'calc(100vh - var(--header-h))',
+          boxSizing: 'border-box', 
+          minWidth: '260px',
+          maxWidth: '260px',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: window.innerWidth < 1024 ? 50 : undefined,
+          transform: window.innerWidth < 1024 && !sidebarOpen ? 'translateX(-100%)' : 'translateX(0)',
+          transition: 'transform var(--dur) var(--ease)',
+        }} 
+        aria-label="Admin navigation"
+      >
+        <div style={{ 
+          padding: '0.5rem 0.75rem', 
+          marginBottom: '1rem', 
+          fontSize: '0.75rem', 
+          fontWeight: 700, 
+          color: 'var(--text-3)', 
+          textTransform: 'uppercase', 
+          letterSpacing: '0.08em',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
           Administration
+          {window.innerWidth < 1024 && (
+            <button
+              onClick={() => setSidebarOpen(false)}
+              style={{ all: 'unset', cursor: 'pointer', padding: '0.25rem', color: 'var(--text-3)' }}
+              aria-label="Close sidebar"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {ADMIN_NAV.map(([to, icon, label]) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1, overflowY: 'auto' }}>
+          {navItems.map(([to, icon, label]) => (
             <NavLink 
               key={to} 
               to={to} 
               end={to === '/admin'} 
               className={({ isActive }) => `row ${isActive ? 'is-active' : ''}`}
               style={{ 
-                padding: '0.75rem 1rem', 
+                padding: '0.625rem 0.875rem', 
                 borderRadius: 'var(--radius)', 
                 textDecoration: 'none',
                 transition: 'background var(--dur) var(--ease), color var(--dur) var(--ease)',
                 width: '100%',
                 boxSizing: 'border-box',
-                gap: '0.75rem'
+                gap: '0.625rem',
+                color: 'var(--ink-700)',
+                fontSize: '0.9rem',
+                fontWeight: 500,
               }}
             >
-              {icon} <span style={{ fontWeight: 500 }}>{label}</span>
+              <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</span> 
+              <span style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
             </NavLink>
           ))}
         </div>
+        
+        {/* Mobile menu toggle - only show on mobile */}
+        {window.innerWidth < 1024 && (
+          <div style={{ paddingTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', marginBottom: '0.5rem' }}>
+              Menu
+            </div>
+          </div>
+        )}
       </nav>
-      <div style={{ minWidth: 0, width: '100%', overflowX: 'hidden', paddingBottom: '3rem' }}>
+
+      {/* Mobile menu button */}
+      {window.innerWidth < 1024 && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="admin-mobile-menu-btn"
+          style={{
+            position: 'fixed',
+            bottom: '1.5rem',
+            right: '1.5rem',
+            zIndex: 45,
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            background: 'var(--brand-blue-600)',
+            color: '#fff',
+            border: 'none',
+            boxShadow: 'var(--shadow-lg)',
+            cursor: 'pointer',
+            display: 'grid',
+            placeItems: 'center',
+            animation: 'fade-in var(--dur) var(--ease)',
+          }}
+          aria-label="Open admin menu"
+        >
+          <Menu size={24} />
+        </button>
+      )}
+
+      <main style={{ 
+        minWidth: 0, 
+        width: '100%', 
+        overflowX: 'hidden', 
+        paddingBottom: '3rem',
+        flex: 1,
+      }}>
         <Outlet />
-      </div>
+      </main>
     </div>
   )
 }
