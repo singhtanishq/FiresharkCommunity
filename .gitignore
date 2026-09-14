@@ -1,44 +1,407 @@
+# =========================================================
 # Dependencies
+# =========================================================
+
 node_modules/
 vendor/
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
 
-# Environment & secrets
-.env
-.env.*.php
-.env.backup
-*.pem
-
-# Frontend builds
+# Python packaging
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
 dist/
 build/
 
-# Runtime artifacts
-backend/storage/*.key
-backend/storage/app/public/media/*
-backend/storage/logs/*
-backend/storage/framework/cache/*
-backend/storage/framework/sessions/*
-backend/storage/framework/views/*
-backend/bootstrap/cache/*.php
 
-# Compiled frontend (regenerate with: cd frontend && npm run build)
-backend/public/build/
-backend/public/storage
+# =========================================================
+# Environment & Secrets
+# =========================================================
 
-# Uploaded media in development
-backend/storage/app/private/
-backend/storage/app/avatars/
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
 
-# Logs & OS noise
-*.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+
+# Cloud / service credentials
+credentials.json
+service-account.json
+firebase-adminsdk-*.json
+
+# SSH
+.ssh/
+id_rsa
+id_rsa.pub
+
+
+# =========================================================
+# Frontend / React / Next.js / Vite
+# =========================================================
+
+# General builds
+dist/
+build/
+out/
+
+# Next.js
+.next/
+.vercel/
+.turbo/
+
+# Vite
+.vite/
+
+# React / CRA
+.eslintcache/
+
+# Storybook
+storybook-static/
+
+# Frontend caches
+.parcel-cache/
+.cache/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/install-state.gz
+
+
+# =========================================================
+# Node.js / Express
+# =========================================================
+
 npm-debug.log*
-.DS_Store
-Thumbs.db
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Editors
+.npmrc
+!.npmrc.example
+
+node_modules/
+
+
+# =========================================================
+# PHP / Laravel
+# =========================================================
+
+# Laravel environment
+.phpunit.result.cache
+
+# Laravel generated/runtime files
+bootstrap/cache/*.php
+
+storage/*.key
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+
+# Uploaded/generated files
+storage/app/private/
+storage/app/public/*
+storage/app/avatars/
+storage/app/media/
+
+# Keep Laravel directory structure
+!storage/framework/
+!storage/framework/cache/
+!storage/framework/sessions/
+!storage/framework/views/
+!storage/logs/
+
+# Laravel compiled assets
+public/build/
+public/hot
+public/storage
+
+# Laravel Telescope
+.phpunit.result.cache
+
+# PHP logs
+*.log
+
+
+# =========================================================
+# Python
+# =========================================================
+
+*.py[cod]
+__pycache__/
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# Python test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Type checkers
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Ruff
+.ruff_cache/
+
+# Celery
+celerybeat-schedule
+
+# Flask
+instance/
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+
+# =========================================================
+# Databases / Local Database Files
+# =========================================================
+
+# SQLite
+*.sqlite
+*.sqlite3
+*.db
+
+# MySQL dumps
+*.sql.gz
+*.dump
+
+# MongoDB local data
+mongodb-data/
+mongo-data/
+data/db/
+
+# Redis
+dump.rdb/
+*.rdb
+
+# Local database backups
+backup/
+backups/
+*.bak
+*.backup
+
+
+# =========================================================
+# Runtime / Application Data
+# =========================================================
+
+tmp/
+temp/
+*.tmp
+*.temp
+
+logs/
+*.log
+
+uploads/
+uploads/*
+media/
+media/*
+
+# PID / runtime files
+*.pid
+*.pid.lock
+*.seed
+
+
+# =========================================================
+# Testing
+# =========================================================
+
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+
+
+# =========================================================
+# Docker
+# =========================================================
+
+# Local Docker overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Docker environment
+.env.docker
+
+# Docker volumes
+.docker/
+
+
+# =========================================================
+# IDEs / Editors
+# =========================================================
+
 .idea/
 .vscode/
 *.swp
+*.swo
+*.swn
+*.sublime-workspace
+*.sublime-project
 
-#bash script
+# JetBrains
+*.iml
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+
+
+# =========================================================
+# macOS / Windows / Linux
+# =========================================================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+.directory
+
+
+# =========================================================
+# Archives
+# =========================================================
+
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+
+# =========================================================
+# Logs / Debugging
+# =========================================================
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+
+# =========================================================
+# Build / Cache Artifacts
+# =========================================================
+
+.cache/
+.parcel-cache/
+.sass-cache/
+.eslintcache/
+.stylelintcache/
+.turbo/
+
+*.tsbuildinfo
+
+
+# =========================================================
+# Certificates / Local SSL
+# =========================================================
+
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+
+
+# =========================================================
+# Serverless / Cloud
+# =========================================================
+
+.serverless/
+.aws-sam/
+.sam/
+.now/
+
+
+# =========================================================
+# Local Development Files
+# =========================================================
+
+*.local
+*.local.json
+
+
+# =========================================================
+# OS / Generated Files
+# =========================================================
+
+*.orig
+*.rej
+
+
+# =========================================================
+# Project-specific scripts
+# =========================================================
+
 auto-push.sh
+# =========================================================
+# ShelfSpace — uploaded media / generated artifacts
+# =========================================================
+backend/media/
+!backend/media/.gitkeep
+frontend/coverage/
