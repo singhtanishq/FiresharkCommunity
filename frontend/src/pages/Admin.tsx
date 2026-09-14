@@ -198,13 +198,27 @@ export function AdminLayout() {
   )
 }
 
-export function AdminHeader({ title, children }: { title: string; children?: React.ReactNode }) {
+export function AdminHeader({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
   return (
-    <div className="page-header" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-      <h1 style={{ fontSize: '1.75rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem', wordBreak: 'break-word', fontWeight: 700 }}>
-        {title}
-      </h1>
-      <div className="row" style={{ gap: '1rem', flexWrap: 'wrap', width: 'auto', maxWidth: '100%' }}>
+    <div className="page-header" style={{ 
+      padding: '1.5rem 0', 
+      marginBottom: '1.5rem', 
+      borderBottom: '1px solid var(--border)',
+      display: 'flex', 
+      flexDirection: 'column',
+      gap: '1rem',
+    }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <h1 style={{ fontSize: '1.75rem', margin: 0, fontWeight: 700, color: 'var(--ink-900)', letterSpacing: '-0.02em' }}>
+          {title}
+        </h1>
+        {subtitle && (
+          <p style={{ margin: 0, color: 'var(--text-3)', fontSize: '0.95rem' }}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+      <div className="row" style={{ gap: '1rem', flexWrap: 'wrap', width: '100%', maxWidth: '100%' }}>
         {children}
       </div>
     </div>
