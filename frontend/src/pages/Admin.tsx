@@ -349,31 +349,38 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
   const [statusFilter, setStatusFilter] = useState('')
   const [q, setQ] = useState('')
   const [loading, setLoading] = useState(true)
+  const [meta, setMeta] = useState({ current_page: 1, last_page: 1, per_page: 20, total: 0 })
 
-  const load = useCallback(() => {
+  const load = useCallback((page = 1) => {
     setLoading(true)
-    api.get(`/admin/${kind}`, { params: { status: statusFilter || undefined, q: q || undefined } })
-      .then((r) => setItems(r.data.data))
+    api.get(`/admin/${kind}`, { params: { status: statusFilter || undefined, q: q || undefined, page, per_page: 20 } })
+      .then((r) => {
+        setItems(r.data.data)
+        setMeta(r.data.meta)
+      })
       .finally(() => setLoading(false))
   }, [kind, statusFilter, q])
 
   useEffect(() => {
-    const t = setTimeout(load, q ? 300 : 0)
+    const t = setTimeout(() => load(1), q ? 300 : 0)
     return () => clearTimeout(t)
   }, [load, q])
 
   const act = async (action: string, body: Record<string, unknown>) => {
     try {
       await api.post(`/admin/content/${action}`, body)
-      load()
+      load(meta.current_page)
     } catch (e) {
       alert(apiError(e).message)
     }
   }
 
   return (
-    <div style={{ width: '100%', boxSizing: 'border-box' }}>
-      <AdminHeader title={kind === 'questions' ? 'Questions Library' : 'Answers Library'}>
+    <div className="admin-content">
+      <AdminHeader 
+        title={kind === 'questions' ? 'Questions Library' : 'Answers Library'} 
+        subtitle={kind === 'questions' ? 'Manage and moderate all questions' : 'Manage and moderate all answers'}
+      >
         <select className="select" style={{ width: '100%', maxWidth: '180px', padding: '0.5rem 1rem' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status filter">
           <option value="">All statuses</option>
           <option value="published">Published</option>
@@ -389,65 +396,74 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
       {loading ? (
         <Spinner />
       ) : items.length === 0 ? (
-        <div className="panel" style={{ padding: '3rem 1rem' }}><EmptyState icon={<FolderOpen size={40} strokeWidth={1.5} />} title="No content found." /></div>
-      ) : (
-        <div className="panel" style={{ overflowX: 'auto', width: '100%', boxSizing: 'border-box' }}>
-          <table className="data-table" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Content Details</th>
-                <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Author</th>
-                {kind === 'questions' && <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Status</th>}
-                <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '2px solid var(--border)' }}>Date</th>
-                <th style={{ padding: '1rem', textAlign: 'right', borderBottom: '2px solid var(--border)' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => {
-                const title = kind === 'questions' ? item.title : item.question?.title
-                const slug = kind === 'questions' ? item.slug : item.question?.slug
-                const type = kind === 'questions' ? 'question' : 'answer'
-                const isHidden = item.status === 'hidden'
-                return (
-                  <tr key={item.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ maxWidth: 400, padding: '1rem' }}>
-                      <div style={{ fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {slug ? <a href={`/questions/${slug}`} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-blue-600)', textDecoration: 'none' }}>{title}</a> : title}
-                      </div>
-                      {kind === 'answers' && <div className="muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.3rem' }}>{item.excerpt}</div>}
-                    </td>
-                    <td style={{ padding: '1rem' }}>
-                      <div className="row" style={{ gap: '0.75rem', flexWrap: 'nowrap' }}>
-                        <Avatar name={item.user?.name ?? '?'} size="sm" />
-                        <span style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{item.user?.name ?? '—'}</span>
-                      </div>
-                    </td>
-                    {kind === 'questions' && (
-                      <td style={{ padding: '1rem' }}>
-                        <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                          {item.status}
-                        </span>
-                      </td>
-                    )}
-                    <td className="muted" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', padding: '1rem' }}>{timeAgo(item.created_at)}</td>
-                    <td style={{ padding: '1rem' }}>
-                      <div className="row" style={{ gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
-                        {isHidden ? (
-                          <button className="btn btn--ghost btn--sm" onClick={() => act('restore', { type, id: item.id })}>Restore</button>
-                        ) : (
-                          <button className="btn btn--ghost btn--sm" onClick={() => act('hide', { type, id: item.id, reason: 'Moderation: hidden' })}>Hide</button>
-                        )}
-                        <button className="btn btn--danger btn--sm" style={{ padding: '0.4rem 0.6rem' }} onClick={() => { if (window.confirm('Delete this content permanently?')) act('delete', { type, id: item.id, reason: 'Deleted by moderation' }) }}>
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+        <div className="panel" style={{ padding: '3rem 1rem' }}>
+          <EmptyState icon={<FolderOpen size={40} strokeWidth={1.5} />} title="No content found." />
         </div>
+      ) : (
+        <>
+          <div className="table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Content Details</th>
+                  <th>Author</th>
+                  {kind === 'questions' && <th>Status</th>}
+                  <th>Date</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => {
+                  const title = kind === 'questions' ? item.title : item.question?.title
+                  const slug = kind === 'questions' ? item.slug : item.question?.slug
+                  const type = kind === 'questions' ? 'question' : 'answer'
+                  const isHidden = item.status === 'hidden'
+                  return (
+                    <tr key={item.id}>
+                      <td style={{ maxWidth: 400 }}>
+                        <div style={{ fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {slug ? <a href={`/questions/${slug}`} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-blue-600)', textDecoration: 'none' }}>{title}</a> : title}
+                        </div>
+                        {kind === 'answers' && <div className="muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.3rem' }}>{item.excerpt}</div>}
+                      </td>
+                      <td>
+                        <div className="row" style={{ gap: '0.75rem', flexWrap: 'nowrap' }}>
+                          <Avatar name={item.user?.name ?? '?'} size="sm" />
+                          <span style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap' }}>{item.user?.name ?? '—'}</span>
+                        </div>
+                      </td>
+                      {kind === 'questions' && (
+                        <td>
+                          <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                            {item.status}
+                          </span>
+                        </td>
+                      )}
+                      <td className="muted" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{timeAgo(item.created_at)}</td>
+                      <td style={{ textAlign: 'right' }}>
+                        <div className="row" style={{ gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                          {isHidden ? (
+                            <button className="btn btn--ghost btn--sm" onClick={() => act('restore', { type, id: item.id })}>Restore</button>
+                          ) : (
+                            <button className="btn btn--ghost btn--sm" onClick={() => act('hide', { type, id: item.id, reason: 'Moderation: hidden' })}>Hide</button>
+                          )}
+                          <button className="btn btn--danger btn--sm" style={{ padding: '0.4rem 0.6rem' }} onClick={() => { if (window.confirm('Delete this content permanently?')) act('delete', { type, id: item.id, reason: 'Deleted by moderation' }) }}>
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          {meta.last_page > 1 && (
+            <div className="mt-4" style={{ width: '100%', boxSizing: 'border-box' }}>
+              <Pagination meta={meta} baseUrl={`/admin/${kind}`} />
+            </div>
+          )}
+        </>
       )}
     </div>
   )
