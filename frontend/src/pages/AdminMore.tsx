@@ -6,7 +6,7 @@ import { formatNumber } from '../lib/format'
 import { 
   FolderTree, Tags, Search, Plus, Save, 
   Trash2, Award, TrendingUp, Settings, CheckCircle2,
-  AlertTriangle, Check, X, ArrowRight
+  AlertTriangle, Check, X, ArrowRight, Trophy
 } from 'lucide-react'
 
 // ---------------------------------------------------- Categories
