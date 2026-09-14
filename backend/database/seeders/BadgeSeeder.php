@@ -17,8 +17,7 @@ class BadgeSeeder extends Seeder
             ['name' => 'Community Contributor', 'slug' => 'community-contributor', 'description' => 'Reached 100 reputation.', 'tier' => 'silver', 'award_type' => 'automatic', 'criteria' => ['type' => 'reputation', 'count' => 100], 'sort_order' => 5],
             ['name' => 'Mentor', 'slug' => 'mentor', 'description' => 'Had 10 answers accepted — consistently helping others succeed.', 'tier' => 'gold', 'award_type' => 'automatic', 'criteria' => ['type' => 'accepted_answers', 'count' => 10], 'sort_order' => 6],
             ['name' => 'Expert Contributor', 'slug' => 'expert-contributor', 'description' => 'Reached 500 reputation through high-quality contributions.', 'tier' => 'gold', 'award_type' => 'automatic', 'criteria' => ['type' => 'reputation', 'count' => 500], 'sort_order' => 7],
-            ['name' => 'FireShark Instructor', 'slug' => 'fireshark-instructor', 'description' => 'Verified FireShark instructor.', 'tier' => 'gold', 'award_type' => 'manual', 'criteria' => null, 'sort_order' => 8],
-            ['name' => 'FireShark Professional', 'slug' => 'fireshark-professional', 'description' => 'Verified FireShark team or professional account.', 'tier' => 'gold', 'award_type' => 'manual', 'criteria' => null, 'sort_order' => 9],
+            ['name' => 'FireShark Professional', 'slug' => 'fireshark-professional', 'description' => 'Verified FireShark team or professional account.', 'tier' => 'gold', 'award_type' => 'manual', 'criteria' => null, 'sort_order' => 8],
         ];
 
         foreach ($badges as $badge) {
