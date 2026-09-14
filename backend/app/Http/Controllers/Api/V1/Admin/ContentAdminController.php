@@ -38,7 +38,7 @@ class ContentAdminController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
-        return $this->paginated(QuestionResource::collection($questions));
+        return $this->paginated($questions, QuestionResource::class);
     }
 
     public function answers(Request $request): JsonResponse
