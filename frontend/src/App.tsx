@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { Spinner } from './components/ui/States'
