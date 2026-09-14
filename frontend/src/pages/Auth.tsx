@@ -402,7 +402,7 @@ export function Register() {
     setError(null)
     try {
       await authApi.completeRegistration(form.email)
-      window.location.href = '/'
+      navigate('/', { replace: true })
     } catch (err) {
       setError(apiError(err).message)
     } finally {
