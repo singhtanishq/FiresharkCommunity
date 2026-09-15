@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import logoWhite from '../assets/fireshark_community.png'
 import { authApi } from '../api/endpoints'
 import { apiError } from '../api/client'
+import { useAuth } from '../context/AuthContext'
 import { 
   Mail, Lock, User, AtSign, ArrowRight, ArrowLeft, 
   ShieldCheck, Terminal, Award, Search, AlertTriangle, CheckCircle2,
