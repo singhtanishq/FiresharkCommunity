@@ -150,6 +150,10 @@ export function AdminLayout() {
           padding: 1rem;
         }
 
+        .admin-mobile-header {
+          display: none;
+        }
+
         .admin-nav {
           background: var(--surface);
           display: flex;
@@ -217,10 +221,6 @@ export function AdminLayout() {
           stroke: var(--brand-blue-700);
         }
 
-        .admin-mobile-menu-btn {
-          display: none;
-        }
-
         /* Desktop Layout (1024px+) */
         @media (min-width: 1024px) {
           .admin-layout {
@@ -248,27 +248,31 @@ export function AdminLayout() {
 
         /* Mobile Layout (< 1024px) */
         @media (max-width: 1023px) {
-          .admin-mobile-menu-btn {
+          .admin-mobile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            background: var(--surface, #fff);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          
+          .admin-mobile-hamburger {
+            all: unset;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 54px;
-            height: 54px;
-            border-radius: 50%;
-            background: var(--brand-blue-600);
-            color: #fff;
-            border: none;
-            box-shadow: 0 4px 14px rgba(22, 122, 201, 0.4);
-            z-index: 40;
-            cursor: pointer;
-            transition: transform 0.2s ease;
+            color: var(--ink-900);
+            padding: 0.25rem;
+            margin-left: -0.25rem;
           }
-          .admin-mobile-menu-btn:active {
-            transform: scale(0.95);
-          }
+
           .admin-nav {
             position: fixed;
             top: 0;
@@ -293,6 +297,19 @@ export function AdminLayout() {
           }
         }
       `}</style>
+
+      {/* Mobile Top Header */}
+      <div className="admin-mobile-header">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="admin-mobile-hamburger"
+          aria-label="Open admin menu"
+        >
+          <Menu size={24} />
+        </button>
+        <span style={{ fontWeight: 600, color: 'var(--ink-900)', fontSize: '1.05rem' }}>Administration</span>
+        <div style={{ width: '28px' }}></div> {/* Spacer for perfect visual centering */}
+      </div>
 
       {/* Mobile sidebar overlay */}
       {window.innerWidth < 1024 && sidebarOpen && (
@@ -332,15 +349,6 @@ export function AdminLayout() {
           ))}
         </div>
       </nav>
-
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setSidebarOpen(true)}
-        className="admin-mobile-menu-btn"
-        aria-label="Open admin menu"
-      >
-        <Menu size={24} />
-      </button>
 
       <main className="admin-main">
         <Outlet />
