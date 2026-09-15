@@ -704,8 +704,6 @@ The following screenshots represent functionality intended for authorized admini
 
 ---
 
----
-
 
 ## Technology Stack
 
