@@ -15,10 +15,23 @@ import {
 
 // ------------------------------------------------------------------ UI Components
 
+interface ActionModalProps {
+  isOpen: boolean;
+  type: string;
+  title: string;
+  message: string;
+  placeholder?: string;
+  onConfirm: (val: any) => void;
+  onCancel: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  isDestructive?: boolean;
+}
+
 function ActionModal({ 
   isOpen, type, title, message, placeholder, 
   onConfirm, onCancel, confirmText = "Confirm", cancelText = "Cancel", isDestructive = false 
-}) {
+}: ActionModalProps) {
   const [inputValue, setInputValue] = useState('')
 
   useEffect(() => {
@@ -797,7 +810,7 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
         title={modal.title}
         message={modal.message}
         isDestructive={modal.isDestructive}
-        onConfirm={() => {
+        onConfirm={(val: any) => {
           if (modal.action) modal.action()
           closeDialog()
         }}
@@ -998,7 +1011,7 @@ export function AdminUsers() {
         message={modal.message}
         placeholder={modal.placeholder}
         isDestructive={modal.isDestructive}
-        onConfirm={(val) => {
+        onConfirm={(val: any) => {
           if (modal.action) modal.action(val)
           closeDialog()
         }}
