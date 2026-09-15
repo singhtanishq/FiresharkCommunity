@@ -265,7 +265,7 @@ export function NotFound() {
         </p>
         
         <Link to="/" className="btn btn--primary btn--lg" style={{ borderRadius: '99px', padding: '0.8rem 2rem', width: '100%', boxSizing: 'border-box', maxWidth: '300px' }}>
-          Return to Base
+          Return to Home
         </Link>
       </div>
     </div>
