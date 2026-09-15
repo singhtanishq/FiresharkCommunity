@@ -257,11 +257,11 @@ export function NotFound() {
         
         <div className="row" style={{ justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <SearchX size={20} color="var(--danger)" style={{ flexShrink: 0 }} />
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--ink-800)', wordBreak: 'break-word' }}>Target Not Found</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--ink-800)', wordBreak: 'break-word' }}>Page Not Found</h2>
         </div>
 
         <p style={{ color: 'var(--text-2)', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2.5rem', wordBreak: 'break-word' }}>
-          The intelligence record you are looking for has either been moved, classified, or never existed in the database.
+          The intelligence record you are looking for has either been moved, classified, or never existed in the our system.
         </p>
         
         <Link to="/" className="btn btn--primary btn--lg" style={{ borderRadius: '99px', padding: '0.8rem 2rem', width: '100%', boxSizing: 'border-box', maxWidth: '300px' }}>
