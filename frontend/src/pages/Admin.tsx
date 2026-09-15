@@ -820,7 +820,7 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
         title={modal.title}
         message={modal.message}
         isDestructive={modal.isDestructive}
-        onConfirm={(val: any) => {
+        onConfirm={() => {
           if (modal.action) modal.action()
           closeDialog()
         }}
