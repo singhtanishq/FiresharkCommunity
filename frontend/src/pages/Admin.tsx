@@ -13,6 +13,66 @@ import {
   Menu, X, Tag, Trophy
 } from 'lucide-react'
 
+// ------------------------------------------------------------------ UI Components
+
+function ActionModal({ 
+  isOpen, type, title, message, placeholder, 
+  onConfirm, onCancel, confirmText = "Confirm", cancelText = "Cancel", isDestructive = false 
+}) {
+  const [inputValue, setInputValue] = useState('')
+
+  useEffect(() => {
+    if (isOpen) setInputValue('')
+  }, [isOpen])
+
+  if (!isOpen) return null
+
+  return (
+    <div style={{ 
+      position: 'fixed', inset: 0, background: 'rgba(11, 18, 32, 0.6)', backdropFilter: 'blur(2px)', 
+      zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', 
+      padding: '1rem', animation: 'fade-in 0.2s ease-out' 
+    }}>
+      <div style={{ 
+        background: 'var(--surface, #fff)', width: '100%', maxWidth: '400px', 
+        borderRadius: 'var(--radius-lg, 8px)', boxShadow: 'var(--shadow-xl)', overflow: 'hidden' 
+      }}>
+        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
+          <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--ink-900)' }}>{title}</h3>
+        </div>
+        <div style={{ padding: '1.5rem' }}>
+          <p style={{ margin: type === 'prompt' ? '0 0 1rem' : '0', fontSize: '0.95rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
+            {message}
+          </p>
+          {type === 'prompt' && (
+            <input
+              type="text"
+              className="input"
+              style={{ width: '100%', padding: '0.6rem 0.8rem', boxSizing: 'border-box' }}
+              placeholder={placeholder}
+              value={inputValue}
+              onChange={e => setInputValue(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') onConfirm(inputValue) }}
+              autoFocus
+            />
+          )}
+        </div>
+        <div style={{ padding: '1rem 1.5rem', background: 'var(--surface-2)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border)' }}>
+          {type !== 'alert' && (
+            <button className="btn btn--ghost" onClick={onCancel}>{cancelText}</button>
+          )}
+          <button
+            className={`btn ${isDestructive ? 'btn--danger' : 'btn--primary'}`}
+            onClick={() => onConfirm(type === 'prompt' ? inputValue : true)}
+          >
+            {type === 'alert' ? 'OK' : confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ------------------------------------------------------------------ shell
 
 const ADMIN_NAV = [
@@ -448,6 +508,10 @@ export function AdminReports() {
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState<number | null>(null)
   const [note, setNote] = useState('')
+  
+  // Modal State
+  const [modal, setModal] = useState({ isOpen: false, type: 'alert', title: '', message: '' })
+  const closeDialog = () => setModal({ ...modal, isOpen: false })
 
   const load = useCallback(() => {
     setLoading(true)
@@ -465,7 +529,7 @@ export function AdminReports() {
       load()
       setNote('')
     } catch (e) {
-      alert(apiError(e).message)
+      setModal({ isOpen: true, type: 'alert', title: 'Error', message: apiError(e).message })
     } finally {
       setBusyId(null)
     }
@@ -540,6 +604,15 @@ export function AdminReports() {
           ))}
         </div>
       )}
+
+      <ActionModal
+        isOpen={modal.isOpen}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        onConfirm={closeDialog}
+        onCancel={closeDialog}
+      />
     </div>
   )
 }
@@ -552,6 +625,10 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
   const [q, setQ] = useState('')
   const [loading, setLoading] = useState(true)
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, per_page: 20, total: 0 })
+
+  // Modal State
+  const [modal, setModal] = useState({ isOpen: false, type: 'alert', title: '', message: '', action: null as any, isDestructive: false })
+  const closeDialog = () => setModal({ ...modal, isOpen: false })
 
   const load = useCallback((page = 1) => {
     setLoading(true)
@@ -573,7 +650,7 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
       await api.post(`/admin/content/${action}`, body)
       load(meta.current_page)
     } catch (e) {
-      alert(apiError(e).message)
+      setModal({ isOpen: true, type: 'alert', title: 'Error', message: apiError(e).message, action: null, isDestructive: false })
     }
   }
 
@@ -686,7 +763,16 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
                           ) : (
                             <button className="btn btn--ghost btn--sm" onClick={() => act('hide', { type, id: item.id, reason: 'Moderation: hidden' })}>Hide</button>
                           )}
-                          <button className="btn btn--danger btn--sm" style={{ padding: '0.4rem 0.6rem' }} onClick={() => { if (window.confirm('Delete this content permanently?')) act('delete', { type, id: item.id, reason: 'Deleted by moderation' }) }}>
+                          <button className="btn btn--danger btn--sm" style={{ padding: '0.4rem 0.6rem' }} onClick={() => {
+                            setModal({
+                              isOpen: true,
+                              type: 'confirm',
+                              title: 'Confirm Deletion',
+                              message: 'Are you sure you want to delete this content permanently?',
+                              isDestructive: true,
+                              action: () => act('delete', { type, id: item.id, reason: 'Deleted by moderation' })
+                            })
+                          }}>
                             <Trash2 size={16} />
                           </button>
                         </div>
@@ -704,6 +790,19 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
           )}
         </>
       )}
+
+      <ActionModal
+        isOpen={modal.isOpen}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        isDestructive={modal.isDestructive}
+        onConfirm={() => {
+          if (modal.action) modal.action()
+          closeDialog()
+        }}
+        onCancel={closeDialog}
+      />
     </div>
   )
 }
@@ -716,6 +815,10 @@ export function AdminUsers() {
   const [loading, setLoading] = useState(true)
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1 })
   const { user: me } = useAuth()
+
+  // Modal State
+  const [modal, setModal] = useState({ isOpen: false, type: 'alert', title: '', message: '', placeholder: '', action: null as any, isDestructive: false })
+  const closeDialog = () => setModal({ ...modal, isOpen: false })
 
   const load = useCallback(() => {
     setLoading(true)
@@ -737,7 +840,7 @@ export function AdminUsers() {
       await api.post(path, body)
       load()
     } catch (e) {
-      alert(apiError(e).message)
+      setModal({ isOpen: true, type: 'alert', title: 'Error', message: apiError(e).message, placeholder: '', action: null, isDestructive: false })
     }
   }
 
@@ -844,9 +947,17 @@ export function AdminUsers() {
                         {me?.role === 'admin' && (
                           <>
                             <button className="btn btn--ghost btn--sm" onClick={() => {
-                              const type = window.prompt('Verification type: team, expert, alumni, professional')
-                              if (type) action(`/admin/users/${u.id}/verify`, { type })
+                              setModal({
+                                isOpen: true,
+                                type: 'prompt',
+                                title: 'Verify User',
+                                message: 'Select verification type:',
+                                placeholder: 'team, expert, alumni, professional',
+                                isDestructive: false,
+                                action: (typeVal: string) => { if (typeVal) action(`/admin/users/${u.id}/verify`, { type: typeVal }) }
+                              })
                             }}>Verify</button>
+                            
                             {u.verification && (
                               <button className="btn btn--ghost btn--sm" onClick={() => action(`/admin/users/${u.id}/revoke-verification`)}>Unverify</button>
                             )}
@@ -856,8 +967,15 @@ export function AdminUsers() {
                           <button className="btn btn--ghost btn--sm" onClick={() => action(`/admin/users/${u.id}/unsuspend`)}>Restore</button>
                         ) : (
                           <button className="btn btn--danger btn--sm" onClick={() => {
-                            const reason = window.prompt('Suspension reason:')
-                            if (reason) action(`/admin/users/${u.id}/suspend`, { reason })
+                            setModal({
+                              isOpen: true,
+                              type: 'prompt',
+                              title: 'Suspend User',
+                              message: 'Enter suspension reason:',
+                              placeholder: 'Reason for suspension...',
+                              isDestructive: true,
+                              action: (reasonVal: string) => { if (reasonVal) action(`/admin/users/${u.id}/suspend`, { reason: reasonVal }) }
+                            })
                           }}>Suspend</button>
                         )}
                       </div>
@@ -872,6 +990,20 @@ export function AdminUsers() {
           </div>
         </>
       )}
+
+      <ActionModal
+        isOpen={modal.isOpen}
+        type={modal.type}
+        title={modal.title}
+        message={modal.message}
+        placeholder={modal.placeholder}
+        isDestructive={modal.isDestructive}
+        onConfirm={(val) => {
+          if (modal.action) modal.action(val)
+          closeDialog()
+        }}
+        onCancel={closeDialog}
+      />
     </div>
   )
 }
