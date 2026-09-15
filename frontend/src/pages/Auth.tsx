@@ -139,6 +139,7 @@ function OtpInput({ value, onChange, disabled, autoFocus }: { value: string; onC
 export function Login() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { refresh } = useAuth()
   const from = (location.state as { from?: string } | null)?.from ?? '/'
 
   const [step, setStep] = useState<'password' | 'otp'>('password')
