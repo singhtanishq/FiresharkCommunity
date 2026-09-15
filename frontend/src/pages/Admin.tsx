@@ -229,6 +229,7 @@ export function AdminLayout() {
             padding: 1.5rem 1rem;
             gap: 2rem;
           }
+          
           .admin-nav {
             width: 250px;
             flex-shrink: 0;
@@ -237,10 +238,12 @@ export function AdminLayout() {
             position: sticky;
             top: calc(var(--header-h, 70px) + 1.5rem);
           }
+          
           .admin-nav-header {
             border-bottom: none;
             padding: 1.25rem 1rem 0.5rem;
           }
+          
           .admin-main {
             padding: 0;
           }
@@ -283,10 +286,12 @@ export function AdminLayout() {
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             transform: translateX(0);
           }
+
           .admin-nav.is-open {
             transform: translateX(280px);
             box-shadow: var(--shadow-xl);
           }
+
           .admin-sidebar-overlay {
             position: fixed;
             inset: 0;
@@ -361,7 +366,8 @@ export function AdminHeader({ title, subtitle, children }: { title: string; subt
   return (
     <div className="page-header" style={{ 
       padding: '0 0 1.5rem', 
-      marginBottom: '1.5rem', 
+      marginBottom: '1.5rem',
+      textAlign: 'left',
       borderBottom: '1px solid var(--border)',
       display: 'flex', 
       flexDirection: 'column',
@@ -369,7 +375,7 @@ export function AdminHeader({ title, subtitle, children }: { title: string; subt
       width: '100%',
       boxSizing: 'border-box'
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', textAlign: 'left' }}>
         <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', margin: 0, fontWeight: 800, color: 'var(--ink-900)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
           {title}
         </h1>
@@ -686,11 +692,13 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
           border: 1px solid var(--border);
           background: var(--surface);
         }
+
         .admin-table-wrapper table {
           width: 100%;
           min-width: 800px;
           border-collapse: collapse;
         }
+
         .admin-table-wrapper th {
           background: var(--surface-2);
           padding: 1rem;
@@ -702,11 +710,13 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
+
         .admin-table-wrapper td {
           padding: 1rem;
           border-bottom: 1px solid var(--border);
           vertical-align: middle;
         }
+
         .admin-table-wrapper tr:last-child td {
           border-bottom: none;
         }
@@ -876,11 +886,13 @@ export function AdminUsers() {
           border: 1px solid var(--border);
           background: var(--surface);
         }
+
         .admin-table-wrapper table {
           width: 100%;
           min-width: 850px;
           border-collapse: collapse;
         }
+
         .admin-table-wrapper th {
           background: var(--surface-2);
           padding: 1rem;
@@ -892,11 +904,13 @@ export function AdminUsers() {
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
+
         .admin-table-wrapper td {
           padding: 1rem;
           border-bottom: 1px solid var(--border);
           vertical-align: middle;
         }
+
         .admin-table-wrapper tr:last-child td {
           border-bottom: none;
         }
