@@ -1,5 +1,5 @@
 <p>
-  <img src="docs/screenshots/logo.png" alt="FireShark Community Logo" width="80">
+  <img src="docs/logos/logo.png" alt="FireShark Community Logo" width="150">
 </p>
 
 # FireShark Community
