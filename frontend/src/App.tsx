@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom'
+import { Route, Routes, Navigate, useLocation, Outlet } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { Spinner } from './components/ui/States'
 import { Home } from './pages/Home'
