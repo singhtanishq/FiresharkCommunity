@@ -458,7 +458,7 @@ export function AdminDashboard() {
         <StatCard value={formatNumber(stats.users.total)} label="Total user base" />
         <StatCard value={formatNumber(stats.users.active_month)} label="Active this month" />
         <StatCard value={formatNumber(stats.questions.published)} label="Published questions" />
-        <StatCard value={formatNumber(stats.questions.unanswered)} label="Unanswered" />
+        <StatCard value={formatNumber(stats.questions.unanswered)} label="Unanswered questions" />
         <StatCard value={formatNumber(stats.answers.total)} label="Total Answers" />
         <StatCard value={formatNumber(stats.reports.pending)} label="Open reports" warn={stats.reports.pending > 0} />
       </div>
