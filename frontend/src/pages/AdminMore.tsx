@@ -160,9 +160,9 @@ export function AdminTags() {
         title="Tags" 
         subtitle="Manage system tags and their usage"
       >
-        <div className="input-affix" style={{ width: '100%', maxWidth: '220px' }}>
-          <Search className="input-affix__icon" size={14} />
-          <input className="input input--with-affix" style={{ padding: '0.4rem 0.6rem 0.4rem 2rem', fontSize: '0.85rem' }} placeholder="Search tags…" value={tagQ} onChange={(e) => setTagQ(e.target.value)} />
+        <div className="input-affix" style={{ width: '100%', maxWidth: '220px', position: 'relative' }}>
+          <Search className="input-affix__icon" size={14} style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '0.6rem' }} />
+          <input className="input input--with-affix" style={{ padding: '0.4rem 0.6rem 0.4rem 2rem', fontSize: '0.85rem', width: '100%', boxSizing: 'border-box' }} placeholder="Search tags…" value={tagQ} onChange={(e) => setTagQ(e.target.value)} />
         </div>
       </AdminHeader>
 
@@ -199,7 +199,7 @@ export function AdminTags() {
                   </td>
                   <td>
                     <input
-                      className="input" style={{ width: '300px', padding: '0.4rem 0.6rem', fontSize: '0.85rem' }}
+                      className="input" style={{ width: '200px', padding: '0.4rem 0.6rem', fontSize: '0.85rem' }}
                       defaultValue={tag.description ?? ''}
                       onBlur={(e) => {
                         if (e.target.value !== (tag.description ?? '')) saveTag({ ...tag, description: e.target.value })
