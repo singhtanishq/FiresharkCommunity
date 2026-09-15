@@ -120,7 +120,8 @@ export function AdminLayout() {
         /* Icon color transitions */
         .admin-nav-list a svg {
           color: var(--text-3);
-          transition: color var(--dur) var(--ease);
+          stroke: currentColor;
+          transition: color var(--dur) var(--ease), stroke var(--dur) var(--ease);
         }
 
         .admin-nav-list a:hover {
@@ -140,6 +141,7 @@ export function AdminLayout() {
         /* Active menu icon matches active menu font color */
         .admin-nav-list a.is-active svg {
           color: var(--brand-blue-700);
+          stroke: var(--brand-blue-700);
         }
 
         .admin-mobile-menu-btn {
