@@ -1,22 +1,28 @@
-<p>
+<p align="center">
   <img src="docs/logos/logo.png" alt="FireShark Community Logo" width="150">
 </p>
 
-# FireShark Community
+<h1 align="center">FireShark Community</h1>
 
-**FireShark Community** is a professional technical Q&A and knowledge-sharing platform created for cybersecurity professionals, learners, developers, and technology enthusiasts.
+<p align="center">
+  <strong>FireShark Community</strong> is a professional technical Q&A and knowledge-sharing platform created for cybersecurity professionals, learners, developers, and technology enthusiasts.
+</p>
 
-It is designed around a simple idea: make it easy to **ask useful questions, discover high-quality technical knowledge, contribute answers, build reputation, and participate in a well-moderated community**.
+<p align="center">
+  It is designed around a simple idea: make it easy to <strong>ask useful questions, discover high-quality technical knowledge, contribute answers, build reputation, and participate in a well-moderated community</strong>.
+</p>
 
-<p>
+<p align="center">
   <a href="https://community.fireshark.in">
     <img src="https://img.shields.io/badge/community.fireshark.in-Visit%20Community-blue?style=for-the-badge" alt="community.fireshark.in">
   </a>
 </p>
 
-**Technology:**
+<p align="center">
+  <strong>Technology:</strong>
+</p>
 
-<p>
+<p align="center">
   <img src="https://img.shields.io/badge/React%2019-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 19">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite">
