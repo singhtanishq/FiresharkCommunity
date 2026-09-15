@@ -9,12 +9,88 @@ import {
   AlertTriangle, Check, Trophy
 } from 'lucide-react'
 
+// ---------------------------------------------------- Custom Modal Hook
+
+const ModalDialog = ({ modal, onClose }: { modal: any, onClose: (val: any) => void }) => {
+  const [inputValue, setInputValue] = useState(modal.defaultValue || '')
+  
+  if (!modal) return null
+  
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div className="panel" style={{ width: '100%', maxWidth: '400px', background: 'var(--surface-1, #fff)', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', animation: 'modal-rise var(--dur) var(--ease)' }}>
+        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', color: 'var(--ink-900)' }}>
+          {modal.type === 'alert' && 'Alert'}
+          {modal.type === 'confirm' && 'Confirm Action'}
+          {modal.type === 'prompt' && 'Input Required'}
+        </h3>
+        
+        <p style={{ margin: '0 0 1rem 0', fontSize: '0.95rem', lineHeight: 1.5 }}>{modal.message}</p>
+        
+        {modal.type === 'prompt' && (
+          <input
+            autoFocus
+            className="input"
+            style={{ width: '100%', marginBottom: '1rem', boxSizing: 'border-box' }}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onClose(inputValue)
+              if (e.key === 'Escape') onClose(null)
+            }}
+          />
+        )}
+        
+        <div className="row" style={{ gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+          {modal.type !== 'alert' && (
+            <button className="btn btn--ghost" onClick={() => onClose(modal.type === 'confirm' ? false : null)}>
+              Cancel
+            </button>
+          )}
+          <button 
+            className={`btn ${modal.type === 'confirm' ? 'btn--danger' : 'btn--primary'}`} 
+            onClick={() => onClose(modal.type === 'prompt' ? inputValue : true)}
+          >
+            {modal.type === 'alert' ? 'OK' : 'Confirm'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function useAppModal() {
+  const [modal, setModal] = useState<any>(null)
+
+  const showAlert = useCallback((message: string) => new Promise(resolve => {
+    setModal({ type: 'alert', message, resolve })
+  }), [])
+
+  const showConfirm = useCallback((message: string) => new Promise<boolean>(resolve => {
+    setModal({ type: 'confirm', message, resolve })
+  }), [])
+
+  const showPrompt = useCallback((message: string, defaultValue = '') => new Promise<string | null>(resolve => {
+    setModal({ type: 'prompt', message, defaultValue, resolve })
+  }), [])
+
+  const handleClose = useCallback((value: any) => {
+    if (modal?.resolve) modal.resolve(value)
+    setModal(null)
+  }, [modal])
+
+  const ModalUI = modal ? <ModalDialog modal={modal} onClose={handleClose} /> : null
+
+  return { showAlert, showConfirm, showPrompt, ModalUI }
+}
+
 // ---------------------------------------------------- Categories
 
 export function AdminCategories() {
   const [categories, setCategories] = useState<any[]>([])
   const [newCategory, setNewCategory] = useState('')
   const [loading, setLoading] = useState(true)
+  const { showAlert, showConfirm, ModalUI } = useAppModal()
 
   const load = useCallback(() => {
     setLoading(true)
@@ -31,27 +107,37 @@ export function AdminCategories() {
       await api.post('/admin/categories', { name: newCategory })
       setNewCategory('')
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   const saveCategory = async (category: any) => {
     try {
       await api.put(`/admin/categories/${category.id}`, category)
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   const deleteCategory = async (category: any) => {
+    const confirmed = await showConfirm(`Delete the category "${category.name}"?`)
+    if (!confirmed) return
+
     try {
       await api.delete(`/admin/categories/${category.id}`)
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   if (loading && categories.length === 0) return <Spinner />
 
   return (
     <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      {ModalUI}
       <AdminHeader 
         title="Categories" 
         subtitle="Manage question categories and their visibility"
@@ -101,7 +187,7 @@ export function AdminCategories() {
                   <td>
                     <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                       <button className="btn btn--ghost btn--sm" onClick={() => saveCategory(category)} title="Save changes"><Save size={14} /></button>
-                      <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => { if (window.confirm('Delete this category?')) deleteCategory(category) }} title="Delete"><Trash2 size={14} /></button>
+                      <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => deleteCategory(category)} title="Delete"><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
@@ -126,6 +212,7 @@ export function AdminTags() {
   const [tags, setTags] = useState<any[]>([])
   const [tagQ, setTagQ] = useState('')
   const [loading, setLoading] = useState(true)
+  const { showAlert, showConfirm, showPrompt, ModalUI } = useAppModal()
 
   const load = useCallback(() => {
     setLoading(true)
@@ -140,22 +227,38 @@ export function AdminTags() {
     try {
       await api.put(`/admin/tags/${tag.id}`, { name: tag.name, description: tag.description })
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   const mergeTag = async (tag: any) => {
-    const targetId = window.prompt(`Merge "${tag.name}" into which tag id? (see ids in the table)`)
+    const targetId = await showPrompt(`Merge "${tag.name}" into which tag id? (see ids in the table)`)
     if (!targetId) return
     try {
       await api.post(`/admin/tags/${tag.id}/merge`, { target_id: Number(targetId) })
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
+  }
+
+  const deleteTag = async (tag: any) => {
+    const confirmed = await showConfirm(`Delete the tag "${tag.name}" permanently?`)
+    if (!confirmed) return
+    try {
+      await api.delete(`/admin/tags/${tag.id}`)
+      load()
+    } catch (e) {
+      await showAlert(apiError(e).message)
+    }
   }
 
   if (loading && tags.length === 0) return <Spinner />
 
   return (
     <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      {ModalUI}
       <AdminHeader 
         title="Tags" 
         subtitle="Manage system tags and their usage"
@@ -212,7 +315,7 @@ export function AdminTags() {
                   <td>
                     <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                       <button className="btn btn--ghost btn--sm" onClick={() => mergeTag(tag)}>Merge Into…</button>
-                      <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => { if (window.confirm('Delete this tag permanently?')) api.delete(`/admin/tags/${tag.id}`).then(load).catch((e) => alert(apiError(e).message)) }}><Trash2 size={14} /></button>
+                      <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => deleteTag(tag)}><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
@@ -230,6 +333,7 @@ export function AdminTags() {
 export function AdminBadges() {
   const [badges, setBadges] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { showAlert, showPrompt, ModalUI } = useAppModal()
 
   const load = useCallback(() => {
     setLoading(true)
@@ -241,18 +345,21 @@ export function AdminBadges() {
   useEffect(load, [load])
 
   const awardBadge = async (badge: any) => {
-    const username = window.prompt(`Manually award "${badge.name}" to username:`)
+    const username = await showPrompt(`Manually award "${badge.name}" to username:`)
     if (!username) return
     try {
       await api.post(`/admin/badges/${badge.id}/award`, { username })
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   if (loading) return <Spinner />
 
   return (
     <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      {ModalUI}
       <AdminHeader 
         title="Badges" 
         subtitle="Manage community badges and manual awards"
@@ -313,6 +420,7 @@ export function AdminBadges() {
 export function AdminReputation() {
   const [rules, setRules] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const { showAlert, ModalUI } = useAppModal()
 
   const load = useCallback(() => {
     setLoading(true)
@@ -327,13 +435,16 @@ export function AdminReputation() {
     try {
       await api.put(`/admin/reputation-rules/${rule.id}`, { points: Number(rule.points), is_enabled: rule.is_enabled })
       load()
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   if (loading) return <Spinner />
 
   return (
     <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      {ModalUI}
       <AdminHeader 
         title="Reputation Rules" 
         subtitle="Configure reputation points for user actions"
@@ -400,6 +511,7 @@ export function AdminSettings() {
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [leaderboard, setLeaderboard] = useState<any>(null)
   const [saved, setSaved] = useState(false)
+  const { showAlert, showConfirm, ModalUI } = useAppModal()
 
   useEffect(() => {
     Promise.all([api.get('/admin/settings'), api.get('/admin/leaderboard')])
@@ -414,16 +526,21 @@ export function AdminSettings() {
       await api.put('/admin/settings', settings)
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   const finalize = async (periodKey: string) => {
-    if (!window.confirm(`Finalize leaderboard for ${periodKey}? This snapshot closes the period and cannot be undone.`)) return
+    const confirmed = await showConfirm(`Finalize leaderboard for ${periodKey}? This snapshot closes the period and cannot be undone.`)
+    if (!confirmed) return
     try {
       await api.post('/admin/leaderboard/finalize', { period_key: periodKey })
       const l = await api.get('/admin/leaderboard')
       setLeaderboard(l.data.data)
-    } catch (e) { alert(apiError(e).message) }
+    } catch (e) { 
+      await showAlert(apiError(e).message) 
+    }
   }
 
   // Helper to safely access periods array
@@ -433,6 +550,7 @@ export function AdminSettings() {
 
   return (
     <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      {ModalUI}
       <AdminHeader 
         title="Settings & Config" 
         subtitle="Platform configuration and leaderboard management"
@@ -447,7 +565,6 @@ export function AdminSettings() {
               </h2>
             </div>
             
-            {/* Added padding and layout fixes inside panel__body to prevent overlap */}
             <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box', padding: '1.5rem' }}>
               {saved && (
                 <div className="banner banner--success mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
