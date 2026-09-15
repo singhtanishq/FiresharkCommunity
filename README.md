@@ -1,12 +1,30 @@
+<p>
+  <img src="docs/screenshots/logo.png" alt="FireShark Community Logo" width="80">
+</p>
+
 # FireShark Community
 
-> **FireShark Community** is a professional technical Q&A and knowledge-sharing platform created for cybersecurity professionals, learners, developers, and technology enthusiasts.
->
-> It is designed around a simple idea: make it easy to **ask useful questions, discover high-quality technical knowledge, contribute answers, build reputation, and participate in a well-moderated community**.
+**FireShark Community** is a professional technical Q&A and knowledge-sharing platform created for cybersecurity professionals, learners, developers, and technology enthusiasts.
 
-**Production:** `https://community.fireshark.in`
+It is designed around a simple idea: make it easy to **ask useful questions, discover high-quality technical knowledge, contribute answers, build reputation, and participate in a well-moderated community**.
 
-**Technology:** React 19 · TypeScript · Vite · Laravel 13 · PHP 8.3+ · MySQL 8+ · Laravel Sanctum
+<p>
+  <a href="https://community.fireshark.in">
+    <img src="https://img.shields.io/badge/community.fireshark.in-Visit%20Community-blue?style=for-the-badge" alt="community.fireshark.in">
+  </a>
+</p>
+
+**Technology:**
+
+<p>
+  <img src="https://img.shields.io/badge/React%2019-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 19">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Laravel%2013-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel 13">
+  <img src="https://img.shields.io/badge/PHP%208.3%2B-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP 8.3+">
+  <img src="https://img.shields.io/badge/MySQL%208%2B-4479A1?style=flat-square&logo=mysql&logoColor=white" alt="MySQL 8+">
+  <img src="https://img.shields.io/badge/Laravel%20Sanctum-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Sanctum">
+</p>
 
 ---
 
