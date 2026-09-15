@@ -117,14 +117,29 @@ export function AdminLayout() {
           gap: 0.75rem;
         }
         
+        /* Icon color transitions */
+        .admin-nav-list a svg {
+          color: var(--text-3);
+          transition: color var(--dur) var(--ease);
+        }
+
         .admin-nav-list a:hover {
           background: var(--surface-2);
+        }
+        
+        .admin-nav-list a:hover svg {
+          color: var(--ink-800);
         }
 
         .admin-nav-list a.is-active {
           background: var(--brand-blue-50);
           color: var(--brand-blue-700);
           font-weight: 600;
+        }
+        
+        /* Active menu icon matches active menu font color */
+        .admin-nav-list a.is-active svg {
+          color: var(--brand-blue-700);
         }
 
         .admin-mobile-menu-btn {
@@ -607,9 +622,11 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
           <option value="hidden">Hidden</option>
           <option value="closed">Closed</option>
         </select>
-        <div className="input-affix" style={{ width: '100%', maxWidth: '300px' }}>
-          <Search className="input-affix__icon" size={18} />
-          <input className="input input--with-affix" style={{ padding: '0.5rem 1rem 0.5rem 2.5rem' }} placeholder="Search content..." value={q} onChange={(e) => setQ(e.target.value)} />
+        
+        {/* Adjusted style for centering the search icon */}
+        <div className="input-affix" style={{ width: '100%', maxWidth: '300px', position: 'relative' }}>
+          <Search className="input-affix__icon" size={18} style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '0.75rem', pointerEvents: 'none', color: 'var(--text-3)' }} />
+          <input className="input input--with-affix" style={{ width: '100%', padding: '0.5rem 1rem 0.5rem 2.5rem', boxSizing: 'border-box' }} placeholder="Search content..." value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
       </AdminHeader>
 
@@ -763,9 +780,10 @@ export function AdminUsers() {
         title="User Directory" 
         subtitle="Manage user accounts, roles, and verifications"
       >
-        <div className="input-affix" style={{ width: '100%', maxWidth: '320px' }}>
-          <Search className="input-affix__icon" size={18} />
-          <input className="input input--with-affix" style={{ padding: '0.5rem 1rem 0.5rem 2.5rem' }} placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
+        {/* Adjusted style for centering the search icon */}
+        <div className="input-affix" style={{ width: '100%', maxWidth: '320px', position: 'relative' }}>
+          <Search className="input-affix__icon" size={18} style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '0.75rem', pointerEvents: 'none', color: 'var(--text-3)' }} />
+          <input className="input input--with-affix" style={{ width: '100%', padding: '0.5rem 1rem 0.5rem 2.5rem', boxSizing: 'border-box' }} placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
       </AdminHeader>
 
