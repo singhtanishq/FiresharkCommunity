@@ -369,7 +369,19 @@ export function AdminHeader({ title, subtitle, children }: { title: string; subt
       width: '100%',
       boxSizing: 'border-box'
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+      <style>{`
+        @media (max-width: 1023px) {
+          .admin-header-title-container {
+            align-items: flex-start !important;
+            text-align: left !important;
+          }
+          .admin-header-title-container h1, 
+          .admin-header-title-container p {
+            text-align: left !important;
+          }
+        }
+      `}</style>
+      <div className="admin-header-title-container" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
         <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', margin: 0, fontWeight: 800, color: 'var(--ink-900)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
           {title}
         </h1>
