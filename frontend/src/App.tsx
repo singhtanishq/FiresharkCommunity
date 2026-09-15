@@ -60,11 +60,11 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 }
 
 // Wrapper for public auth pages (login, register, forgot-password)
-function PublicAuthPage({ children }: { children: React.ReactNode }) {
+function PublicAuthPage() {
   return (
     <AuthGuard>
       <Suspense fallback={<Spinner />}>
-        {children}
+        <Outlet />
       </Suspense>
     </AuthGuard>
   )
