@@ -187,6 +187,7 @@ export function Login() {
     setError(null)
     try {
       await authApi.verifyLoginOtp({ identifier: email, code: otp }, otpToken)
+      await refresh()
       navigate(from, { replace: true })
     } catch (err) {
       setError(apiError(err).message)
