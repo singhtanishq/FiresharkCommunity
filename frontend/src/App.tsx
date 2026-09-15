@@ -59,6 +59,17 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+// Wrapper for public auth pages (login, register, forgot-password)
+function PublicAuthPage({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGuard>
+      <Suspense fallback={<Spinner />}>
+        {children}
+      </Suspense>
+    </AuthGuard>
+  )
+}
+
 export function App() {
   return (
     <Routes>
@@ -77,13 +88,8 @@ export function App() {
         <Route path="/users/:username" element={<Suspense fallback={<Spinner />}><UserProfile /></Suspense>} />
         <Route path="/leaderboard" element={<Suspense fallback={<Spinner />}><Leaderboard /></Suspense>} />
 
-        <Route element={<Suspense fallback={<Spinner />}>
-            <AuthGuard>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-            </AuthGuard>
-          </Suspense>}>
+        {/* Public auth routes - only accessible when not authenticated */}
+        <Route element={<PublicAuthPage />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
