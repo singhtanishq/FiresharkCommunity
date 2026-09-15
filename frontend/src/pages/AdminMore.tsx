@@ -446,7 +446,9 @@ export function AdminSettings() {
                 <Settings size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Core Configuration
               </h2>
             </div>
-            <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box' }}>
+            
+            {/* Added padding and layout fixes inside panel__body to prevent overlap */}
+            <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box', padding: '1.5rem' }}>
               {saved && (
                 <div className="banner banner--success mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
                   <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
@@ -454,39 +456,41 @@ export function AdminSettings() {
                 </div>
               )}
               
-              <div className="field">
-                <label htmlFor="cfg-site-name">Platform Name</label>
+              <div className="field" style={{ marginBottom: '1.5rem' }}>
+                <label htmlFor="cfg-site-name" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Platform Name</label>
                 <input 
                   id="cfg-site-name" 
                   className="input input--lg" 
+                  style={{ width: '100%', boxSizing: 'border-box' }}
                   value={settings.site_name ?? ''} 
                   onChange={(e) => setSettings({ ...settings, site_name: e.target.value })} 
                 />
               </div>
               
-              <div className="field">
-                <label htmlFor="cfg-site-desc">Global SEO Description</label>
+              <div className="field" style={{ marginBottom: '1.5rem' }}>
+                <label htmlFor="cfg-site-desc" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Global SEO Description</label>
                 <textarea 
                   id="cfg-site-desc" 
                   className="textarea" 
-                  style={{ minHeight: '90px' }} 
+                  style={{ minHeight: '90px', width: '100%', boxSizing: 'border-box' }} 
                   value={settings.site_description ?? ''} 
                   onChange={(e) => setSettings({ ...settings, site_description: e.target.value })} 
                 />
-                <span className="hint">Used for metadata and default opengraph descriptions.</span>
+                <span className="hint muted" style={{ display: 'block', marginTop: '0.5rem', fontSize: '0.85rem' }}>Used for metadata and default opengraph descriptions.</span>
               </div>
               
-              <div className="field">
-                <label htmlFor="cfg-support">Support URL</label>
+              <div className="field" style={{ marginBottom: '1.5rem' }}>
+                <label htmlFor="cfg-support" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Support URL</label>
                 <input 
                   id="cfg-support" 
                   className="input" 
+                  style={{ width: '100%', boxSizing: 'border-box' }}
                   value={settings.support_url ?? ''} 
                   onChange={(e) => setSettings({ ...settings, support_url: e.target.value })} 
                 />
               </div>
               
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+              <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
                 <button className="btn btn--primary" onClick={save}>
                   <Check size={16} /> Save Configuration
                 </button>
