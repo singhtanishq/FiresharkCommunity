@@ -320,6 +320,7 @@ export function Login() {
 
 export function Register() {
   const navigate = useNavigate()
+  const { refresh } = useAuth()
   const [step, setStep] = useState<'details' | 'otp' | 'password'>('details')
   const [form, setForm] = useState({ name: '', username: '', email: '', password: '' })
   const [confirm, setConfirm] = useState('')
