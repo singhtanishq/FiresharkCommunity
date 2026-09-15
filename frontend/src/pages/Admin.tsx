@@ -455,7 +455,7 @@ export function AdminDashboard() {
       />
 
       <div className="admin-stat-grid">
-        <StatCard value={formatNumber(stats.users.total)} label="Total users" />
+        <StatCard value={formatNumber(stats.users.total)} label="Total user base" />
         <StatCard value={formatNumber(stats.users.active_month)} label="Active this month" />
         <StatCard value={formatNumber(stats.questions.published)} label="Published questions" />
         <StatCard value={formatNumber(stats.questions.unanswered)} label="Unanswered" />
