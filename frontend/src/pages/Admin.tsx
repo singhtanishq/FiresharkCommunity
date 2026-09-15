@@ -10,7 +10,7 @@ import {
   LayoutDashboard, Flag, MessageSquare, FileText, Users, 
   FolderOpen, Award, Settings, CheckCircle2, 
   EyeOff, Lock, AlertCircle, ShieldCheck, Trash2, Clock, Search,
-  Menu, X, Tag, Trophy, Terminal
+  Menu, X, Tag, Trophy
 } from 'lucide-react'
 
 // ------------------------------------------------------------------ shell
@@ -121,20 +121,10 @@ export function AdminLayout() {
           background: var(--surface-2);
         }
 
-        /* Fixed Icon Colors */
-        .admin-nav-list a svg {
-          color: var(--text-3);
-          transition: color var(--dur) var(--ease);
-        }
-
         .admin-nav-list a.is-active {
           background: var(--brand-blue-50);
           color: var(--brand-blue-700);
           font-weight: 600;
-        }
-        
-        .admin-nav-list a.is-active svg {
-          color: var(--brand-blue-700);
         }
 
         .admin-mobile-menu-btn {
@@ -617,9 +607,9 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
           <option value="hidden">Hidden</option>
           <option value="closed">Closed</option>
         </select>
-        <div className="input-affix" style={{ width: '100%', maxWidth: '300px', position: 'relative' }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }} />
-          <input className="input input--with-affix" style={{ width: '100%', padding: '0.5rem 1rem 0.5rem 2.2rem', boxSizing: 'border-box' }} placeholder="Search content..." value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="input-affix" style={{ width: '100%', maxWidth: '300px' }}>
+          <Search className="input-affix__icon" size={18} />
+          <input className="input input--with-affix" style={{ padding: '0.5rem 1rem 0.5rem 2.5rem' }} placeholder="Search content..." value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
       </AdminHeader>
 
@@ -773,9 +763,9 @@ export function AdminUsers() {
         title="User Directory" 
         subtitle="Manage user accounts, roles, and verifications"
       >
-        <div className="input-affix" style={{ width: '100%', maxWidth: '320px', position: 'relative' }}>
-          <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', pointerEvents: 'none' }} />
-          <input className="input input--with-affix" style={{ width: '100%', padding: '0.5rem 1rem 0.5rem 2.2rem', boxSizing: 'border-box' }} placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="input-affix" style={{ width: '100%', maxWidth: '320px' }}>
+          <Search className="input-affix__icon" size={18} />
+          <input className="input input--with-affix" style={{ padding: '0.5rem 1rem 0.5rem 2.5rem' }} placeholder="Search name, username or email…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
       </AdminHeader>
 
@@ -862,193 +852,6 @@ export function AdminUsers() {
           </div>
         </>
       )}
-    </div>
-  )
-}
-
-// ------------------------------------------------------------------ Settings
-
-export function AdminSettings() {
-  const [settings, setSettings] = useState<Record<string, string>>({})
-  const [leaderboard, setLeaderboard] = useState<any>(null)
-  const [saved, setSaved] = useState(false)
-
-  useEffect(() => {
-    Promise.all([api.get('/admin/settings'), api.get('/admin/leaderboard')])
-      .then(([s, l]) => {
-        setSettings(s.data.data)
-        setLeaderboard(l.data.data)
-      })
-  }, [])
-
-  const save = async () => {
-    try {
-      await api.put('/admin/settings', settings)
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
-    } catch (e) { alert(apiError(e).message) }
-  }
-
-  const finalize = async (periodKey: string) => {
-    if (!window.confirm(`Finalize leaderboard for ${periodKey}? This snapshot closes the period and cannot be undone.`)) return
-    try {
-      await api.post('/admin/leaderboard/finalize', { period_key: periodKey })
-      const l = await api.get('/admin/leaderboard')
-      setLeaderboard(l.data.data)
-    } catch (e) { alert(apiError(e).message) }
-  }
-
-  // Helper to safely access periods array
-  const periods = Array.isArray(leaderboard?.periods) ? leaderboard.periods : []
-  const currentPeriod = leaderboard?.current
-
-  return (
-    <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
-      <style>{`
-        .admin-settings-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-        }
-        @media (min-width: 1024px) {
-          .admin-settings-grid {
-            grid-template-columns: 2fr 1fr;
-          }
-        }
-      `}</style>
-      
-      <AdminHeader 
-        title="Settings & Config" 
-        subtitle="Platform configuration and leaderboard management"
-      />
-
-      <div className="admin-settings-grid">
-        <div style={{ width: '100%', minWidth: 0 }}>
-          <section className="panel mb-3" style={{ overflowX: 'hidden' }}>
-            <div className="panel__header">
-              <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Settings size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Core Configuration
-              </h2>
-            </div>
-            <div className="panel__body" style={{ width: '100%', boxSizing: 'border-box' }}>
-              {saved && (
-                <div className="banner banner--success mb-3" style={{ animation: 'modal-rise var(--dur) var(--ease)' }}>
-                  <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
-                  <span style={{ wordBreak: 'break-word' }}>Global configuration updated successfully.</span>
-                </div>
-              )}
-              
-              <div className="field">
-                <label htmlFor="cfg-site-name">Platform Name</label>
-                <input 
-                  id="cfg-site-name" 
-                  className="input input--lg" 
-                  style={{ width: '100%', boxSizing: 'border-box' }}
-                  value={settings.site_name ?? ''} 
-                  onChange={(e) => setSettings({ ...settings, site_name: e.target.value })} 
-                />
-              </div>
-              
-              <div className="field">
-                <label htmlFor="cfg-site-desc">Global SEO Description</label>
-                <textarea 
-                  id="cfg-site-desc" 
-                  className="textarea" 
-                  style={{ minHeight: '100px', width: '100%', boxSizing: 'border-box' }} 
-                  value={settings.site_description ?? ''} 
-                  onChange={(e) => setSettings({ ...settings, site_description: e.target.value })} 
-                />
-                <span className="hint">Used for metadata and default opengraph descriptions.</span>
-              </div>
-              
-              <div className="field">
-                <label htmlFor="cfg-support">Support URL</label>
-                <input 
-                  id="cfg-support" 
-                  className="input" 
-                  style={{ width: '100%', boxSizing: 'border-box' }}
-                  value={settings.support_url ?? ''} 
-                  onChange={(e) => setSettings({ ...settings, support_url: e.target.value })} 
-                />
-              </div>
-
-              {/* Replaced nested grey box with professional dark code snippet block */}
-              <div className="field" style={{ marginTop: '1.5rem' }}>
-                <label>System Environment Config</label>
-                <div style={{ background: '#0b1220', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.1)', overflowX: 'auto', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                    <Terminal size={14} color="#94a3b8" />
-                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>system_config.json</span>
-                  </div>
-                  <pre style={{ margin: 0, fontSize: '0.85rem', color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontFamily: 'var(--font-mono, monospace)', lineHeight: 1.5 }}>
-                    {JSON.stringify(settings || { message: "No generic configuration loaded." }, null, 2)}
-                  </pre>
-                </div>
-              </div>
-              
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-                <button className="btn btn--primary" onClick={save}>
-                  <Check size={16} style={{ marginRight: '4px' }} /> Save Configuration
-                </button>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <aside style={{ width: '100%', minWidth: 0 }}>
-          <section className="panel" style={{ overflowX: 'hidden' }}>
-            <div className="panel__header">
-              <h2 style={{ fontSize: '1.05rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Trophy size={18} color="var(--brand-blue-600)" style={{ flexShrink: 0 }} /> Leaderboard Engine
-              </h2>
-            </div>
-            <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
-              {!leaderboard ? (
-                <Spinner />
-              ) : periods.length === 0 ? (
-                <div style={{ padding: '2rem 1rem' }}>
-                  <EmptyState icon={<Trophy size={32} strokeWidth={1.5} />} title="No finalized periods." />
-                </div>
-              ) : (
-                <table className="data-table" style={{ width: '100%', minWidth: '320px' }}>
-                  <thead>
-                    <tr>
-                      <th>Period Cycle</th>
-                      <th style={{ textAlign: 'right' }}>Finalized Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {periods.map((p: any) => (
-                      <tr key={p.period_key}>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <b style={{ color: 'var(--ink-900)', fontSize: '0.95rem' }}>{p.period_key}</b>
-                          <div className="chip chip--ghost mt-1" style={{ fontSize: '0.7rem', display: 'inline-block' }}>{p.status}</div>
-                        </td>
-                        <td className="muted text-3" style={{ textAlign: 'right', verticalAlign: 'middle', whiteSpace: 'nowrap', padding: '0.75rem 1rem' }}>
-                          {p.finalized_at ? new Date(p.finalized_at).toLocaleDateString() : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-              
-              {currentPeriod && (
-                <div style={{ padding: '1.5rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)', boxSizing: 'border-box' }}>
-                  <div className="row row--between mb-2" style={{ fontSize: '0.9rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <b style={{ color: 'var(--ink-900)' }}>Active Cycle:</b>
-                    <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)', padding: '0.2rem 0.6rem' }}>Current Month</span>
-                  </div>
-                  <p className="muted text-3 mb-3" style={{ lineHeight: 1.5, wordBreak: 'break-word' }}>The current month's leaderboard is live and updates in real-time. Finalize to snapshot it.</p>
-                  <button className="btn btn--danger btn--block" onClick={() => finalize(currentPeriod.period_key ?? new Date().toISOString().slice(0, 7))}>
-                    <AlertTriangle size={16} style={{ marginRight: '4px' }} /> Finalize Current Month
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        </aside>
-      </div>
     </div>
   )
 }
