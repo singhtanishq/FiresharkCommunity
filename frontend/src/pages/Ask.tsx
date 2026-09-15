@@ -135,8 +135,10 @@ export function Ask() {
           <HelpCircle size={32} color="var(--brand-blue-600)" strokeWidth={2.5} style={{ flexShrink: 0 }} />
           <span>{editId ? 'Edit your question' : 'Ask a question'}</span>
         </h1>
-        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', wordBreak: 'break-word' }}>
-          <BookOpen size={16} style={{ flexShrink: 0 }} /> Be specific, share what you've tried, and review our{' '}
+        {/* FIXED: Removed flex properties on the p tag and adjusted the icon to flow seamlessly with the text inline on all screen sizes */}
+        <p className="muted" style={{ fontSize: '1.05rem', marginTop: '0.5rem', wordBreak: 'break-word', lineHeight: 1.5 }}>
+          <BookOpen size={16} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '0.4rem', marginTop: '-2px' }} /> 
+          Be specific, share what you've tried, and review our{' '}
           <a 
             href="/community-guidelines" 
             style={{ fontWeight: 600, textDecoration: 'none', color: 'var(--brand-blue-600)', transition: 'color 0.2s ease' }}
