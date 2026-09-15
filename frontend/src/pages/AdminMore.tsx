@@ -314,7 +314,7 @@ export function AdminTags() {
                   <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatNumber(tag.questions_count)}</td>
                   <td>
                     <div className="row" style={{ gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
-                      <button className="btn btn--ghost btn--sm" onClick={() => mergeTag(tag)}>Merge Into</button>
+                      <button className="btn btn--ghost btn--sm" onClick={() => mergeTag(tag)}>Merge</button>
                       <button className="btn btn--danger btn--sm" style={{ padding: '0.36rem' }} onClick={() => deleteTag(tag)}><Trash2 size={14} /></button>
                     </div>
                   </td>
