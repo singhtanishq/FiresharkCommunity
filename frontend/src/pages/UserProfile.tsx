@@ -59,6 +59,16 @@ export function UserProfile() {
   return (
     <div className="app-main" style={{ animation: 'fade-in var(--dur-slow) var(--ease)', width: '100%', boxSizing: 'border-box' }}>
       
+      {/* Inject style for mobile responsiveness */}
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-name-black {
+            color: #000 !important;
+            text-shadow: none !important;
+          }
+        }
+      `}</style>
+
       {/* Premium Profile Header */}
       <div className="panel" style={{ padding: 0, overflow: 'hidden', marginBottom: '2rem', animation: 'modal-rise var(--dur-slow) var(--ease) 0.05s both', width: '100%', boxSizing: 'border-box' }}>
         {/* Top Banner Gradient */}
@@ -74,7 +84,7 @@ export function UserProfile() {
             </div>
             
             <div style={{ flex: '1 1 245px', minWidth: 0, paddingBottom: '0.2rem', boxSizing: 'border-box' }}>
-              <h1 className="row" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.4rem', color: '#fff', gap: '0.6rem', flexWrap: 'wrap', textShadow: '0 2px 4px rgba(0,0,0,0.15)', wordBreak: 'break-word' }}>
+              <h1 className="row mobile-name-black" style={{ fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 900, letterSpacing: '-0.02em', margin: '0 0 0.4rem', color: '#fff', gap: '0.6rem', flexWrap: 'wrap', textShadow: '0 2px 4px rgba(0,0,0,0.15)', wordBreak: 'break-word' }}>
                 <span>{profile.name}</span>
                 {profile.verification && (
                   <span className="chip" style={{ background: 'rgba(255,255,255,0.9)', color: 'var(--brand-blue-700)', border: 'none', fontSize: '0.8rem', padding: '0.2rem 0.6rem', textShadow: 'none', flexShrink: 0 }}>
