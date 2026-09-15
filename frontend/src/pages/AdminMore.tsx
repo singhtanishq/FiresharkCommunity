@@ -403,7 +403,7 @@ export function AdminBadges() {
                   <td className="muted font-mono text-3" style={{ whiteSpace: 'nowrap' }}>{badge.criteria ? `${badge.criteria.type} ≥ ${badge.criteria.count}` : 'Manual'}</td>
                   <td style={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{formatNumber(badge.awarded_count)}</td>
                   <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <button className="btn btn--ghost btn--sm" onClick={() => awardBadge(badge)}>Award Manually…</button>
+                    <button className="btn btn--ghost btn--sm" onClick={() => awardBadge(badge)}>Award Manually</button>
                   </td>
                 </tr>
               ))}
