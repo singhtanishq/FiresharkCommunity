@@ -426,6 +426,11 @@ export function AdminSettings() {
     } catch (e) { alert(apiError(e).message) }
   }
 
+  // Helper to safely access periods array
+  const periods = Array.isArray(leaderboard?.periods) ? leaderboard.periods : []
+  // Backend returns 'current' not 'period'
+  const currentPeriod = leaderboard?.current
+
   return (
     <div className="admin-content" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
       <AdminHeader 
@@ -500,7 +505,7 @@ export function AdminSettings() {
             <div className="panel__body" style={{ padding: 0, overflowX: 'auto', width: '100%' }}>
               {!leaderboard ? (
                 <Spinner />
-              ) : leaderboard.periods.length === 0 ? (
+              ) : periods.length === 0 ? (
                 <div style={{ padding: '2rem 1rem' }}>
                   <EmptyState icon={<Trophy size={32} strokeWidth={1.5} />} title="No finalized periods." />
                 </div>
@@ -513,7 +518,7 @@ export function AdminSettings() {
                     </tr>
                   </thead>
                   <tbody>
-                    {leaderboard.periods.map((p: any) => (
+                    {periods.map((p: any) => (
                       <tr key={p.period_key}>
                         <td>
                           <b style={{ color: 'var(--ink-900)' }}>{p.period_key}</b>
@@ -528,14 +533,15 @@ export function AdminSettings() {
                 </table>
               )}
               
-              {leaderboard?.period && leaderboard.period.is_current && (
+              {currentPeriod && (
                 <div style={{ padding: '1.25rem', background: 'var(--surface-2)', borderTop: '1px solid var(--border)', boxSizing: 'border-box' }}>
                   <div className="row row--between mb-1" style={{ fontSize: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <b>Active Cycle:</b>
-                    <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)' }}>{leaderboard.period.period_key}</span>
+                    <span className="chip" style={{ background: 'var(--brand-blue-50)', color: 'var(--brand-blue-700)' }}>Current Month</span>
                   </div>
-                  <button className="btn btn--danger btn--block mt-2" onClick={() => finalize(leaderboard.period.period_key)}>
-                    <AlertTriangle size={16} /> Finalize Current Cycle
+                  <p className="muted text-3 mb-2">The current month's leaderboard is live and updates in real-time. Finalize to snapshot it.</p>
+                  <button className="btn btn--danger btn--block mt-2" onClick={() => finalize(currentPeriod.period_key ?? new Date().toISOString().slice(0, 7))}>
+                    <AlertTriangle size={16} /> Finalize Current Month
                   </button>
                 </div>
               )}
