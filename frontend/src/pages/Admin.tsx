@@ -42,13 +42,6 @@ export function AdminLayout() {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  if (loading) return <Spinner />
-  if (!user) return <Navigate to="/login" state={{ from: '/admin' }} replace />
-  if (user.role !== 'admin' && user.role !== 'moderator') return <Navigate to="/" replace />
-
-  const isAdmin = user.role === 'admin'
-  const navItems = isAdmin ? ADMIN_NAV : MODERATOR_NAV
-
   // Close sidebar on route change (mobile)
   useEffect(() => {
     if (window.innerWidth < 1024) {
@@ -56,8 +49,161 @@ export function AdminLayout() {
     }
   }, [location.pathname])
 
+  if (loading) return <Spinner />
+  if (!user) return <Navigate to="/login" state={{ from: '/admin' }} replace />
+  if (user.role !== 'admin' && user.role !== 'moderator') return <Navigate to="/" replace />
+
+  const isAdmin = user.role === 'admin'
+  const navItems = isAdmin ? ADMIN_NAV : MODERATOR_NAV
+
   return (
     <div className="admin-layout" style={{ animation: 'fade-in var(--dur) var(--ease)' }}>
+      <style>{`
+        .admin-layout {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          max-width: var(--container, 1400px);
+          margin: 0 auto;
+          box-sizing: border-box;
+          position: relative;
+        }
+        
+        .admin-main {
+          flex: 1;
+          min-width: 0;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 1rem;
+        }
+
+        .admin-nav {
+          background: var(--surface);
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          z-index: 50;
+        }
+
+        .admin-nav-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          font-size: 0.8rem;
+          font-weight: 700;
+          color: var(--text-3);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .admin-nav-list {
+          display: flex;
+          flex-direction: column;
+          padding: 0.75rem;
+          gap: 0.25rem;
+          overflow-y: auto;
+        }
+
+        .admin-nav-list a {
+          padding: 0.65rem 0.85rem;
+          border-radius: var(--radius);
+          text-decoration: none;
+          color: var(--ink-800);
+          transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        
+        .admin-nav-list a:hover {
+          background: var(--surface-2);
+        }
+
+        .admin-nav-list a.is-active {
+          background: var(--brand-blue-50);
+          color: var(--brand-blue-700);
+          font-weight: 600;
+        }
+
+        .admin-mobile-menu-btn {
+          display: none;
+        }
+
+        /* Desktop Layout (1024px+) */
+        @media (min-width: 1024px) {
+          .admin-layout {
+            flex-direction: row;
+            align-items: flex-start;
+            padding: 1.5rem 1rem;
+            gap: 2rem;
+          }
+          .admin-nav {
+            width: 250px;
+            flex-shrink: 0;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            position: sticky;
+            top: calc(var(--header-h, 70px) + 1.5rem);
+          }
+          .admin-nav-header {
+            border-bottom: none;
+            padding: 1.25rem 1rem 0.5rem;
+          }
+          .admin-main {
+            padding: 0;
+          }
+        }
+
+        /* Mobile Layout (< 1024px) */
+        @media (max-width: 1023px) {
+          .admin-mobile-menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--brand-blue-600);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 14px rgba(22, 122, 201, 0.4);
+            z-index: 40;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+          }
+          .admin-mobile-menu-btn:active {
+            transform: scale(0.95);
+          }
+          .admin-nav {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            border-right: 1px solid var(--border);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(0);
+          }
+          .admin-nav.is-open {
+            transform: translateX(280px);
+            box-shadow: var(--shadow-xl);
+          }
+          .admin-sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 18, 32, 0.6);
+            backdrop-filter: blur(2px);
+            z-index: 45;
+            animation: fade-in 0.3s ease forwards;
+          }
+        }
+      `}</style>
+
       {/* Mobile sidebar overlay */}
       {window.innerWidth < 1024 && sidebarOpen && (
         <div 
@@ -75,10 +221,10 @@ export function AdminLayout() {
           {window.innerWidth < 1024 && (
             <button
               onClick={() => setSidebarOpen(false)}
-              style={{ all: 'unset', cursor: 'pointer', padding: '0.25rem', color: 'var(--text-3)' }}
+              style={{ all: 'unset', cursor: 'pointer', padding: '0.25rem', color: 'var(--text-3)', display: 'grid', placeItems: 'center' }}
               aria-label="Close sidebar"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
           )}
         </div>
@@ -88,7 +234,7 @@ export function AdminLayout() {
               key={to} 
               to={to} 
               end={to === '/admin'} 
-              className={({ isActive }) => `row ${isActive ? 'is-active' : ''}`}
+              className={({ isActive }) => (isActive ? 'is-active' : '')}
             >
               <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</span> 
               <span style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>
@@ -98,15 +244,13 @@ export function AdminLayout() {
       </nav>
 
       {/* Mobile menu button */}
-      {window.innerWidth < 1024 && (
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="admin-mobile-menu-btn"
-          aria-label="Open admin menu"
-        >
-          <Menu size={24} />
-        </button>
-      )}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="admin-mobile-menu-btn"
+        aria-label="Open admin menu"
+      >
+        <Menu size={24} />
+      </button>
 
       <main className="admin-main">
         <Outlet />
@@ -118,26 +262,30 @@ export function AdminLayout() {
 export function AdminHeader({ title, subtitle, children }: { title: string; subtitle?: string; children?: React.ReactNode }) {
   return (
     <div className="page-header" style={{ 
-      padding: '1.5rem 0', 
+      padding: '0 0 1.5rem', 
       marginBottom: '1.5rem', 
       borderBottom: '1px solid var(--border)',
       display: 'flex', 
       flexDirection: 'column',
       gap: '1rem',
+      width: '100%',
+      boxSizing: 'border-box'
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-        <h1 style={{ fontSize: '1.75rem', margin: 0, fontWeight: 700, color: 'var(--ink-900)', letterSpacing: '-0.02em' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 1.8rem)', margin: 0, fontWeight: 800, color: 'var(--ink-900)', letterSpacing: '-0.02em', wordBreak: 'break-word' }}>
           {title}
         </h1>
         {subtitle && (
-          <p style={{ margin: 0, color: 'var(--text-3)', fontSize: '0.95rem' }}>
+          <p style={{ margin: 0, color: 'var(--text-3)', fontSize: '0.95rem', wordBreak: 'break-word' }}>
             {subtitle}
           </p>
         )}
       </div>
-      <div className="row" style={{ gap: '1rem', flexWrap: 'wrap', width: '100%', maxWidth: '100%' }}>
-        {children}
-      </div>
+      {children && (
+        <div className="row" style={{ gap: '1rem', flexWrap: 'wrap', width: '100%' }}>
+          {children}
+        </div>
+      )}
     </div>
   )
 }
@@ -156,20 +304,57 @@ export function AdminDashboard() {
   const { stats, recent_activity: activity } = data
 
   const StatCard = ({ value, label, warn = false }: { value: string | number, label: string, warn?: boolean }) => (
-    <div className={`stat-card ${warn ? 'warn' : ''}`}>
-      <b>{value}</b>
-      <span>{label}</span>
+    <div 
+      className={`panel stat-card ${warn ? 'warn' : ''}`}
+      style={{
+        padding: '1.25rem 1rem',
+        border: warn ? '1px solid var(--danger)' : '1px solid var(--border)',
+        background: warn ? 'var(--danger-bg)' : 'var(--surface)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        transition: 'transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease)',
+      }}
+      onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)'; }}
+      onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-xs)'; }}
+    >
+      <b style={{ fontSize: '1.75rem', color: warn ? 'var(--danger)' : 'var(--ink-900)', lineHeight: 1.2 }}>{value}</b>
+      <span style={{ fontSize: '0.85rem', color: warn ? '#991b1b' : 'var(--text-3)' }}>{label}</span>
     </div>
   )
 
   return (
-    <div className="admin-content">
+    <div className="admin-content" style={{ width: '100%', boxSizing: 'border-box' }}>
+      <style>{`
+        .admin-stat-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+        @media (min-width: 640px) {
+          .admin-stat-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1200px) {
+          .admin-stat-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        .admin-grid-2 {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+          .admin-grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+      `}</style>
+
       <AdminHeader 
         title="Dashboard Overview" 
         subtitle="Platform statistics and recent activity"
       />
 
-      <div className="stat-grid">
+      <div className="admin-stat-grid">
         <StatCard value={formatNumber(stats.users.total)} label="Total users" />
         <StatCard value={formatNumber(stats.users.active_month)} label="Active this month" />
         <StatCard value={formatNumber(stats.questions.published)} label="Published questions" />
@@ -178,57 +363,57 @@ export function AdminDashboard() {
         <StatCard value={formatNumber(stats.reports.pending)} label="Open reports" warn={stats.reports.pending > 0} />
       </div>
 
-      <div className="grid-2">
-        <div className="panel">
-          <div className="panel__header">
-            <h2>Recent questions</h2>
-            <NavLink to="/admin/questions" className="muted text-3" style={{ fontSize: '0.9rem' }}>View all →</NavLink>
+      <div className="admin-grid-2">
+        <div className="panel" style={{ overflowX: 'hidden' }}>
+          <div className="panel__header" style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Recent questions</h2>
+            <NavLink to="/admin/questions" className="muted text-3" style={{ fontSize: '0.85rem' }}>View all →</NavLink>
           </div>
           <div className="panel__body" style={{ padding: 0 }}>
             {activity.questions.map((q: any) => (
               <div 
                 key={q.id} 
                 className="row row--between" 
-                style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'wrap', gap: '1rem' }}
+                style={{ padding: '0.85rem 1.25rem', borderTop: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'nowrap', gap: '0.75rem' }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'}
                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}
               >
-                <div className="row" style={{ gap: '0.75rem', flex: 1, minWidth: 0 }}>
-                  {q.status === 'hidden' && <EyeOff size={16} color="var(--text-3)" style={{ flexShrink: 0 }} />}
-                  {q.status === 'closed' && <Lock size={16} color="var(--warning)" style={{ flexShrink: 0 }} />}
-                  <span style={{ fontSize: '0.95rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
+                <div className="row" style={{ gap: '0.5rem', flex: 1, minWidth: 0, flexWrap: 'nowrap' }}>
+                  {q.status === 'hidden' && <EyeOff size={14} color="var(--text-3)" style={{ flexShrink: 0 }} />}
+                  {q.status === 'closed' && <Lock size={14} color="var(--warning)" style={{ flexShrink: 0 }} />}
+                  <span style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                     {q.title}
                   </span>
                 </div>
-                <span className="muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{timeAgo(q.created_at)}</span>
+                <span className="muted" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', flexShrink: 0 }}>{timeAgo(q.created_at)}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="panel">
-          <div className="panel__header">
-            <h2>Latest reports</h2>
-            <NavLink to="/admin/reports" className="muted text-3" style={{ fontSize: '0.9rem' }}>Review queue →</NavLink>
+        <div className="panel" style={{ overflowX: 'hidden' }}>
+          <div className="panel__header" style={{ padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '1.05rem', margin: 0 }}>Latest reports</h2>
+            <NavLink to="/admin/reports" className="muted text-3" style={{ fontSize: '0.85rem' }}>Review queue →</NavLink>
           </div>
           <div className="panel__body" style={{ padding: 0 }}>
-            {activity.reports.length === 0 && <p className="muted" style={{ padding: '2rem', textAlign: 'center', fontSize: '0.95rem' }}>No recent reports.</p>}
+            {activity.reports.length === 0 && <p className="muted" style={{ padding: '2rem', textAlign: 'center', margin: 0, fontSize: '0.95rem' }}>No recent reports.</p>}
             {activity.reports.map((report: any) => (
               <div 
                 key={report.id} 
                 className="row row--between" 
-                style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'wrap', gap: '1rem' }}
+                style={{ padding: '0.85rem 1.25rem', borderTop: '1px solid var(--border)', transition: 'background var(--dur) var(--ease)', flexWrap: 'nowrap', gap: '0.75rem' }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--surface-2)'}
                 onMouseOut={e => e.currentTarget.style.background = 'transparent'}
               >
-                <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', minWidth: 0 }}>
-                  <AlertCircle size={16} color="var(--danger)" style={{ flexShrink: 0 }} /> 
-                  <span style={{ fontSize: '0.95rem', fontWeight: 500, wordBreak: 'break-word' }}>
+                <div className="row" style={{ gap: '0.5rem', flexWrap: 'nowrap', minWidth: 0 }}>
+                  <AlertCircle size={14} color="var(--danger)" style={{ flexShrink: 0 }} /> 
+                  <span style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {reportReasonLabels[report.reason] ?? report.reason}
                   </span>
-                  <span className="chip chip--ghost" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', flexShrink: 0 }}>{report.status}</span>
+                  <span className="chip chip--ghost" style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem', flexShrink: 0, textTransform: 'capitalize' }}>{report.status}</span>
                 </div>
-                <span className="muted" style={{ fontSize: '0.85rem', flexShrink: 0 }}>{timeAgo(report.created_at)}</span>
+                <span className="muted" style={{ fontSize: '0.8rem', flexShrink: 0, whiteSpace: 'nowrap' }}>{timeAgo(report.created_at)}</span>
               </div>
             ))}
           </div>
@@ -270,7 +455,7 @@ export function AdminReports() {
   }
 
   return (
-    <div className="admin-content">
+    <div className="admin-content" style={{ width: '100%', boxSizing: 'border-box' }}>
       <AdminHeader 
         title="Moderation Queue" 
         subtitle="Review and take action on reported content"
@@ -291,12 +476,12 @@ export function AdminReports() {
           <EmptyState icon={<ShieldCheck size={48} color="var(--success)" strokeWidth={1.5} />} title="Queue is empty. Great job." />
         </div>
       ) : (
-        <div className="panel" style={{ overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {reports.map((report) => (
-            <div key={report.id} style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+            <div key={report.id} className="panel" style={{ padding: '1.25rem', overflowX: 'hidden' }}>
               <div className="row row--between" style={{ flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
                 <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <span className={`chip ${report.status === 'pending' ? '' : 'chip--ghost'}`} style={{ flexShrink: 0, padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
+                  <span className={`chip ${report.status === 'pending' ? '' : 'chip--ghost'}`} style={{ flexShrink: 0, padding: '0.2rem 0.6rem', fontSize: '0.85rem' }}>
                     {reportReasonLabels[report.reason] ?? report.reason}
                   </span>
                   <span className="text-3 muted row" style={{ gap: '0.4rem', flexShrink: 0, fontSize: '0.85rem' }}>
@@ -312,26 +497,26 @@ export function AdminReports() {
                 {report.target_excerpt ?? <span className="muted"><i>(Content already deleted)</i></span>}
               </div>
               
-              <p className="text-3" style={{ wordBreak: 'break-word', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1rem' }}>
+              <p className="text-3" style={{ wordBreak: 'break-word', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '1.25rem' }}>
                 {report.description && <span><b>Context:</b> “{report.description}” — </span>}
                 Reported by <b style={{ color: 'var(--ink-900)' }}>{report.reporter?.name ?? 'Unknown user'}</b> on {report.reportable_type} #{report.reportable_id}
               </p>
 
               {report.status === 'pending' || report.status === 'reviewing' ? (
-                <div className="row" style={{ background: 'var(--surface-2)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', flexWrap: 'wrap', gap: '1rem' }}>
-                  <input className="input input--sm" style={{ flex: '1 1 250px', minWidth: '200px', padding: '0.5rem 0.75rem' }} placeholder="Resolution note (optional)..." value={note} onChange={(e) => setNote(e.target.value)} />
-                  <div className="row" style={{ gap: '0.75rem', flexWrap: 'wrap', width: 'auto', justifyContent: 'flex-start' }}>
-                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'reviewing', 'none')}>Reviewing</button>
-                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'dismissed', 'none')}>Dismiss</button>
-                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'hide')}><EyeOff size={16} style={{ marginRight: '4px' }} /> Hide</button>
-                    <button className="btn btn--danger btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'delete')}><Trash2 size={16} style={{ marginRight: '4px' }} /> Delete</button>
+                <div style={{ background: 'var(--surface-2)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <input className="input input--sm" style={{ width: '100%', padding: '0.5rem 0.75rem', boxSizing: 'border-box' }} placeholder="Resolution note (optional)..." value={note} onChange={(e) => setNote(e.target.value)} />
+                  <div className="row" style={{ gap: '0.5rem', flexWrap: 'wrap', width: '100%', justifyContent: 'flex-end' }}>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'reviewing', 'none')} style={{ flex: '1 1 auto', justifyContent: 'center' }}>Reviewing</button>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'dismissed', 'none')} style={{ flex: '1 1 auto', justifyContent: 'center' }}>Dismiss</button>
+                    <button className="btn btn--ghost btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'hide')} style={{ flex: '1 1 auto', justifyContent: 'center' }}><EyeOff size={16} style={{ marginRight: '4px' }} /> Hide</button>
+                    <button className="btn btn--danger btn--sm" disabled={busyId === report.id} onClick={() => resolve(report.id, 'resolved', 'delete')} style={{ flex: '1 1 auto', justifyContent: 'center' }}><Trash2 size={16} style={{ marginRight: '4px' }} /> Delete</button>
                   </div>
                 </div>
               ) : (
                 <div className="row" style={{ fontSize: '0.9rem', color: 'var(--text-2)', background: 'var(--surface-2)', padding: '0.75rem 1rem', borderRadius: 'var(--radius)', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <CheckCircle2 size={16} color="var(--success)" style={{ flexShrink: 0 }} />
                   {report.handled_by && <span>Handled by <b style={{ color: 'var(--ink-900)' }}>{report.handled_by.name}</b>:</span>}
-                  <span style={{ wordBreak: 'break-word' }}>{report.resolution_note || 'No resolution note provided.'}</span>
+                  <span style={{ wordBreak: 'break-word', flex: 1 }}>{report.resolution_note || 'No resolution note provided.'}</span>
                 </div>
               )}
             </div>
@@ -376,12 +561,47 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
   }
 
   return (
-    <div className="admin-content">
+    <div className="admin-content" style={{ width: '100%', boxSizing: 'border-box' }}>
+      <style>{`
+        .admin-table-wrapper {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          background: var(--surface);
+        }
+        .admin-table-wrapper table {
+          width: 100%;
+          min-width: 800px;
+          border-collapse: collapse;
+        }
+        .admin-table-wrapper th {
+          background: var(--surface-2);
+          padding: 1rem;
+          text-align: left;
+          border-bottom: 1px solid var(--border);
+          font-weight: 600;
+          color: var(--text-3);
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .admin-table-wrapper td {
+          padding: 1rem;
+          border-bottom: 1px solid var(--border);
+          vertical-align: middle;
+        }
+        .admin-table-wrapper tr:last-child td {
+          border-bottom: none;
+        }
+      `}</style>
+
       <AdminHeader 
         title={kind === 'questions' ? 'Questions Library' : 'Answers Library'} 
         subtitle={kind === 'questions' ? 'Manage and moderate all questions' : 'Manage and moderate all answers'}
       >
-        <select className="select" style={{ width: '100%', maxWidth: '180px', padding: '0.5rem 1rem' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status filter">
+        <select className="select" style={{ width: '100%', maxWidth: '200px', padding: '0.5rem 1rem' }} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="Status filter">
           <option value="">All statuses</option>
           <option value="published">Published</option>
           <option value="hidden">Hidden</option>
@@ -396,13 +616,13 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
       {loading ? (
         <Spinner />
       ) : items.length === 0 ? (
-        <div className="panel" style={{ padding: '3rem 1rem' }}>
-          <EmptyState icon={<FolderOpen size={40} strokeWidth={1.5} />} title="No content found." />
+        <div className="panel" style={{ padding: '4rem 2rem' }}>
+          <EmptyState icon={<FolderOpen size={48} strokeWidth={1.5} />} title="No content found." />
         </div>
       ) : (
         <>
-          <div className="table-wrapper">
-            <table className="data-table">
+          <div className="admin-table-wrapper">
+            <table>
               <thead>
                 <tr>
                   <th>Content Details</th>
@@ -420,7 +640,7 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
                   const isHidden = item.status === 'hidden'
                   return (
                     <tr key={item.id}>
-                      <td style={{ maxWidth: 400 }}>
+                      <td style={{ maxWidth: 350 }}>
                         <div style={{ fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {slug ? <a href={`/questions/${slug}`} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-blue-600)', textDecoration: 'none' }}>{title}</a> : title}
                         </div>
@@ -434,14 +654,14 @@ export function AdminContent({ kind }: { kind: 'questions' | 'answers' }) {
                       </td>
                       {kind === 'questions' && (
                         <td>
-                          <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.2rem 0.6rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                          <span className={`chip ${isHidden ? 'chip--ghost' : ''}`} style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
                             {item.status}
                           </span>
                         </td>
                       )}
                       <td className="muted" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap' }}>{timeAgo(item.created_at)}</td>
                       <td style={{ textAlign: 'right' }}>
-                        <div className="row" style={{ gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                        <div className="row" style={{ gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                           {isHidden ? (
                             <button className="btn btn--ghost btn--sm" onClick={() => act('restore', { type, id: item.id })}>Restore</button>
                           ) : (
@@ -503,7 +723,42 @@ export function AdminUsers() {
   }
 
   return (
-    <div className="admin-content">
+    <div className="admin-content" style={{ width: '100%', boxSizing: 'border-box' }}>
+      <style>{`
+        .admin-table-wrapper {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          background: var(--surface);
+        }
+        .admin-table-wrapper table {
+          width: 100%;
+          min-width: 850px;
+          border-collapse: collapse;
+        }
+        .admin-table-wrapper th {
+          background: var(--surface-2);
+          padding: 1rem;
+          text-align: left;
+          border-bottom: 1px solid var(--border);
+          font-weight: 600;
+          color: var(--text-3);
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .admin-table-wrapper td {
+          padding: 1rem;
+          border-bottom: 1px solid var(--border);
+          vertical-align: middle;
+        }
+        .admin-table-wrapper tr:last-child td {
+          border-bottom: none;
+        }
+      `}</style>
+
       <AdminHeader 
         title="User Directory" 
         subtitle="Manage user accounts, roles, and verifications"
@@ -518,8 +773,8 @@ export function AdminUsers() {
         <Spinner />
       ) : (
         <>
-          <div className="table-wrapper">
-            <table className="data-table">
+          <div className="admin-table-wrapper">
+            <table>
               <thead>
                 <tr>
                   <th>Profile</th>
@@ -533,7 +788,7 @@ export function AdminUsers() {
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id}>
-                    <td>
+                    <td style={{ maxWidth: 220 }}>
                       <div className="row" style={{ gap: '1rem', flexWrap: 'nowrap' }}>
                         <Avatar name={u.name} path={u.avatar_path} size="md" />
                         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, gap: '0.2rem' }}>
@@ -550,7 +805,7 @@ export function AdminUsers() {
                           <option value="admin">Admin</option>
                         </select>
                       ) : (
-                        <span className="chip chip--ghost" style={{ padding: '0.2rem 0.6rem', fontSize: '0.85rem' }}>{u.role}</span>
+                        <span className="chip chip--ghost" style={{ padding: '0.2rem 0.6rem', fontSize: '0.85rem', textTransform: 'capitalize' }}>{u.role}</span>
                       )}
                     </td>
                     <td style={{ fontWeight: 700, color: 'var(--brand-blue-600)', whiteSpace: 'nowrap', fontSize: '1rem' }}>{formatNumber(u.reputation)}</td>
@@ -565,7 +820,7 @@ export function AdminUsers() {
                       )}
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <div className="row" style={{ gap: '0.75rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                      <div className="row" style={{ gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                         {me?.role === 'admin' && (
                           <>
                             <button className="btn btn--ghost btn--sm" onClick={() => {
