@@ -20,6 +20,14 @@
 - [Administration & Moderation](#administration--moderation)
 - [Security & Access Control](#security--access-control)
 - [SEO & Discoverability](#seo--discoverability)
+- [Product Walkthrough & Screenshots](#product-walkthrough--screenshots)
+  - [01. Public Entry & Authentication](#01-public-entry--authentication)
+  - [02. Account Security & Personal Settings](#02-account-security--personal-settings)
+  - [03. Authenticated Community Experience](#03-authenticated-community-experience)
+  - [04. Asking, Answering & Discovering Content](#04-asking-answering--discovering-content)
+  - [05. Profiles, Reputation & Notifications](#05-profiles-reputation--notifications)
+  - [06. Administrator Control Center](#06-administrator-control-center)
+  - [07. Moderation & Content Governance](#07-moderation--content-governance)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Repository Structure](#repository-structure)
@@ -37,15 +45,8 @@
 - [Documentation](#documentation)
 - [Environment Configuration](#environment-configuration)
 - [Deployment Checklist](#deployment-checklist)
-- [Product Walkthrough & Screenshots](#product-walkthrough--screenshots)
-  - [01. Public Entry & Authentication](#01-public-entry--authentication)
-  - [02. Account Security & Personal Settings](#02-account-security--personal-settings)
-  - [03. Authenticated Community Experience](#03-authenticated-community-experience)
-  - [04. Asking, Answering & Discovering Content](#04-asking-answering--discovering-content)
-  - [05. Profiles, Reputation & Notifications](#05-profiles-reputation--notifications)
-  - [06. Administrator Control Center](#06-administrator-control-center)
-  - [07. Moderation & Content Governance](#07-moderation--content-governance)
 - [FireShark Ecosystem](#fireshark-ecosystem)
+- [Project Positioning](#project-positioning)
 - [License & Ownership](#license--ownership)
 
 ---
@@ -231,6 +232,464 @@ Supported SEO capabilities include:
 Individual question pages use structured data appropriate for community Q&A content, helping search engines understand the relationship between questions and answers.
 
 ---
+
+---
+
+
+# Product Walkthrough & Screenshots
+
+This section provides a **systematic visual tour of FireShark Community**.
+
+All screenshots are loaded from:
+
+```text
+docs/screenshots/
+```
+
+The sequence intentionally follows the product journey from public discovery and account creation through community participation, personal activity, and privileged administration.
+
+---
+
+## 01. Public Entry & Authentication
+
+### 1. Home Page — Public Experience
+
+![FireShark Community public home page](docs/screenshots/home_page.png)
+
+**What this screen demonstrates**
+
+- Establishes the public-facing identity and first impression of FireShark Community.
+- Presents the platform as a destination for technical questions, answers, and discovery.
+- Acts as the primary entry point for visitors who have not yet authenticated.
+- Provides the foundation from which users can move toward questions, categories, tags, authentication, and other public content.
+- Demonstrates the overall visual language used across the community experience.
+
+### 2. Login Page
+
+![FireShark Community login page](docs/screenshots/login_page.png)
+
+**What this screen demonstrates**
+
+- Provides the dedicated authentication entry point for returning community members.
+- Creates a clear transition from public browsing into authenticated functionality.
+- Keeps the sign-in experience focused on account access rather than distracting community content.
+- Serves as the central gateway to personalized features available after authentication.
+
+### 3. Sign Up Page
+
+![FireShark Community signup page](docs/screenshots/signup_page.png)
+
+**What this screen demonstrates**
+
+- Introduces the new-user onboarding experience.
+- Provides a dedicated registration surface for creating a community account.
+- Establishes the account journey before the user can participate in reputation-driven features.
+- Separates account creation cleanly from normal question discovery and participation.
+
+### 4. Email Verification Message
+
+![Email received for account verification](docs/screenshots/email_received_for_verification.png)
+
+**What this screen demonstrates**
+
+- Illustrates the email verification stage of the account lifecycle.
+- Shows that the platform extends authentication beyond a simple form submission.
+- Helps reinforce account ownership and verification as part of the onboarding workflow.
+- Provides a visible confirmation point between registration and a fully verified account experience.
+
+### 5. Login With Email OTP
+
+![Login with email OTP](docs/screenshots/login_with_email_otp.png)
+
+**What this screen demonstrates**
+
+- Documents the email-based OTP authentication flow.
+- Highlights an alternate authentication path for users who prefer verification through a one-time code.
+- Demonstrates that authentication has been designed with more than one sign-in mechanism in mind.
+- Adds another layer to the overall account-access experience.
+
+---
+
+## 02. Account Security & Personal Settings
+
+### 6. Account Settings
+
+![Account settings page](docs/screenshots/account_settings_page.png)
+
+**What this screen demonstrates**
+
+- Centralizes important user-level account configuration.
+- Gives authenticated members a dedicated location for maintaining their account information.
+- Reinforces the separation between public community activity and private account configuration.
+- Acts as the primary personal settings surface for an individual user.
+
+### 7. Security Settings on Accounts
+
+![Security settings on account](docs/screenshots/security_settings_on_accounts.png)
+
+**What this screen demonstrates**
+
+- Focuses specifically on account security controls.
+- Provides a dedicated visual checkpoint for security-related configuration.
+- Demonstrates that sensitive account functions receive their own settings area rather than being buried inside general profile options.
+- Strengthens the overall account-management experience by making security visible and intentional.
+
+### 8. Logged-In Home Page
+
+![Home page for a logged-in user](docs/screenshots/home_page_logged_in_user.png)
+
+**What this screen demonstrates**
+
+- Shows the transition from public browsing into a personalized authenticated experience.
+- Represents the platform as experienced by a signed-in community member.
+- Provides the foundation for user-specific participation, discovery, and community activity.
+- Highlights the distinction between anonymous public access and authenticated functionality.
+
+---
+
+## 03. Authenticated Community Experience
+
+### 9. Questions Page
+
+![Questions page](docs/screenshots/questions_page.png)
+
+**What this screen demonstrates**
+
+- Presents the broader collection of community questions in an organized browsing experience.
+- Gives users a dedicated place to discover discussions rather than relying only on the home page.
+- Creates a central information-discovery surface for technical Q&A.
+- Supports the core community loop of reading, learning, and choosing a question to open.
+
+### 10. Tags Page
+
+![Tags page](docs/screenshots/tags_page.png)
+
+**What this screen demonstrates**
+
+- Exposes the tag taxonomy used to organize technical knowledge.
+- Makes topic-based discovery more direct and systematic.
+- Helps users move from broad community content toward focused subject areas.
+- Demonstrates that content classification is an important part of the platform architecture.
+
+### 11. Categories Page
+
+![Categories page](docs/screenshots/categories_page.png)
+
+**What this screen demonstrates**
+
+- Provides a higher-level classification layer for community content.
+- Helps users browse technical discussions by broader subject groups.
+- Complements the more granular tag-based discovery model.
+- Demonstrates a two-level organization approach: broad categories combined with detailed tags.
+
+### 12. Explore the Home Page
+
+![Explore home page](docs/screenshots/explore_home_page.png)
+
+**What this screen demonstrates**
+
+- Shows the broader discovery-oriented experience of the platform.
+- Highlights how users can move through community content from a central exploration surface.
+- Represents the platform as an active knowledge hub rather than a single-purpose question form.
+- Creates a bridge between new visitors, returning users, and deeper technical content.
+
+### 13. Global Search for Questions
+
+![Global search for questions](docs/screenshots/global_search_questions.png)
+
+**What this screen demonstrates**
+
+- Documents the global question-search capability.
+- Shows how users can move directly from intent to relevant technical content.
+- Reduces friction when a user already knows the topic or phrase they want to investigate.
+- Supports the platform's goal of turning accumulated community knowledge into a searchable technical resource.
+
+---
+
+## 04. Asking, Answering & Discovering Content
+
+### 14. Ask Question Options
+
+![Ask question options](docs/screenshots/ask_question_options.png)
+
+**What this screen demonstrates**
+
+- Shows the entry point for creating a new technical question.
+- Establishes the available choices and structure around initiating a question workflow.
+- Emphasizes that posting content is an intentional, guided action rather than an unstructured text box.
+- Creates a clean bridge from content discovery into content contribution.
+
+### 15. Ask Questions Page
+
+![Ask questions page](docs/screenshots/ask_questions_page.png)
+
+**What this screen demonstrates**
+
+- Presents the dedicated question-composition experience.
+- Provides the primary authoring surface for submitting technical questions.
+- Represents the point where a community member converts a technical problem or idea into a reusable knowledge artifact.
+- Supports the platform's core contribution loop: ask, receive answers, learn, and continue contributing.
+
+### 16. Answer Yourself
+
+![Answer yourself flow](docs/screenshots/answer_yourself.png)
+
+**What this screen demonstrates**
+
+- Documents the ability to contribute an answer within the community experience.
+- Highlights the platform's contribution model beyond simply asking questions.
+- Reinforces the idea of peer-to-peer technical knowledge sharing.
+- Demonstrates how the product supports members who transition from learners into contributors.
+
+### 17. View Any Question
+
+![View any question](docs/screenshots/view_any_question.png)
+
+**What this screen demonstrates**
+
+- Presents the individual question detail experience.
+- Brings together the technical problem, surrounding interaction, and answer-oriented discussion in one place.
+- Represents the core unit of searchable community knowledge.
+- Provides the destination where users can read, evaluate, and participate in a specific discussion.
+
+### 18. View Verified Answers
+
+![View verified answers](docs/screenshots/view_verified_answers.png)
+
+**What this screen demonstrates**
+
+- Highlights the answer-verification aspect of the Q&A experience.
+- Helps users quickly identify answers that have received a stronger level of community or author confirmation.
+- Strengthens the platform's usefulness as a knowledge resource by making answer quality easier to interpret.
+- Connects directly to the platform's accepted-answer and reputation mechanisms.
+
+### 19. Explore Any Category
+
+![Explore any category](docs/screenshots/explore_any_category.png)
+
+**What this screen demonstrates**
+
+- Shows category-level discovery for users who want to explore a broad technical area.
+- Converts category organization into an active browsing workflow.
+- Helps users move from a general subject to relevant discussions.
+- Demonstrates how structured taxonomy supports content discovery at scale.
+
+### 20. Explore Any Tag
+
+![Explore any tag](docs/screenshots/explore_any_tag.png)
+
+**What this screen demonstrates**
+
+- Shows fine-grained topic discovery through tags.
+- Enables users to focus on narrower technical concepts or technologies.
+- Complements category-level navigation with more precise filtering.
+- Demonstrates the value of a detailed, community-oriented tagging system.
+
+---
+
+## 05. Profiles, Reputation & Notifications
+
+### 21. Check Your Profile
+
+![Check your profile](docs/screenshots/check_your_profile.png)
+
+**What this screen demonstrates**
+
+- Presents the authenticated user's own profile view.
+- Provides a consolidated representation of community identity and contribution history.
+- Creates a central destination for viewing reputation, badges, activity, and profile-related information.
+- Helps users understand how their community participation is represented publicly.
+
+### 22. View Anyone's Profile
+
+![View anyone's profile](docs/screenshots/view_anyones_profile.png)
+
+**What this screen demonstrates**
+
+- Demonstrates the public profile model beyond an individual's own account.
+- Allows community members to explore the identity and contribution history of other participants.
+- Supports trust, recognition, and contributor discovery within the technical community.
+- Connects social discovery with measurable community contribution.
+
+### 23. View Full Profile Activities
+
+![View full profile activities](docs/screenshots/view_full_profile_activities.png)
+
+**What this screen demonstrates**
+
+- Provides a deeper activity-oriented perspective on a community profile.
+- Makes contribution history more transparent and easier to understand.
+- Demonstrates that profiles are not merely static identity pages but records of ongoing participation.
+- Helps the community see how knowledge and engagement accumulate over time.
+
+### 24. Leaderboard Page
+
+![Leaderboard page](docs/screenshots/leaderboard_page.png)
+
+**What this screen demonstrates**
+
+- Presents the community leaderboard experience.
+- Surfaces contribution-oriented rankings and recognition mechanisms.
+- Connects individual reputation with broader community participation.
+- Gives contributors a visible representation of sustained activity within the platform.
+
+### 25. Real-Time Notification Page
+
+![Real-time notification page](docs/screenshots/realtime_notification_page.png)
+
+**What this screen demonstrates**
+
+- Documents the in-app notification experience.
+- Gives users a central place to see important changes related to their participation.
+- Reinforces the platform's ability to keep members connected to community activity.
+- Supports interaction-driven experiences around answers, comments, votes, mentions, and achievements.
+
+---
+
+## 06. Administrator Control Center
+
+The following screenshots represent functionality intended for authorized administrators rather than ordinary users.
+
+### 26. Admin Dashboard — Restricted to Administrators
+
+![Admin dashboard only for admins](docs/screenshots/admin_dashboard_only_for_admins.png)
+
+**What this screen demonstrates**
+
+- Shows the dedicated administrative dashboard.
+- Makes the separation between normal community functionality and privileged management immediately visible.
+- Provides a centralized operational starting point for administrators.
+- Represents the control layer used to oversee the wider community platform.
+
+### 27. Settings Configuration by Admin
+
+![Settings configuration by admin](docs/screenshots/settings_config_by_admin.png)
+
+**What this screen demonstrates**
+
+- Documents administrator-controlled platform configuration.
+- Shows how global community behavior can be managed from a privileged interface.
+- Moves configuration decisions away from hard-coded frontend behavior and into an operational settings layer.
+- Provides administrators with a direct mechanism for maintaining platform-wide preferences.
+
+### 28. Manage Categories by Admin
+
+![Manage categories by admin](docs/screenshots/manage_categories_by_admin.png)
+
+**What this screen demonstrates**
+
+- Shows the administrative management surface for categories.
+- Allows the platform's high-level knowledge structure to be maintained without redesigning the frontend.
+- Supports ongoing content taxonomy maintenance as the community grows.
+- Demonstrates that category organization is treated as managed data rather than a static presentation layer.
+
+### 29. Manage Tags by Admin
+
+![Manage tags by admin](docs/screenshots/manage_tags_by_admin.png)
+
+**What this screen demonstrates**
+
+- Documents administrative control over the platform's tag system.
+- Helps maintain consistency in topic classification and discoverability.
+- Gives administrators the ability to keep the technical taxonomy clean and relevant.
+- Supports long-term content organization across a growing knowledge base.
+
+### 30. Manage Badges by Admin
+
+![Manage badges by admin](docs/screenshots/manage_badges_by_admin.png)
+
+**What this screen demonstrates**
+
+- Shows administrative management of community recognition badges.
+- Provides a dedicated place to maintain achievement-oriented recognition.
+- Connects platform participation with visible community acknowledgement.
+- Helps administrators shape how contributions and milestones are recognized.
+
+### 31. Manage Reputation Rules by Admin
+
+![Manage reputation rules by admin](docs/screenshots/manage_reputation_rules_by_admin.png)
+
+**What this screen demonstrates**
+
+- Documents the administrative reputation-rule configuration experience.
+- Shows that reputation is governed through configurable platform rules rather than being treated as an opaque number.
+- Creates a centralized mechanism for managing contribution scoring behavior.
+- Provides operational control over one of the platform's key community incentives.
+
+### 32. View and Manage Users by Admin
+
+![View and manage users by admin](docs/screenshots/view_and_manage_users_by_admin.png)
+
+**What this screen demonstrates**
+
+- Presents the administrative user-management experience.
+- Gives authorized staff visibility into registered community members.
+- Supports operational account management and community governance.
+- Establishes users as a first-class administrative resource within the platform.
+
+### 33. View and Manage Questions by Admin
+
+![View and manage questions by admin](docs/screenshots/view_and_manage_questions_by_admin.png)
+
+**What this screen demonstrates**
+
+- Shows the administrator's question-management workspace.
+- Provides centralized visibility into community-generated questions.
+- Supports content oversight at a scale that would not be practical through individual public pages alone.
+- Connects question management directly with broader moderation and governance workflows.
+
+### 34. View and Manage Answers by Admin
+
+![View and manage answers by admin](docs/screenshots/view_and_manage_answers_by_admin.png)
+
+**What this screen demonstrates**
+
+- Documents administrative oversight of submitted answers.
+- Gives authorized staff a dedicated management surface for answer content.
+- Supports quality, moderation, and policy-oriented review of community contributions.
+- Complements the public answer experience with a privileged operational layer.
+
+---
+
+## 07. Moderation & Content Governance
+
+### 35. Remove Any Question by Admin
+
+![Remove any question by admin](docs/screenshots/remove_any_question_by_admin.png)
+
+**What this screen demonstrates**
+
+- Shows a privileged moderation action for removing question content.
+- Demonstrates that administrators can intervene directly when content requires action.
+- Represents the enforcement side of the community-management model.
+- Reinforces the principle that public contribution is balanced by administrative governance.
+
+### 36. Report Any Question by Admin
+
+![Report any question by admin](docs/screenshots/report_any_question_by_admin.png)
+
+**What this screen demonstrates**
+
+- Documents the administrator-facing capability to report or flag a question from the privileged management workflow.
+- Shows how potential policy, quality, or community issues can be surfaced directly from the administrative environment.
+- Connects question-level oversight with the broader reporting and moderation lifecycle.
+- Reinforces that administrative tooling is designed to support structured intervention rather than informal content handling.
+
+### 37. Review and Manage Reports by Admin
+
+![Review and manage reports by admin](docs/screenshots/review_and_manage_reports_by_admin.png)
+
+**What this screen demonstrates**
+
+- Provides the administrative review surface for community reports.
+- Creates a structured workflow for evaluating reported content rather than relying on ad-hoc intervention.
+- Demonstrates the platform's commitment to moderation, accountability, and community governance.
+- Acts as the final screenshot in this walkthrough because it represents the operational feedback loop that protects the quality of the wider community experience.
+
+---
+
+---
+
 
 ## Technology Stack
 
@@ -689,491 +1148,8 @@ Before going live, verify:
 
 ---
 
-# Product Walkthrough & Screenshots
-
-This section provides a **systematic visual tour of FireShark Community**.
-
-All screenshots are loaded from:
-
-```text
-docs/screenshots/
-```
-
-The sequence intentionally follows the product journey from public discovery and account creation through community participation, personal activity, and privileged administration.
-
 ---
 
-## 01. Public Entry & Authentication
-
-### 1. Home Page — Public Experience
-
-![FireShark Community public home page](docs/screenshots/home_page.png)
-
-**What this screen demonstrates**
-
-- Establishes the public-facing identity and first impression of FireShark Community.
-- Presents the platform as a destination for technical questions, answers, and discovery.
-- Acts as the primary entry point for visitors who have not yet authenticated.
-- Provides the foundation from which users can move toward questions, categories, tags, authentication, and other public content.
-- Demonstrates the overall visual language used across the community experience.
-
-### 2. Login Page
-
-![FireShark Community login page](docs/screenshots/login_page.png)
-
-**What this screen demonstrates**
-
-- Provides the dedicated authentication entry point for returning community members.
-- Creates a clear transition from public browsing into authenticated functionality.
-- Keeps the sign-in experience focused on account access rather than distracting community content.
-- Serves as the central gateway to personalized features available after authentication.
-
-### 3. Sign Up Page
-
-![FireShark Community signup page](docs/screenshots/signup_page.png)
-
-**What this screen demonstrates**
-
-- Introduces the new-user onboarding experience.
-- Provides a dedicated registration surface for creating a community account.
-- Establishes the account journey before the user can participate in reputation-driven features.
-- Separates account creation cleanly from normal question discovery and participation.
-
-### 4. Email Verification Message
-
-![Email received for account verification](docs/screenshots/email_received_for_verification.png)
-
-**What this screen demonstrates**
-
-- Illustrates the email verification stage of the account lifecycle.
-- Shows that the platform extends authentication beyond a simple form submission.
-- Helps reinforce account ownership and verification as part of the onboarding workflow.
-- Provides a visible confirmation point between registration and a fully verified account experience.
-
-### 5. Login With Email OTP
-
-![Login with email OTP](docs/screenshots/login_with_email_otp.png)
-
-**What this screen demonstrates**
-
-- Documents the email-based OTP authentication flow.
-- Highlights an alternate authentication path for users who prefer verification through a one-time code.
-- Demonstrates that authentication has been designed with more than one sign-in mechanism in mind.
-- Adds another layer to the overall account-access experience.
-
----
-
-## 02. Account Security & Personal Settings
-
-### 6. Account Settings
-
-![Account settings page](docs/screenshots/account_settings_page.png)
-
-**What this screen demonstrates**
-
-- Centralizes important user-level account configuration.
-- Gives authenticated members a dedicated location for maintaining their account information.
-- Reinforces the separation between public community activity and private account configuration.
-- Acts as the primary personal settings surface for an individual user.
-
-### 7. Security Settings on Accounts
-
-![Security settings on account](docs/screenshots/security_settings_on_accounts.png)
-
-**What this screen demonstrates**
-
-- Focuses specifically on account security controls.
-- Provides a dedicated visual checkpoint for security-related configuration.
-- Demonstrates that sensitive account functions receive their own settings area rather than being buried inside general profile options.
-- Strengthens the overall account-management experience by making security visible and intentional.
-
-### 8. Logged-In Home Page
-
-![Home page for a logged-in user](docs/screenshots/home_page_logged_in_user.png)
-
-**What this screen demonstrates**
-
-- Shows the transition from public browsing into a personalized authenticated experience.
-- Represents the platform as experienced by a signed-in community member.
-- Provides the foundation for user-specific participation, discovery, and community activity.
-- Highlights the distinction between anonymous public access and authenticated functionality.
-
----
-
-## 03. Authenticated Community Experience
-
-### 9. Questions Page
-
-![Questions page](docs/screenshots/questions_page.png)
-
-**What this screen demonstrates**
-
-- Presents the broader collection of community questions in an organized browsing experience.
-- Gives users a dedicated place to discover discussions rather than relying only on the home page.
-- Creates a central information-discovery surface for technical Q&A.
-- Supports the core community loop of reading, learning, and choosing a question to open.
-
-### 10. Tags Page
-
-![Tags page](docs/screenshots/tags_page.png)
-
-**What this screen demonstrates**
-
-- Exposes the tag taxonomy used to organize technical knowledge.
-- Makes topic-based discovery more direct and systematic.
-- Helps users move from broad community content toward focused subject areas.
-- Demonstrates that content classification is an important part of the platform architecture.
-
-### 11. Categories Page
-
-![Categories page](docs/screenshots/categories_page.png)
-
-**What this screen demonstrates**
-
-- Provides a higher-level classification layer for community content.
-- Helps users browse technical discussions by broader subject groups.
-- Complements the more granular tag-based discovery model.
-- Demonstrates a two-level organization approach: broad categories combined with detailed tags.
-
-### 12. Explore the Home Page
-
-![Explore home page](docs/screenshots/explore_home_page.png)
-
-**What this screen demonstrates**
-
-- Shows the broader discovery-oriented experience of the platform.
-- Highlights how users can move through community content from a central exploration surface.
-- Represents the platform as an active knowledge hub rather than a single-purpose question form.
-- Creates a bridge between new visitors, returning users, and deeper technical content.
-
-### 13. Global Search for Questions
-
-![Global search for questions](docs/screenshots/global_search_questions.png)
-
-**What this screen demonstrates**
-
-- Documents the global question-search capability.
-- Shows how users can move directly from intent to relevant technical content.
-- Reduces friction when a user already knows the topic or phrase they want to investigate.
-- Supports the platform's goal of turning accumulated community knowledge into a searchable technical resource.
-
----
-
-## 04. Asking, Answering & Discovering Content
-
-### 14. Ask Question Options
-
-![Ask question options](docs/screenshots/ask_question_options.png)
-
-**What this screen demonstrates**
-
-- Shows the entry point for creating a new technical question.
-- Establishes the available choices and structure around initiating a question workflow.
-- Emphasizes that posting content is an intentional, guided action rather than an unstructured text box.
-- Creates a clean bridge from content discovery into content contribution.
-
-### 15. Ask Questions Page
-
-![Ask questions page](docs/screenshots/ask_questions_page.png)
-
-**What this screen demonstrates**
-
-- Presents the dedicated question-composition experience.
-- Provides the primary authoring surface for submitting technical questions.
-- Represents the point where a community member converts a technical problem or idea into a reusable knowledge artifact.
-- Supports the platform's core contribution loop: ask, receive answers, learn, and continue contributing.
-
-### 16. Answer Yourself
-
-![Answer yourself flow](docs/screenshots/answer_yourself.png)
-
-**What this screen demonstrates**
-
-- Documents the ability to contribute an answer within the community experience.
-- Highlights the platform's contribution model beyond simply asking questions.
-- Reinforces the idea of peer-to-peer technical knowledge sharing.
-- Demonstrates how the product supports members who transition from learners into contributors.
-
-### 17. View Any Question
-
-![View any question](docs/screenshots/view_any_question.png)
-
-**What this screen demonstrates**
-
-- Presents the individual question detail experience.
-- Brings together the technical problem, surrounding interaction, and answer-oriented discussion in one place.
-- Represents the core unit of searchable community knowledge.
-- Provides the destination where users can read, evaluate, and participate in a specific discussion.
-
-### 18. View Verified Answers
-
-![View verified answers](docs/screenshots/view_verified_answers.png)
-
-**What this screen demonstrates**
-
-- Highlights the answer-verification aspect of the Q&A experience.
-- Helps users quickly identify answers that have received a stronger level of community or author confirmation.
-- Strengthens the platform's usefulness as a knowledge resource by making answer quality easier to interpret.
-- Connects directly to the platform's accepted-answer and reputation mechanisms.
-
-### 19. Explore Any Category
-
-![Explore any category](docs/screenshots/explore_any_category.png)
-
-**What this screen demonstrates**
-
-- Shows category-level discovery for users who want to explore a broad technical area.
-- Converts category organization into an active browsing workflow.
-- Helps users move from a general subject to relevant discussions.
-- Demonstrates how structured taxonomy supports content discovery at scale.
-
-### 20. Explore Any Tag
-
-![Explore any tag](docs/screenshots/explore_any_tag.png)
-
-**What this screen demonstrates**
-
-- Shows fine-grained topic discovery through tags.
-- Enables users to focus on narrower technical concepts or technologies.
-- Complements category-level navigation with more precise filtering.
-- Demonstrates the value of a detailed, community-oriented tagging system.
-
----
-
-## 05. Profiles, Reputation & Notifications
-
-### 21. Check Your Profile
-
-![Check your profile](docs/screenshots/check_your_profile.png)
-
-**What this screen demonstrates**
-
-- Presents the authenticated user's own profile view.
-- Provides a consolidated representation of community identity and contribution history.
-- Creates a central destination for viewing reputation, badges, activity, and profile-related information.
-- Helps users understand how their community participation is represented publicly.
-
-### 22. View Anyone's Profile
-
-![View anyone's profile](docs/screenshots/view_anyones_profile.png)
-
-**What this screen demonstrates**
-
-- Demonstrates the public profile model beyond an individual's own account.
-- Allows community members to explore the identity and contribution history of other participants.
-- Supports trust, recognition, and contributor discovery within the technical community.
-- Connects social discovery with measurable community contribution.
-
-### 23. View Full Profile Activities
-
-![View full profile activities](docs/screenshots/view_full_profile_activities.png)
-
-**What this screen demonstrates**
-
-- Provides a deeper activity-oriented perspective on a community profile.
-- Makes contribution history more transparent and easier to understand.
-- Demonstrates that profiles are not merely static identity pages but records of ongoing participation.
-- Helps the community see how knowledge and engagement accumulate over time.
-
-### 24. Leaderboard Page
-
-![Leaderboard page](docs/screenshots/leaderboard_page.png)
-
-**What this screen demonstrates**
-
-- Presents the community leaderboard experience.
-- Surfaces contribution-oriented rankings and recognition mechanisms.
-- Connects individual reputation with broader community participation.
-- Gives contributors a visible representation of sustained activity within the platform.
-
-### 25. Real-Time Notification Page
-
-![Real-time notification page](docs/screenshots/realtime_notification_page.png)
-
-**What this screen demonstrates**
-
-- Documents the in-app notification experience.
-- Gives users a central place to see important changes related to their participation.
-- Reinforces the platform's ability to keep members connected to community activity.
-- Supports interaction-driven experiences around answers, comments, votes, mentions, and achievements.
-
----
-
-## 06. Administrator Control Center
-
-The following screenshots represent functionality intended for authorized administrators rather than ordinary users.
-
-### 26. Admin Dashboard — Restricted to Administrators
-
-![Admin dashboard only for admins](docs/screenshots/admin_dashboard_only_for_admins.png)
-
-**What this screen demonstrates**
-
-- Shows the dedicated administrative dashboard.
-- Makes the separation between normal community functionality and privileged management immediately visible.
-- Provides a centralized operational starting point for administrators.
-- Represents the control layer used to oversee the wider community platform.
-
-### 27. Settings Configuration by Admin
-
-![Settings configuration by admin](docs/screenshots/settings_config_by_admin.png)
-
-**What this screen demonstrates**
-
-- Documents administrator-controlled platform configuration.
-- Shows how global community behavior can be managed from a privileged interface.
-- Moves configuration decisions away from hard-coded frontend behavior and into an operational settings layer.
-- Provides administrators with a direct mechanism for maintaining platform-wide preferences.
-
-### 28. Manage Categories by Admin
-
-![Manage categories by admin](docs/screenshots/manage_categories_by_admin.png)
-
-**What this screen demonstrates**
-
-- Shows the administrative management surface for categories.
-- Allows the platform's high-level knowledge structure to be maintained without redesigning the frontend.
-- Supports ongoing content taxonomy maintenance as the community grows.
-- Demonstrates that category organization is treated as managed data rather than a static presentation layer.
-
-### 29. Manage Tags by Admin
-
-![Manage tags by admin](docs/screenshots/manage_tags_by_admin.png)
-
-**What this screen demonstrates**
-
-- Documents administrative control over the platform's tag system.
-- Helps maintain consistency in topic classification and discoverability.
-- Gives administrators the ability to keep the technical taxonomy clean and relevant.
-- Supports long-term content organization across a growing knowledge base.
-
-### 30. Manage Badges by Admin
-
-![Manage badges by admin](docs/screenshots/manage_badges_by_admin.png)
-
-**What this screen demonstrates**
-
-- Shows administrative management of community recognition badges.
-- Provides a dedicated place to maintain achievement-oriented recognition.
-- Connects platform participation with visible community acknowledgement.
-- Helps administrators shape how contributions and milestones are recognized.
-
-### 31. Manage Reputation Rules by Admin
-
-![Manage reputation rules by admin](docs/screenshots/manage_reputation_rules_by_admin.png)
-
-**What this screen demonstrates**
-
-- Documents the administrative reputation-rule configuration experience.
-- Shows that reputation is governed through configurable platform rules rather than being treated as an opaque number.
-- Creates a centralized mechanism for managing contribution scoring behavior.
-- Provides operational control over one of the platform's key community incentives.
-
-### 32. View and Manage Users by Admin
-
-![View and manage users by admin](docs/screenshots/view_and_manage_users_by_admin.png)
-
-**What this screen demonstrates**
-
-- Presents the administrative user-management experience.
-- Gives authorized staff visibility into registered community members.
-- Supports operational account management and community governance.
-- Establishes users as a first-class administrative resource within the platform.
-
-### 33. View and Manage Questions by Admin
-
-![View and manage questions by admin](docs/screenshots/view_and_manage_questions_by_admin.png)
-
-**What this screen demonstrates**
-
-- Shows the administrator's question-management workspace.
-- Provides centralized visibility into community-generated questions.
-- Supports content oversight at a scale that would not be practical through individual public pages alone.
-- Connects question management directly with broader moderation and governance workflows.
-
-### 34. View and Manage Answers by Admin
-
-![View and manage answers by admin](docs/screenshots/view_and_manage_answers_by_admin.png)
-
-**What this screen demonstrates**
-
-- Documents administrative oversight of submitted answers.
-- Gives authorized staff a dedicated management surface for answer content.
-- Supports quality, moderation, and policy-oriented review of community contributions.
-- Complements the public answer experience with a privileged operational layer.
-
----
-
-## 07. Moderation & Content Governance
-
-### 35. Remove Any Question by Admin
-
-![Remove any question by admin](docs/screenshots/remove_any_question_by_admin.png)
-
-**What this screen demonstrates**
-
-- Shows a privileged moderation action for removing question content.
-- Demonstrates that administrators can intervene directly when content requires action.
-- Represents the enforcement side of the community-management model.
-- Reinforces the principle that public contribution is balanced by administrative governance.
-
-### 36. Review and Manage Reports by Admin
-
-![Review and manage reports by admin](docs/screenshots/review_and_manage_reports_by_admin.png)
-
-**What this screen demonstrates**
-
-- Provides the administrative review surface for community reports.
-- Creates a structured workflow for evaluating reported content rather than relying on ad-hoc intervention.
-- Demonstrates the platform's commitment to moderation, accountability, and community governance.
-- Acts as the final screenshot in this walkthrough because it represents the operational feedback loop that protects the quality of the wider community experience.
-
----
-
-## Screenshot Inventory
-
-For quick verification, the README includes all requested screenshots from `docs/screenshots/`:
-
-| # | Screenshot |
-| ---: | --- |
-| 01 | `account_settings_page.png` |
-| 02 | `home_page_logged_in_user.png` |
-| 03 | `security_settings_on_accounts.png` |
-| 04 | `admin_dashboard_only_for_admins.png` |
-| 05 | `leaderboard_page.png` |
-| 06 | `settings_config_by_admin.png` |
-| 07 | `answer_yourself.png` |
-| 08 | `login_page.png` |
-| 09 | `signup_page.png` |
-| 10 | `ask_question_options.png` |
-| 11 | `login_with_email_otp.png` |
-| 12 | `tags_page.png` |
-| 13 | `ask_questions_page.png` |
-| 14 | `manage_badges_by_admin.png` |
-| 15 | `view_and_manage_answers_by_admin.png` |
-| 16 | `categories_page.png` |
-| 17 | `manage_categories_by_admin.png` |
-| 18 | `view_and_manage_questions_by_admin.png` |
-| 19 | `check_your_profile.png` |
-| 20 | `manage_reputation_rules_by_admin.png` |
-| 21 | `view_and_manage_users_by_admin.png` |
-| 22 | `email_received_for_verification.png` |
-| 23 | `manage_tags_by_admin.png` |
-| 24 | `view_any_question.png` |
-| 25 | `explore_any_category.png` |
-| 26 | `questions_page.png` |
-| 27 | `view_anyones_profile.png` |
-| 28 | `explore_any_tag.png` |
-| 29 | `realtime_notification_page.png` |
-| 30 | `view_full_profile_activities.png` |
-| 31 | `explore_home_page.png` |
-| 32 | `remove_any_question_by_admin.png` |
-| 33 | `view_verified_answers.png` |
-| 34 | `global_search_questions.png` |
-| 35 | `home_page.png` |
-| 36 | `review_and_manage_reports_by_admin.png` |
-
----
 
 ## FireShark Ecosystem
 
