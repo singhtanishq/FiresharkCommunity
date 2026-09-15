@@ -405,6 +405,7 @@ export function Register() {
     setError(null)
     try {
       await authApi.completeRegistration(form.email)
+      await refresh()
       navigate('/', { replace: true })
     } catch (err) {
       setError(apiError(err).message)
