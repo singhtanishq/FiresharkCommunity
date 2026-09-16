@@ -1,545 +1,209 @@
 # Security
 
-> **FireShark Community is a cybersecurity-focused technical community designed to be publicly reviewable, security-conscious, and resistant to common web application abuse.**
->
-> Security is not treated as a single feature or a checkbox. The platform uses multiple independent layers across authentication, authorization, input validation, database access, session security, abuse prevention, email protection, file handling, content rendering, transport security, logging, moderation, and operational deployment.
->
-> A failure or bypass of one defensive layer is not intended to automatically result in unrestricted access to the application or uncontrolled resource consumption.
+FireShark Community is designed with a **defense-in-depth security model** across authentication, authorization, session management, input validation, content rendering, file uploads, abuse prevention, email delivery, database integrity, transport security, and moderation.
+
+The security architecture assumes that:
+
+- Client-side controls can be bypassed and are therefore never treated as an authorization boundary.
+- APIs may be called directly without using the frontend.
+- User input, uploaded files, and community content are untrusted.
+- Authentication and OTP endpoints are high-value abuse targets.
+- Email delivery is an external, metered resource that requires independent protection.
+- Database integrity must not depend solely on application UI behavior.
+- Security-sensitive operations require server-side enforcement.
 
 ---
 
-## Security Philosophy
+## Security Architecture
 
-FireShark Community follows a **defense-in-depth** security model.
+The production application uses the following security-relevant components:
 
-The application assumes that:
+| Layer | Technology / Control |
+| --- | --- |
+| Edge / DNS | Cloudflare |
+| Transport | HTTPS / TLS |
+| Web Application | Laravel |
+| Backend | PHP |
+| Frontend | React + TypeScript |
+| Authentication | Laravel Sanctum SPA cookie authentication |
+| Sessions | Database-backed Laravel sessions |
+| Database | MySQL |
+| Cache | Database-backed Laravel cache |
+| Queue | Database-backed Laravel queue |
+| Email Delivery | ZeptoMail |
+| Content Format | Markdown |
+| HTML Sanitization | DOMPurify |
+| Image Processing | GD |
+| Authorization | Roles, middleware, and Laravel Policies |
+| Abuse Prevention | Multiple application-level rate limiters |
+| Email Protection | Global, endpoint, IP, and identifier budgets |
+| Edge Proxy | Cloudflare with trusted proxy handling |
+| CAPTCHA Readiness | Server-side Cloudflare Turnstile verification |
+| Auditability | Application and moderation logging |
 
-- Client-side controls can be bypassed.
-- API endpoints can be called directly without using the React interface.
-- Attackers may automate requests.
-- Authentication endpoints are high-value abuse targets.
-- Email delivery is a billable external resource and must therefore be protected.
-- User-generated content must be treated as untrusted input.
-- Uploaded files must be treated as potentially malicious.
-- Authorization must never depend on the frontend.
-- Database integrity must not depend on application UI restrictions.
-- Production deployment procedures must explicitly avoid destructive database operations.
-- Logging must provide useful forensic information without leaking credentials or secrets.
-
-The resulting architecture applies security controls at multiple layers:
-
-```text
-Internet
-   │
-   ▼
-Cloudflare / TLS / Edge Protection
-   │
-   ▼
-Laravel Public Application
-   │
-   ├── Security Headers
-   ├── Session / CSRF Protection
-   ├── Authentication
-   ├── Rate Limiting
-   ├── OTP Controls
-   ├── Email Budget Controls
-   ├── Authorization / Policies
-   ├── Input Validation
-   ├── Upload Validation
-   ├── Content Sanitization
-   ├── Audit Logging
-   │
-   ▼
-MySQL
-   │
-   ├── Constraints
-   ├── Unique Indexes
-   ├── Transactional Operations
-   └── Persistent Security / Audit Data
-````
+The platform does not rely on a single security mechanism. Sensitive workflows are protected by multiple independent controls so that bypassing one layer does not automatically bypass the others.
 
 ---
 
-# 1. Security Architecture
+# Authentication
 
-The production application consists of:
+## Password Security
 
-| LayerTechnology / Control |                                           |
-| ------------------------- | ----------------------------------------- |
-| Edge / DNS                | Cloudflare                                |
-| Transport                 | HTTPS / TLS                               |
-| Web application           | Laravel                                   |
-| Backend language          | PHP 8.4+                                  |
-| Frontend                  | React + TypeScript                        |
-| Authentication            | Laravel Sanctum SPA cookie authentication |
-| Database                  | MySQL                                     |
-| Sessions                  | Database-backed Laravel sessions          |
-| Cache                     | Database-backed Laravel cache             |
-| Queue                     | Database-backed Laravel queue             |
-| Email                     | ZeptoMail                                 |
-| Content format            | Markdown                                  |
-| HTML sanitization         | DOMPurify                                 |
-| Image processing          | GD                                        |
-| Authorization             | Roles + middleware + Policies             |
-| Abuse prevention          | Multiple Laravel rate limiters            |
-| Email abuse prevention    | Multi-layer email budget system           |
-| CAPTCHA readiness         | Cloudflare Turnstile backend verification |
-| Auditability              | Application and moderation logs           |
-
-The application does not rely on a third-party forum engine or an external hosted community platform for its core security model.
-
----
-
-# 2. Authentication Security
-
-Authentication is implemented server-side using Laravel and Laravel Sanctum.
-
-## 2.1 Password Authentication
+Authentication is enforced server-side through Laravel.
 
 Passwords are:
 
 - Never stored in plaintext.
-- Never intentionally logged.
 - Hashed using Laravel's configured password hashing mechanism.
-- Compared server-side.
-- Never trusted from client-side state.
-- Never accepted as a replacement for the server-side authentication process.
+- Verified server-side.
+- Not intentionally written to application logs.
+- Not returned through normal API responses.
 
-Sensitive password-related fields are not exposed through normal API responses.
+Client-side password validation is treated only as a usability feature. The backend remains responsible for validating and authenticating credentials.
 
----
+## Login Security
 
-## 2.2 Login Flow
+The authentication flow uses:
 
-The login process uses a two-stage authentication flow:
+1. Identifier submission using email address or username.
+2. Server-side password verification.
+3. OTP challenge generation.
+4. OTP verification.
+5. Authenticated Laravel Sanctum session establishment.
 
-```text
-Email / Username
-       │
-       ▼
-Password Verification
-       │
-       ├── Invalid → Generic authentication error
-       │
-       ▼
-OTP Challenge
-       │
-       ▼
-OTP Verification
-       │
-       ▼
-Authenticated Sanctum Session
-```
+Authentication failures are normalized so that ordinary login behavior does not unnecessarily disclose whether a particular account exists.
 
-The application supports login using:
+## OTP Security
 
-- Email address
-- Username
-
-Authentication failures are deliberately normalized so that an attacker cannot easily determine whether a particular account exists based solely on the response.
-
----
-
-## 2.3 OTP-Based Authentication
-
-OTP verification is used as an additional authentication step after successful password verification.
-
-OTP security includes:
+OTP verification is protected with multiple controls, including:
 
 - Short-lived OTP challenges.
 - Single-use verification.
-- Verification token/challenge association.
+- Challenge expiration.
 - Attempt restrictions.
-- Expiration.
 - Resend restrictions.
-- Identifier-based throttling.
 - IP-based throttling.
-- Challenge invalidation where applicable.
+- Identifier-based throttling.
 - Protection against repeated automated OTP requests.
+- Email-delivery budgets applied before the mail provider is contacted.
 
-The objective is to prevent attackers from turning the OTP mechanism into an unrestricted email-delivery endpoint.
-
----
-
-# 3. Authentication Rate Limiting
-
-Authentication endpoints are protected by dedicated Laravel rate limiters.
-
-The security model does not rely solely on one global request limit.
-
-Different authentication operations use different controls.
-
-| OperationProtection             |                       |
-| ------------------------------- | --------------------- |
-| Login start                     | `throttle:auth`       |
-| Login OTP verification          | `throttle:auth`       |
-| Login OTP resend                | `throttle:auth`       |
-| Forgot password                 | `throttle:auth`       |
-| Password-reset OTP resend       | `throttle:auth`       |
-| Password-reset OTP verification | `throttle:auth`       |
-| Password reset                  | `throttle:auth`       |
-| Registration start              | `throttle:register`   |
-| Registration OTP verification   | `throttle:otp.verify` |
-| Registration completion         | `throttle:otp.verify` |
-| Registration OTP resend         | `throttle:otp.resend` |
-| Username availability           | `throttle:auth`       |
-| Email verification resend       | `throttle:auth`       |
-
-The currently implemented baseline limits include:
-
-- Authentication: **10 requests/minute per IP**
-- Registration: **5 requests/hour per IP**
-- OTP verification: **10 requests/minute per IP/identifier**
-- OTP resend: **3 requests/minute per IP**
-- OTP resend identifier control: **8 requests/hour per identifier**
-- Username checking: **20 requests/minute per IP**
-
-These controls are independent of the email budget system described below.
+These controls are designed to prevent both OTP guessing and abuse of the OTP system as an unrestricted email-sending mechanism.
 
 ---
 
-# 4. Email Abuse Protection
+# Authentication Rate Limiting
 
-## 4.1 Why Email Requires Its Own Security Layer
+Authentication-related endpoints use dedicated Laravel rate limiters rather than relying on one generic application-wide threshold.
 
-Authentication rate limiting alone is insufficient to protect an application that sends security emails.
+Current baseline limits include:
 
-For example:
+| Operation | Limit |
+| --- | --- |
+| Authentication endpoints | 10 requests/minute/IP |
+| Registration | 5 requests/hour/IP |
+| Registration identifier controls | 3 requests/hour/identifier |
+| OTP verification | 10 requests/minute/IP/identifier |
+| OTP resend | 3 requests/minute/IP |
+| OTP resend identifier control | 8 requests/hour/identifier |
+| Username availability | 20 requests/minute/IP |
 
-```text
-Attacker
-   │
-   ├── IP #1 ──┐
-   ├── IP #2 ──┤
-   ├── IP #3 ──┤
-   ├── IP #4 ──┤
-   └── IP #N ──┘
-              │
-              ▼
-       Authentication API
-              │
-              ▼
-          ZeptoMail
-```
+Protected authentication operations include login, OTP verification, OTP resend, password recovery, password-reset OTP operations, registration, and account-verification resend operations.
 
-Distributed requests can potentially bypass a simplistic per-IP limiter.
-
-FireShark Community therefore implements an additional **application-level email budget**.
+Rate limiting is one layer of protection. Email-specific controls described below operate independently of these request limits.
 
 ---
 
-# 5. Global Email Budget
+# Password Reset Protection
 
-All security-sensitive emails pass through the email budget mechanism **before the external email provider is called**.
-
-Current hard limits:
-
-| ScopeLimit                 |       |
-| -------------------------- | ----- |
-| Global hourly email budget | 500   |
-| Global daily email budget  | 5,000 |
-
-These are hard-stop limits.
-
-Once the applicable budget is exceeded, the application rejects the email operation instead of continuing to call ZeptoMail.
-
-This creates an application-level circuit breaker against uncontrolled email consumption.
-
----
-
-# 6. Per-Endpoint Email Budgets
-
-Email generation is additionally constrained according to the type of email being sent.
-
-Current limits:
-
-| Email operationHourly limit |     |
-| --------------------------- | --- |
-| Login OTP                   | 200 |
-| Signup OTP                  | 100 |
-| Password reset OTP          | 150 |
-| Email verification resend   | 50  |
-
-These limits prevent a single application feature from consuming the entire global email budget.
-
-For example, even if another endpoint has available capacity, an attacker cannot simply concentrate all abuse against one email-generating operation indefinitely.
-
----
-
-# 7. Per-IP Email Budgets
-
-A separate email budget is maintained per source IP.
-
-Current limit:
-
-```text
-50 security emails / hour / IP
-```
-
-This provides an additional protection layer even when individual endpoint limits have not yet been exhausted.
-
----
-
-# 8. Per-Identifier Email Budgets
-
-Email operations are also constrained by the relevant email/account identifier.
-
-Current limit:
-
-```text
-10 security emails / hour / identifier
-```
-
-This prevents an attacker from repeatedly targeting one email address or account even when requests are distributed across multiple IP addresses.
-
----
-
-# 9. Email Budget Enforcement Order
-
-The email budget is checked **before ZeptoMail is called**.
-
-Conceptually:
-
-```text
-Request
-  │
-  ▼
-Authentication / Validation
-  │
-  ▼
-Endpoint Rate Limit
-  │
-  ▼
-OTP / Security Operation
-  │
-  ▼
-Email Budget Check
-  │
-  ├── Budget exceeded
-  │       │
-  │       └── STOP
-  │
-  ▼
-ZeptoMail
-  │
-  ▼
-Email delivered
-```
-
-This distinction is critical.
-
-The budget is not merely a reporting mechanism.
-
-It actively prevents external email transmission after the configured budget has been exhausted.
-
----
-
-# 10. Concurrency-Safe Email Counters
-
-Email budgets are stored in the MySQL table:
-
-```text
-email_budget_counters
-```
-
-The implementation uses:
-
-- A unique `bucket_key`.
-- MySQL/InnoDB atomic operations.
-- `INSERT ... ON DUPLICATE KEY UPDATE`.
-- Persistent database-backed counters.
-- Window start/end timestamps.
-- Separate bucket types and scopes.
-
-This is specifically designed to avoid a race condition such as:
-
-```text
-Request A → read count = 49
-Request B → read count = 49
-Request A → send
-Request B → send
-```
-
-Instead, counter updates are serialized by the database.
-
-The unique bucket constraint prevents duplicate counter rows for the same security bucket.
-
----
-
-# 11. Email Budget Alerts
-
-The email budget service also maintains alert thresholds.
-
-Current alert thresholds:
-
-| ScopeAlert threshold |       |
-| -------------------- | ----- |
-| Hourly               | 100   |
-| Daily                | 1,000 |
-
-At these thresholds, the application generates server-side security warnings while still allowing legitimate email traffic to continue.
-
-The implementation currently logs these events and provides a designated integration point for future external monitoring.
-
----
-
-# 12. Email Abuse Defense in Depth
-
-The complete email-abuse model therefore combines:
-
-```text
-                 ┌──────────────────────┐
-                 │ Authentication Limit │
-                 └──────────┬───────────┘
-                            │
-                 ┌──────────▼───────────┐
-                 │ Endpoint Limit       │
-                 └──────────┬───────────┘
-                            │
-                 ┌──────────▼───────────┐
-                 │ IP Email Budget      │
-                 └──────────┬───────────┘
-                            │
-                 ┌──────────▼───────────┐
-                 │ Identifier Budget     │
-                 └──────────┬───────────┘
-                            │
-                 ┌──────────▼───────────┐
-                 │ Endpoint Email Budget│
-                 └──────────┬───────────┘
-                            │
-                 ┌──────────▼───────────┐
-                 │ Global Hourly Budget │
-                 └──────────┬───────────┘
-                            │
-                 ┌──────────▼───────────┐
-                 │ Global Daily Budget  │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-                         ZeptoMail
-```
-
-No individual control is intended to be the only line of defense.
-
----
-
-# 13. Password Reset Security
-
-Password reset functionality is designed to prevent account enumeration and uncontrolled email generation.
+Password recovery is protected against both account enumeration and uncontrolled email generation.
 
 The reset flow:
 
-- Does not reveal whether an arbitrary email address belongs to an account through the normal request response.
 - Uses OTP-based verification.
-- Applies authentication/abuse rate limits.
-- Applies email budgets before sending.
+- Applies authentication-related throttling.
+- Applies email budgets before sending security messages.
 - Uses expiring verification challenges.
-- Prevents unrestricted repeated reset-email generation.
+- Restricts repeated reset operations.
+- Avoids intentionally exposing account existence through the normal password-reset request flow.
 
-The application does not intentionally provide an attacker with a reliable:
-
-```text
-"Account exists"
-```
-
-versus:
-
-```text
-"Account does not exist"
-```
-
-oracle through the password-reset request.
+This prevents the password-reset endpoint from becoming a reliable account-discovery oracle or an unrestricted email-delivery endpoint.
 
 ---
 
-# 14. Registration Security
+# Registration Security
 
 Registration is protected independently from normal login.
 
-Controls include:
+Implemented controls include:
 
-- Dedicated registration rate limiter.
+- Dedicated registration rate limiting.
 - Username availability throttling.
 - Registration OTP verification.
-- OTP resend throttling.
-- OTP attempt restrictions.
-- Email budget protection.
-- Validation of submitted account information.
+- OTP verification attempt restrictions.
+- OTP resend restrictions.
+- Identifier-based resend controls.
+- Email budget enforcement.
+- Server-side validation of registration data.
 - Server-side account creation.
 - Protection of privileged attributes from mass assignment.
 
-Current registration controls include:
-
-```text
-5 registration attempts/hour/IP
-3 registration attempts/hour/identifier
-10 OTP verification attempts/minute/IP/identifier
-3 OTP resends/minute/IP
-8 OTP resends/hour/identifier
-```
+Registration is therefore subject to both authentication-style abuse controls and dedicated account-creation protections.
 
 ---
 
-# 15. Session Security
+# Session Security
 
-Laravel Sanctum is used in SPA cookie mode.
+Laravel Sanctum is used for SPA authentication through first-party cookies.
 
-The application uses:
+The session model includes:
 
-- First-party authentication cookies.
-- Secure cookies in production.
-- Database-backed sessions.
-- CSRF protection.
-- Same-origin API architecture.
-- Server-side session state.
-- No authentication tokens stored in browser JavaScript as the primary authentication mechanism.
+- Database-backed Laravel sessions.
+- Secure production cookies.
+- Credentialed frontend requests.
+- Server-side authentication state.
+- CSRF protection for state-changing requests.
+- Same-origin application/API security controls.
 
-Production configuration includes:
-
-```text
-SESSION_DRIVER=database
-SESSION_SECURE_COOKIE=true
-SESSION_DOMAIN=fireshark.in
-```
+The application does not depend on storing its primary authentication state in browser-accessible JavaScript storage.
 
 ---
 
-# 16. CSRF Protection
+# CSRF Protection
 
-State-changing requests are protected using Laravel's CSRF/session security model.
+State-changing requests are protected through Laravel's CSRF and session security model.
 
-The React API client:
+The React client:
 
-1. Uses credentialed requests.
-2. Ensures the CSRF cookie is available.
-3. Sends mutating requests through the Laravel session security pipeline.
-4. Does not bypass server-side CSRF validation.
+- Uses credentialed requests.
+- Obtains the Laravel CSRF cookie where required.
+- Sends state-changing requests through the normal Laravel security pipeline.
 
-The frontend cannot disable or override server-side CSRF enforcement.
+CSRF validation remains a server-side control and cannot be disabled by the frontend.
 
 ---
 
-# 17. Authorization
+# Authorization
 
-Authorization is enforced server-side.
+Authorization is enforced on the backend.
 
-The React application may hide or display interface elements based on user state, but **the frontend is never considered an authorization boundary**.
+The frontend may conditionally display controls based on user state, but frontend visibility is never considered proof of authorization.
 
-The backend independently verifies:
+For protected operations, the server evaluates the applicable:
 
 - Authentication state.
 - User role.
 - Resource ownership.
-- Applicable Laravel Policies.
-- Verification status.
-- Administrative privileges.
+- Laravel Policy.
+- Verification state.
+- Administrative privilege.
+
+Direct API calls that bypass the React interface are therefore still subject to server-side authorization.
 
 ---
 
-# 18. Role-Based Access Control
+# Role-Based Access Control
 
-The platform defines application roles including:
+The application defines role-based access for:
 
 ```text
 user
@@ -547,24 +211,27 @@ moderator
 admin
 ```
 
-Role restrictions are enforced using middleware and server-side authorization policies.
+Role restrictions are enforced through server-side middleware and authorization policies.
 
-Sensitive attributes such as:
+Privileged state is not intended to be controlled through ordinary user-submitted fields.
 
-- role
-- reputation
-- moderation state
-- suspension state
-- administrative counters
-- verification state
+Protected security-sensitive attributes include, where applicable:
 
-are not intended to be user-controlled through ordinary mass-assignment operations.
+- Role.
+- Reputation.
+- Moderation state.
+- Suspension state.
+- Administrative state.
+- Verification state.
+- Security-related counters.
 
 ---
 
-# 19. Privilege Escalation Protection
+# Privilege Escalation Protection
 
-Users cannot simply submit:
+The application protects privileged model attributes from ordinary mass-assignment operations.
+
+A malicious request attempting to submit a privileged field such as:
 
 ```json
 {
@@ -572,223 +239,194 @@ Users cannot simply submit:
 }
 ```
 
-or equivalent privileged attributes through normal account update operations and expect the server to honor them.
+is not treated as an authorized role-change operation.
 
-Sensitive model attributes are protected using explicit `$fillable` definitions and controlled administrative operations.
+Administrative changes are handled through explicit server-side logic rather than normal user profile updates.
 
-Administrative operations requiring privileged changes are handled through dedicated server-side logic.
+Administrative functionality is additionally protected with role-aware server-side middleware.
 
 ---
 
-# 20. Administrative Security
+# Administrative Controls
 
-Administrative operations are protected behind server-side role middleware.
+Administrative and moderation operations are protected independently from normal user operations.
 
-The security model includes protections against:
+The security model includes controls against:
 
 - Unauthorized administrative API access.
-- Regular-user access to administrative endpoints.
-- Moderator access to administrator-only functionality.
-- Unauthorized user-role modification.
-- Unauthorized category management.
-- Unauthorized badge management.
-- Unauthorized settings management.
+- Regular-user access to administrative functionality.
+- Unauthorized role modification.
+- Unauthorized moderation operations.
+- Unauthorized management of platform-controlled resources.
 
-The server remains the final authority.
+Application-level safety invariants also protect important administrative states, including safeguards against unintentionally removing the last administrator from administrative control.
 
 ---
 
-# 21. Administrative Safety Invariants
+# Input Validation
 
-Important application invariants include protections such as:
+All significant application writes are validated server-side.
 
-- The last administrator cannot be unintentionally removed from administrative control.
-- Administrators cannot arbitrarily self-suspend through ordinary user-facing functionality.
-- Users cannot modify other users' content without appropriate authority.
-- Privileged attributes cannot be assigned through normal mass assignment.
+Laravel Form Requests and explicit validation rules are used to constrain incoming data.
 
-These invariants are enforced server-side rather than through UI restrictions.
+Representative validation limits include:
 
----
+| Input | Validation |
+| --- | --- |
+| Question title | 15–180 characters |
+| Question body | Minimum 30 characters |
+| Tags | Maximum 5 |
+| Comment | Maximum 2,000 characters |
+| Enum fields | Explicitly allowed values |
+| Username | Format and uniqueness validation |
+| Email | Email-format validation |
+| Uploaded media | MIME, extension, size, and dimension validation |
 
-# 22. Input Validation
-
-All significant writes are validated server-side.
-
-The platform uses Laravel Form Requests and explicit validation rules.
-
-Examples include:
-
-| InputValidation |                                                |
-| --------------- | ---------------------------------------------- |
-| Question title  | 15–180 characters                              |
-| Question body   | Minimum 30 characters                          |
-| Tags            | Maximum 5                                      |
-| Comment         | Maximum 2,000 characters                       |
-| Enum values     | Explicit whitelist                             |
-| Usernames       | Validated format and uniqueness                |
-| Emails          | Validated email format                         |
-| Uploaded media  | MIME, extension, size and dimension validation |
-
-Client-side validation is considered a usability feature, not a security boundary.
+Browser-side validation does not replace backend validation.
 
 ---
 
-# 23. Mass Assignment Protection
+# Mass Assignment Protection
 
-Models use explicit `$fillable` definitions.
+Models use explicit `$fillable` definitions so ordinary user-controlled request payloads cannot arbitrarily populate privileged attributes.
 
-Sensitive fields are intentionally excluded from ordinary user-controlled mass assignment.
+Security-sensitive fields are intentionally excluded from normal mass-assignment workflows.
 
-Protected categories include:
-
-- Roles.
-- Reputation.
-- Counters.
-- Suspension state.
-- Administrative state.
-- Other security-sensitive attributes.
-
-Administrative code may use controlled operations such as `forceFill` where explicitly authorized.
+This protects against attempts to manipulate application state through additional properties included in otherwise legitimate requests.
 
 ---
 
-# 24. SQL Injection Protection
+# SQL Injection Protection
 
-Database access uses Laravel's query builder and Eloquent bindings.
+Database access uses Laravel Eloquent and the query builder with parameter binding.
 
-User-supplied values are not interpolated into SQL strings.
+The application does not intentionally interpolate uncontrolled user input directly into SQL statements.
 
-The application has been manually reviewed for SQL injection risks.
+Controlled raw SQL operations are limited to application-defined cases such as:
 
-Raw SQL is limited to controlled operations such as:
+- Aggregate/leaderboard calculations.
+- Atomic email-budget counter operations.
+- Counter update or clamping logic.
 
-- Leaderboard aggregate operations.
-- Atomic email-budget counters.
-- Counter clamping / decrement operations.
-
-These operations do not use uncontrolled user-provided SQL fragments.
+These operations do not treat arbitrary user input as executable SQL.
 
 ---
 
-# 25. Database Integrity
+# Database Integrity
 
-The application uses database constraints in addition to application-level validation.
+Application-level validation is reinforced with database-level integrity controls.
 
-Examples include:
+These include:
 
 - Unique constraints.
 - Foreign keys where appropriate.
+- Transactional operations.
 - Unique vote relationships.
 - Unique email-budget bucket keys.
-- Transactional operations.
-- Persistent audit/security records.
+- Persistent security-related records.
 
-Database constraints provide a second line of defense when application-level checks are bypassed.
+Database constraints provide a second enforcement layer if an application request bypasses normal UI behavior.
 
 ---
 
-# 26. Vote Manipulation Protection
+# Vote Integrity
 
-Voting is protected against common manipulation scenarios.
+Voting operations include server-side and database-level protections against common manipulation scenarios.
 
 Controls include:
 
-- Database uniqueness preventing duplicate votes.
-- Server-side self-voting restrictions.
 - Authentication requirements where applicable.
+- Server-side self-voting restrictions.
+- Database uniqueness preventing duplicate votes.
 - Controlled vote mutation logic.
-- Reputation updates through server-side logic.
+- Server-side reputation updates.
 
-The database therefore participates in enforcing vote integrity rather than relying exclusively on frontend state.
+The database therefore participates directly in preserving vote integrity.
 
 ---
 
-# 27. Reputation Integrity
+# Reputation Integrity
 
 Reputation changes are controlled by server-side application logic.
 
-Security-sensitive reputation events are logged.
+Security-sensitive reputation events are logged, and reputation effects associated with subsequently removed content can be reversed through the application's reputation ledger logic.
 
-When content deletion invalidates previously earned reputation, the application can reverse the corresponding reputation effect through the reputation ledger rather than blindly leaving derived reputation behind.
-
-This reduces opportunities for permanent reputation inflation through later-deleted content.
+This helps prevent deleted content from continuing to provide unintended reputation benefits.
 
 ---
 
-# 28. XSS Protection
+# Cross-Site Scripting Protection
 
-User-generated content is treated as untrusted.
+All community-generated content is treated as untrusted input.
 
-Community content is stored as Markdown and rendered through a sanitization pipeline.
+User content is stored as Markdown and passed through a sanitization pipeline before being rendered as HTML.
 
-The client-side rendering process uses:
+The rendering flow is:
 
 ```text
-Markdown
-   │
-   ▼
-marked
-   │
-   ▼
-DOMPurify
-   │
-   ▼
+User Content
+     │
+     ▼
+  Markdown
+     │
+     ▼
+   marked
+     │
+     ▼
+ DOMPurify
+     │
+     ▼
 Sanitized HTML
 ```
 
 DOMPurify is configured with an explicit allowlist.
 
-The platform does not intentionally echo arbitrary user HTML directly into the DOM.
+The platform does not intentionally render arbitrary user-provided HTML directly into the application DOM.
 
 ---
 
-# 29. Stored XSS Protection
+# Stored XSS Protection
 
-User content is not considered safe merely because it was stored successfully.
+Stored community content remains untrusted even after it has been persisted successfully.
 
-The security model accounts for stored XSS by sanitizing content during rendering.
-
-This applies particularly to:
+Sanitization is therefore applied at rendering time for user-generated content such as:
 
 - Questions.
 - Answers.
 - Comments.
-- User-generated Markdown.
+- User-authored Markdown.
 
-The platform does not assume that authenticated users are trustworthy content authors.
-
----
-
-# 30. Mention Rendering
-
-Mentions are handled using text-oriented rendering rather than blindly injecting user-provided HTML.
-
-Mention data is therefore not treated as executable markup.
+This provides protection against malicious content that may have been successfully stored but later rendered to other users.
 
 ---
 
-# 31. SEO Security
+# Mention Security
 
-Server-rendered SEO content uses Blade escaping.
+Mention rendering is handled as text-oriented application data rather than treating user-provided mention values as executable HTML.
 
-Dynamic values are rendered using escaped Blade output such as:
+Mention content is therefore not intentionally promoted into an arbitrary HTML injection surface.
+
+---
+
+# SEO Rendering Security
+
+Server-rendered SEO content uses escaped Blade output for dynamic values.
+
+Dynamic values are rendered through escaped expressions such as:
 
 ```blade
 {{ $value }}
 ```
 
-rather than intentionally rendering arbitrary user data with raw HTML output.
+rather than intentionally outputting arbitrary user content as raw HTML.
 
-JSON-LD data is serialized using JSON encoding with appropriate escaping flags.
-
-This prevents SEO functionality from becoming an alternate XSS injection surface.
+Structured SEO data is serialized as JSON with appropriate escaping so that SEO metadata does not become an alternate injection path.
 
 ---
 
-# 32. File Upload Security
+# File Upload Security
 
-File uploads are treated as untrusted input.
+Uploaded files are treated as untrusted input.
 
 Supported image formats are restricted to:
 
@@ -798,9 +436,7 @@ JPG / JPEG
 WEBP
 ```
 
-Uploads are checked using multiple properties rather than trusting only the filename.
-
-Validation includes:
+Image uploads are validated using multiple properties, including:
 
 - MIME type.
 - File extension.
@@ -809,253 +445,336 @@ Validation includes:
 - Image decoding.
 - Re-encoding.
 
+Validation does not rely solely on the filename supplied by the client.
+
 ---
 
-# 33. Image Re-Encoding
+# Image Re-Processing
 
-Uploaded images are processed through GD.
+Uploaded images are processed through GD and re-encoded before storage.
 
-The image is re-encoded before being stored.
-
-This provides an additional defensive layer against arbitrary embedded content or payloads that might otherwise survive unchanged inside an uploaded image.
-
-Uploaded images are also resized to a maximum dimension of approximately:
+The application also limits image dimensions to approximately:
 
 ```text
 1600 px
 ```
 
+This introduces an additional processing boundary between attacker-supplied image data and the final stored asset.
+
+Re-encoding is intended to reduce the risk of retaining arbitrary embedded content unchanged inside uploaded images.
+
 ---
 
-# 34. Upload Storage
+# Secure Upload Storage
 
-Processed uploads are stored under randomized filenames.
+Processed media is stored under randomized filenames rather than preserving attacker-controlled filenames as storage identifiers.
 
-The application uses a random approximately 40-character filename rather than retaining attacker-controlled filenames as storage identifiers.
-
-Media is organized using date-based paths:
+The application uses approximately 40-character random filenames and organizes media using date-based storage paths such as:
 
 ```text
 storage/app/public/media/YYYY/MM
 ```
 
-Every upload is registered in the application's `media` table.
-
-This provides traceability for moderation and removal.
+Uploaded media is also registered in the application's `media` table, providing application-level traceability for stored assets.
 
 ---
 
-# 35. Personally Identifiable Information in Uploads
+# Sensitive Information in Uploaded Content
 
-Users are explicitly warned before publishing screenshots or similar media to remove sensitive information.
+Uploaded screenshots and other media can contain sensitive information even when the file itself is technically valid.
 
-Warnings are provided at multiple points, including:
+The application therefore provides user-facing warnings to remove sensitive information before publication.
 
-- Editor-level guidance.
-- Pre-submission warnings.
-
-The platform does **not** claim that image uploads are automatically PII-safe.
-
-Users remain responsible for removing:
+Examples include:
 
 - Email addresses.
 - Credentials.
-- Tokens.
+- Passwords.
 - API keys.
-- IP addresses where sensitive.
+- Authentication tokens.
+- Sensitive IP information.
 - Personal documents.
-- Other confidential information.
+- Other confidential data.
+
+The platform does not represent ordinary image validation as automatic PII detection.
 
 ---
 
-# 36. Content Safety
+# Community Content and Moderation
 
-FireShark Community provides community rules covering prohibited or dangerous content.
+FireShark Community is a technical knowledge-sharing platform and therefore supports legitimate cybersecurity discussion while maintaining controls for prohibited or harmful content.
 
-Examples include:
+Community rules address areas such as:
 
 - Credential exposure.
 - Doxxing.
 - Harassment.
-- Illegal activity.
 - Malicious content.
 - Unauthorized disclosure of sensitive information.
+- Other prohibited or dangerous material.
 
-The platform is a technical community and therefore intentionally allows legitimate cybersecurity discussion while maintaining moderation controls around harmful or prohibited material.
+Moderation is performed through explicit application functionality and authorized human roles rather than relying exclusively on automated or AI moderation.
 
----
+Authorized moderation actions include operations such as:
 
-# 37. Human Moderation
-
-FireShark Community does not depend on AI moderation.
-
-Moderation is performed through explicit application functionality.
-
-Moderators can perform authorized actions such as:
-
-- Hide content.
-- Restore content.
-- Close questions.
-- Delete content.
-- Warn users.
-- Suspend users.
-- Review reports.
-
-Closed questions may remain publicly readable where appropriate so useful technical knowledge is not unnecessarily destroyed.
+- Hiding content.
+- Restoring content.
+- Closing questions.
+- Deleting content.
+- Warning users.
+- Suspending users.
+- Reviewing reports.
 
 ---
 
-# 38. Moderation Audit Trail
+# Moderation Audit Trail
 
-Significant moderation operations are recorded.
+Significant moderation operations are recorded for accountability and review.
 
 Audit information can include:
 
 - Moderator identity.
-- Target/subject.
-- Action.
+- Affected target.
+- Action performed.
 - Reason.
-- Metadata.
+- Relevant metadata.
 - Timestamp.
 
-This creates accountability for privileged moderation actions.
+This creates a traceable record for privileged content-management actions.
 
 ---
 
-# 39. Reports and Abuse Handling
+# Abuse Reporting Controls
 
-Report functionality is rate limited.
+User reporting functionality is rate limited.
 
 Current baseline:
 
 ```text
-5 reports/minute/user
+5 reports / minute / user
 ```
 
-The application also prevents unnecessary duplicate open reports against the same target by the same reporter where the applicable report constraint exists.
+The application also restricts unnecessary duplicate open reports against the same target by the same reporter where the applicable report constraint exists.
 
-This limits automated report flooding.
+These controls help limit report flooding and automated abuse of moderation workflows.
 
 ---
 
-# 40. General API Rate Limiting
+# API Rate Limiting
 
 Rate limiting is applied across multiple classes of API activity.
 
 Current baseline controls include:
 
-| SurfaceLimit                       |                      |
-| ---------------------------------- | -------------------- |
-| General authenticated API activity | 60/min/user          |
-| Authentication endpoints           | 10/min/IP            |
-| Registration                       | 5/hour/IP            |
-| Content writes                     | 20/min/user          |
-| Search                             | 30/min               |
-| Reports                            | 5/min/user           |
-| Username availability              | 20/min/IP            |
-| OTP verification                   | 10/min/IP/identifier |
-| OTP resend                         | 3/min/IP             |
+| Surface | Limit |
+| --- | --- |
+| General authenticated API activity | 60/minute/user |
+| Authentication endpoints | 10/minute/IP |
+| Registration | 5/hour/IP |
+| Content writes | 20/minute/user |
+| Search | 30/minute |
+| Reports | 5/minute/user |
+| Username availability | 20/minute/IP |
+| OTP verification | 10/minute/IP/identifier |
+| OTP resend | 3/minute/IP |
 
-These limits are intended to reduce:
+These controls reduce automated abuse such as:
 
 - Brute-force attempts.
-- Automated scraping.
-- Vote manipulation.
 - Content flooding.
-- Report abuse.
+- Search abuse.
+- Report flooding.
 - Authentication abuse.
-- Resource exhaustion.
+- Automated resource consumption.
+- Common forms of account and interaction manipulation.
+
+Rate limiting is an application-abuse control and is not represented as a substitute for volumetric DDoS protection.
 
 ---
 
-# 41. Distributed Abuse Considerations
+# Email Abuse Protection
 
-Application-level rate limiting is not presented as a replacement for volumetric DDoS protection.
+Email delivery has an additional security boundary because authentication workflows can cause external email traffic and provider-side resource consumption.
 
-The security architecture separates:
+FireShark Community therefore applies dedicated email budgets **before the external mail provider is called**.
 
-```text
-Application abuse
-```
+The email protection model combines:
 
-from:
+1. Endpoint rate limiting.
+2. Per-IP email budgets.
+3. Per-identifier email budgets.
+4. Per-endpoint email budgets.
+5. Global hourly budgets.
+6. Global daily budgets.
+7. Concurrency-safe database counters.
 
-```text
-Volumetric network attacks
-```
-
-Application controls address abusive API behavior.
-
-Cloudflare and upstream infrastructure provide an additional edge layer for traffic filtering and volumetric protection.
+This prevents a single bypass of an ordinary request limiter from automatically becoming unrestricted email delivery.
 
 ---
 
-# 42. Cloudflare Proxy Awareness
+# Global Email Budgets
 
-The application includes dedicated Cloudflare proxy handling:
+The application currently enforces hard global email limits of:
+
+| Scope | Limit |
+| --- | ---: |
+| Global hourly email budget | 500 |
+| Global daily email budget | 5,000 |
+
+When the applicable global budget is exhausted, the email operation is rejected before ZeptoMail is invoked.
+
+These are enforcement controls, not merely reporting counters.
+
+---
+
+# Per-Endpoint Email Budgets
+
+Security-email generation is additionally constrained per operation type.
+
+Current hourly limits are:
+
+| Email Operation | Hourly Limit |
+| --- | ---: |
+| Login OTP | 200 |
+| Signup OTP | 100 |
+| Password reset OTP | 150 |
+| Email verification resend | 50 |
+
+This prevents one email-generating feature from consuming the entire global budget.
+
+---
+
+# Per-IP and Per-Identifier Email Budgets
+
+Additional email limits are applied independently by source and account identifier.
+
+### Per IP
+
+```text
+50 security emails / hour / IP
+```
+
+### Per Identifier
+
+```text
+10 security emails / hour / identifier
+```
+
+The identifier-level control limits repeated targeting of one account or email address, while the IP-level control limits abuse originating from a single source.
+
+Together with endpoint and global budgets, these limits provide protection against both concentrated and distributed abuse patterns.
+
+---
+
+# Concurrency-Safe Email Accounting
+
+Email budget counters are stored in MySQL using the:
+
+```text
+email_budget_counters
+```
+
+table.
+
+The counter implementation uses:
+
+- Unique `bucket_key` values.
+- Database-backed persistent counters.
+- MySQL/InnoDB atomic update behavior.
+- `INSERT ... ON DUPLICATE KEY UPDATE`.
+- Window start and end timestamps.
+- Separate bucket types and scopes.
+
+This is designed to prevent race conditions in which multiple concurrent requests could otherwise read the same old counter value and all proceed as though capacity were still available.
+
+---
+
+# Email Budget Enforcement
+
+The enforcement order is intentionally placed before external email delivery:
+
+```text
+Request
+  │
+  ▼
+Validation / Authentication
+  │
+  ▼
+Endpoint Rate Limit
+  │
+  ▼
+Security Operation
+  │
+  ▼
+Email Budget Check
+  │
+  ├── Exceeded ──► Reject
+  │
+  ▼
+ZeptoMail
+  │
+  ▼
+Email Delivery
+```
+
+The budget system therefore acts as an actual outbound-email control boundary rather than a post-delivery monitoring mechanism.
+
+---
+
+# Email Budget Monitoring
+
+The email budget system has alert thresholds for elevated usage.
+
+Current thresholds include:
+
+| Scope | Alert Threshold |
+| --- | ---: |
+| Hourly | 100 |
+| Daily | 1,000 |
+
+These thresholds are intended to surface unusual or elevated email activity before a hard limit is reached.
+
+---
+
+# Cloudflare Proxy and Client IP Handling
+
+Production traffic passes through Cloudflare.
+
+The application includes dedicated Cloudflare proxy handling through:
 
 ```text
 TrustCloudflareProxies
 ```
 
-This exists so that application-level security controls can correctly reason about client IP information when traffic passes through Cloudflare.
+This allows application-level controls that depend on client IP information—such as rate limiting, abuse detection, email budgeting, and security logging—to operate correctly behind the trusted proxy layer.
 
-This is particularly relevant to:
-
-- Rate limiting.
-- Authentication abuse detection.
-- Email abuse controls.
-- Security logging.
-
-The application must not blindly trust arbitrary client-supplied forwarding headers.
+Forwarded client information is not intended to be blindly trusted from arbitrary sources.
 
 ---
 
-# 43. CAPTCHA / Cloudflare Turnstile
+# Cloudflare Turnstile
 
-The backend contains a dedicated:
+The backend includes dedicated server-side Turnstile verification through:
 
 ```text
 VerifyTurnstile
 ```
 
-middleware capable of server-side Cloudflare Turnstile verification.
+The middleware supports server-side verification against Cloudflare and handles verification failures, including invalid, expired, or duplicate tokens.
 
-The middleware:
+The verification path is designed to fail closed when it is explicitly enforced.
 
-- Accepts Turnstile tokens from supported request locations.
-- Sends the token to Cloudflare's server-side verification endpoint.
-- Uses the configured secret key.
-- Handles verification failures.
-- Handles expired/duplicate tokens.
-- Handles invalid responses.
-- Handles service failures.
-- Logs security-relevant verification failures.
-- Fails closed when explicitly enforced.
+## Current Status
 
-### Current production state
+The backend Turnstile implementation is **available but not currently enforced on production authentication routes**.
 
-Turnstile is **implemented and available in the backend but is not currently enforced on production authentication routes**.
-
-The reason is deliberate:
-
-```text
-Backend Turnstile verification
-        +
-Frontend Turnstile token generation
-```
-
-must be implemented and tested together.
-
-The existing frontend currently does not generate Turnstile tokens. Enabling backend enforcement without the frontend integration would cause legitimate authentication requests to fail.
-
-Therefore the current production configuration retains the stronger rate-limiting and email-budget controls while Turnstile remains prepared for a subsequent properly integrated deployment.
+The frontend integration required to generate and submit Turnstile tokens has not yet been completed. The application therefore retains its currently active rate-limiting and email-budget controls without falsely representing Turnstile as an active production enforcement layer.
 
 ---
 
-# 44. Security Headers
+# Security Headers
 
-Production responses use security-oriented HTTP headers including:
+Production responses include security-oriented browser controls such as:
 
 ```text
 X-Content-Type-Options: nosniff
@@ -1064,26 +783,20 @@ Referrer-Policy
 Permissions-Policy
 ```
 
-These headers reduce common browser-side attack surfaces such as:
+These controls reduce common browser-side attack surfaces including:
 
-- MIME sniffing.
+- MIME-type sniffing.
 - Unwanted framing.
 - Excessive referrer disclosure.
 - Unnecessary browser capability exposure.
 
 ---
 
-# 45. Transport Security
+# Transport Security
 
 The production application is served through HTTPS.
 
-Traffic passes through the Cloudflare edge before reaching the Hostinger origin.
-
-Production configuration requires secure cookies.
-
-HSTS is enabled as part of the production security-header strategy.
-
-The intended production transport model is:
+The production traffic model is:
 
 ```text
 Browser
@@ -1100,9 +813,13 @@ Hostinger Origin
 Laravel
 ```
 
+Production authentication cookies are configured to use secure transport.
+
+HSTS is also part of the production security-header strategy.
+
 ---
 
-# 46. Production Debug Protection
+# Production Debug Protection
 
 Production configuration uses:
 
@@ -1111,47 +828,46 @@ APP_ENV=production
 APP_DEBUG=false
 ```
 
-This prevents normal production requests from exposing Laravel debugging information, stack traces, internal implementation details, or environment configuration through user-facing error responses.
+This prevents normal production responses from exposing Laravel debugging pages, stack traces, environment information, or other development-only diagnostic details.
 
 ---
 
-# 47. Error Handling
+# Error Handling
 
-API exceptions are rendered through the application's API-aware exception handling.
+API failures are handled through the application's API-aware exception handling rather than exposing development diagnostics to clients.
 
-The application does not intentionally expose:
+The application does not intentionally expose through normal production error responses:
 
 - Database credentials.
 - Application secrets.
 - Passwords.
 - Authentication tokens.
-- Internal stack traces.
-- Server filesystem paths.
+- Session secrets.
+- Internal filesystem paths.
+- Development stack traces.
 
-Production failures should result in controlled error responses rather than development debugging pages.
+Errors should therefore provide controlled application responses while retaining server-side diagnostic information for operational investigation.
 
 ---
 
-# 48. Logging Security
+# Security Logging
 
-Security-relevant events are logged server-side.
+Security-relevant events are recorded server-side to support detection, troubleshooting, and investigation.
 
-Examples include:
+Relevant events can include:
 
 - Authentication anomalies.
-- Email budget violations.
+- Email-budget violations.
 - OTP/security events.
 - Reputation events.
-- Badge grants.
+- Badge-related security events.
 - Moderation actions.
-- Turnstile verification failures where enabled.
-- Security-related exceptions.
+- Turnstile verification failures where the middleware is enforced.
+- Security-related application exceptions.
 
-Logs are intended to provide operational and forensic visibility without becoming a secondary secret-storage system.
+Logs are intended to provide investigation value without becoming a secondary location for storing credentials or authentication secrets.
 
----
-
-# 49. Sensitive Data Logging Policy
+## Sensitive Data Logging
 
 The application must not intentionally log:
 
@@ -1162,861 +878,141 @@ The application must not intentionally log:
 - Database credentials.
 - Session secrets.
 
-Security logs should contain enough information to investigate abuse without reproducing credentials or authentication material.
+Security logging should capture the context needed for investigation without reproducing sensitive authentication material.
 
 ---
 
-# 50. Email Provider Security
+# Email Provider Security
 
-Security emails are sent through ZeptoMail.
+Security-sensitive email is delivered through ZeptoMail.
 
-The application treats email delivery as a privileged external operation.
+The provider is treated as a privileged external service rather than as the primary abuse-control layer.
 
-Before sending security-sensitive email, the application can enforce:
+Before a security email is sent, the application can enforce:
 
 1. Endpoint rate limits.
 2. IP rate limits.
 3. Identifier rate limits.
 4. Endpoint email budgets.
-5. Global hourly budget.
-6. Global daily budget.
+5. Global hourly email budgets.
+6. Global daily email budgets.
 
-Only after these controls succeed should the email provider be contacted.
+Only after those controls succeed is the external email provider invoked.
 
----
-
-# 51. Email Provider Failure Handling
-
-The application does not assume that the email provider is always available.
-
-Provider failures are handled as application-level errors.
-
-The email budget and security logic are intentionally positioned before provider invocation so that repeated attacker requests cannot simply translate into unrestricted provider traffic.
+Provider-side delivery failure is handled as an application-level failure and does not remove the application's own outbound-email restrictions.
 
 ---
 
-# 52. Scheduled Security Maintenance
+# Scheduled Security Cleanup
 
-The application includes scheduled maintenance operations for security-related temporary data.
+Temporary security data is subject to scheduled cleanup.
 
-These include cleanup of:
+Relevant cleanup includes:
 
-- Pending registrations.
+- Pending registration data.
 - Expired OTP/security challenges.
 
-The objective is to prevent temporary authentication data from accumulating indefinitely.
+This limits unnecessary retention of temporary authentication-related state.
 
 ---
 
-# 53. Database-Backed Infrastructure
+# Security Principles
 
-The production application intentionally uses database-backed infrastructure for:
+The platform's implementation follows several core principles.
 
-```text
-Sessions
-Cache
-Queue
-Email budgets
-```
+### Server-Side Authority
 
-This reduces the number of additional infrastructure dependencies required by the shared-hosting deployment.
+Authentication, authorization, validation, moderation, and security-sensitive state changes are enforced by the backend.
 
-The production architecture does not require:
+### Defense in Depth
 
-- Redis.
-- Elasticsearch.
-- Docker.
-- Kubernetes.
-- PM2.
-- Supervisor.
-- Separate Node.js application servers.
+No single control is assumed to be sufficient for a high-risk workflow.
 
-The React application is compiled into static production assets and served through the Laravel application architecture.
+### Least Privilege
 
----
+Administrative and moderation capabilities are restricted according to role and policy.
 
-# 54. Production Deployment Safety
+### Untrusted Input
 
-Production deployment is designed to avoid destructive database resets.
+User-submitted text, Markdown, files, and request parameters are treated as untrusted until validated and sanitized.
 
-Normal production migrations use:
+### Resource Protection
 
-```bash
-php artisan migrate --force
-```
+External resources—particularly email delivery—are protected with independent budgets and rate limits.
 
-The following commands are explicitly **not part of the normal production deployment process**:
+### Database Enforcement
 
-```text
-migrate:fresh
-migrate:refresh
-migrate:reset
-db:wipe
-```
+Important integrity rules are reinforced with database constraints rather than relying only on interface behavior.
 
-These operations can destroy or recreate application data and must never be casually executed against the production database.
+### Auditable Security Actions
+
+Security-sensitive and moderation-sensitive operations are logged where appropriate.
 
 ---
 
-# 55. Migration Safety
+# Current Security Baseline
 
-Production database schema changes are applied through Laravel migrations.
+The currently implemented production security baseline includes:
 
-The production deployment performed for the security hardening added:
-
-```text
-2026_09_16_000001_create_email_budget_counters_table
-```
-
-The migration completed successfully in production.
-
-Existing application tables were not dropped or recreated as part of this deployment.
-
----
-
-# 56. Production Backup Procedure
-
-Before the security deployment, a complete production website backup was created.
-
-The backup included:
-
-```text
-community/
-public_html/
-```
-
-and included the production Laravel application and public web files.
-
-A production database dump was also created and verified to contain:
-
-- Table structures.
-- Existing records.
-- Application data.
-
-This establishes a rollback/recovery point before security changes are applied.
-
----
-
-# 57. Production Configuration Protection
-
-The production `.env` file is treated as a deployment-sensitive file.
-
-Backend code deployments do not overwrite the production `.env`.
-
-The production environment retains its actual:
-
-- Database configuration.
-- Application environment.
-- Mail configuration.
-- Session configuration.
-- Application URL.
-- Sanctum configuration.
-
-Secrets are intentionally excluded from source-control templates.
+| Security Control | Status |
+| --- | --- |
+| Password hashing | Active |
+| Sanctum authentication | Active |
+| Database-backed sessions | Active |
+| CSRF protection | Active |
+| Authentication rate limiting | Active |
+| Registration rate limiting | Active |
+| OTP verification limiting | Active |
+| OTP resend limiting | Active |
+| Password-reset protection | Active |
+| Global email budgets | Active |
+| Per-IP email budgets | Active |
+| Per-identifier email budgets | Active |
+| Per-endpoint email budgets | Active |
+| Concurrency-safe email counters | Active |
+| Role-based authorization | Active |
+| Laravel Policies | Active |
+| Mass-assignment protection | Active |
+| SQL injection defenses | Active |
+| XSS sanitization | Active |
+| Upload validation | Active |
+| Image re-encoding | Active |
+| Moderation audit trail | Active |
+| Security headers | Active |
+| HTTPS | Active |
+| Production debug disabled | Active |
+| Cloudflare proxy handling | Active |
+| Turnstile backend verification | Implemented |
+| Turnstile frontend integration | Pending |
+| Turnstile production enforcement | Pending |
 
 ---
 
-# 58. Production Environment
+# Responsible Security Disclosure
 
-The production application has been verified with:
+Security vulnerabilities should be reported responsibly through the official FireShark Community project communication channels.
 
-```text
-Environment: production
-Debug Mode: OFF
-Laravel: 13.30.1
-PHP: 8.4.19
-Database: MySQL
-Cache: database
-Queue: database
-Session: database
-Mail: ZeptoMail
-Maintenance Mode: OFF
-```
+A useful report should include:
 
-Laravel framework caches are enabled for:
-
-```text
-Configuration
-Events
-Routes
-Views
-```
-
----
-
-# 59. Live Authentication Verification
-
-After deployment, production authentication was tested against the actual live application.
-
-The tested flow successfully completed:
-
-```text
-Password submission
-       │
-       ▼
-Password verification
-       │
-       ▼
-OTP generation
-       │
-       ▼
-ZeptoMail delivery
-       │
-       ▼
-OTP entry
-       │
-       ▼
-OTP verification
-       │
-       ▼
-Authenticated session
-```
-
-This confirms that the production security changes did not break the primary authentication workflow.
-
----
-
-# 60. Production API Verification
-
-A deliberately invalid login request was also sent directly against the production API.
-
-The application returned:
-
-```text
-HTTP 422
-Email or password is incorrect.
-```
-
-This demonstrated that the request reached the normal authentication logic rather than failing because of the incomplete Turnstile configuration.
-
-No Turnstile configuration error was returned.
-
----
-
-# 61. Production Cache Verification
-
-After deployment, production caches were explicitly cleared and rebuilt.
-
-The following framework components were successfully rebuilt:
-
-```text
-config
-events
-routes
-views
-```
-
-Laravel subsequently reported all four as:
-
-```text
-```
-
-This ensures the production application is operating using the current deployed route and configuration definitions rather than stale cached application metadata.
-
----
-
-# 62. Security Review Checklist
-
-The platform security review includes the following areas:
-
-### Authentication
-
--  Password authentication is server-side.
--  Passwords are hashed.
--  Passwords are not intentionally logged.
--  Login supports email/username authentication.
--  Authentication failures are normalized.
--  OTP-based second-stage verification is implemented.
--  OTP verification is rate limited.
--  OTP resend is rate limited.
--  OTP challenges expire.
--  OTP challenges are protected against repeated use.
--  Password reset is rate limited.
--  Password-reset responses avoid account enumeration.
-
-### Sessions
-
--  Laravel Sanctum SPA cookie authentication.
--  Database-backed sessions.
--  Secure production cookies.
--  CSRF protection.
--  Same-origin API architecture.
--  Authentication state enforced server-side.
-
-### Authorization
-
--  Role-based authorization.
--  Server-side role middleware.
--  Laravel Policies.
--  Ownership checks.
--  Privileged fields protected from mass assignment.
--  Administrative operations restricted.
--  Privilege escalation controls.
-
-### Input Security
-
--  Form Request validation.
--  Explicit input limits.
--  Enum whitelisting.
--  Mass-assignment protection.
--  SQL parameter binding.
--  Server-side validation independent of frontend validation.
-
-### XSS
-
--  Markdown-based user content.
--  DOMPurify sanitization.
--  Explicit HTML allowlist.
--  Escaped Blade output.
--  Escaped JSON-LD.
--  No intentional raw rendering of arbitrary user content.
-
-### Uploads
-
--  MIME validation.
--  Extension validation.
--  Size validation.
--  Dimension validation.
--  GD processing.
--  Image re-encoding.
--  Image resizing.
--  Randomized storage names.
--  Media registration.
--  PII warnings.
-
-### Abuse Prevention
-
--  Authentication rate limiting.
--  Registration rate limiting.
--  OTP verification rate limiting.
--  OTP resend rate limiting.
--  Content-write rate limiting.
--  Search rate limiting.
--  Report rate limiting.
--  Per-IP email budgets.
--  Per-identifier email budgets.
--  Per-endpoint email budgets.
--  Global hourly email budget.
--  Global daily email budget.
--  Atomic email-budget counters.
--  Email budget checked before provider invocation.
-
-### Database
-
--  MySQL.
--  Database constraints.
--  Unique vote protection.
--  Unique email-budget bucket protection.
--  Transactional security operations.
--  Migration-based schema management.
-
-### Content & Moderation
-
--  Community guidelines.
--  Report controls.
--  Moderation roles.
--  Moderation actions.
--  Moderation audit trail.
--  User suspension controls.
--  Content ownership controls.
--  Reputation ledger integrity.
-
-### Transport
-
--  HTTPS.
--  Cloudflare edge.
--  Secure cookies.
--  HSTS strategy.
--  Security headers.
--  `X-Content-Type-Options`.
--  `X-Frame-Options`.
--  `Referrer-Policy`.
--  `Permissions-Policy`.
-
-### Production
-
--  `APP_ENV=production`.
--  `APP_DEBUG=false`.
--  Production caches enabled.
--  Database-backed sessions.
--  Production database migration completed.
--  Production backup completed before deployment.
--  Production database dump verified.
--  Live authentication flow tested.
--  Live API authentication behavior tested.
--  Destructive migration commands excluded from normal deployment.
-
-### CAPTCHA
-
--  Server-side Turnstile middleware implemented.
--  Fail-closed verification logic implemented.
--  Turnstile configuration support implemented.
--  Frontend Turnstile widget/token generation.
--  Production Turnstile enforcement.
-
----
-
-# 63. Security Controls Summary
-
-The current security model can be summarized as:
-
-```text
-                    ┌──────────────────────┐
-                    │      CLOUDFLARE      │
-                    │ Edge / TLS / Proxy   │
-                    └──────────┬───────────┘
-                               │
-                    ┌──────────▼───────────┐
-                    │   SECURITY HEADERS   │
-                    │ HSTS / Browser       │
-                    │ Security Controls    │
-                    └──────────┬───────────┘
-                               │
-                    ┌──────────▼───────────┐
-                    │     LARAVEL API      │
-                    └──────────┬───────────┘
-                               │
-             ┌─────────────────┼─────────────────┐
-             │                 │                 │
-             ▼                 ▼                 ▼
-       Authentication     Authorization     Validation
-             │                 │                 │
-             ▼                 ▼                 ▼
-        OTP Controls       Policies        Sanitization
-             │
-             ▼
-       Rate Limiting
-             │
-             ▼
-       Email Budgets
-             │
-             ├── Per IP
-             ├── Per Identifier
-             ├── Per Endpoint
-             ├── Global Hourly
-             └── Global Daily
-             │
-             ▼
-          ZeptoMail
-             │
-             ▼
-          MySQL
-             │
-             ├── Constraints
-             ├── Transactions
-             ├── Sessions
-             ├── Security Counters
-             └── Audit Data
-```
-
----
-
-# 64. Security Principle: No Single Control Is Trusted
-
-FireShark Community does not rely on:
-
-- A CAPTCHA alone.
-- A rate limiter alone.
-- A frontend restriction alone.
-- A role dropdown alone.
-- A database constraint alone.
-- Cloudflare alone.
-- Laravel alone.
-- Email-provider controls alone.
-
-Instead, security-sensitive operations are deliberately protected through multiple layers.
-
-For example, an OTP email request may encounter:
-
-```text
-Cloudflare
-   ↓
-Laravel API
-   ↓
-Authentication / validation
-   ↓
-Rate limiter
-   ↓
-Identifier restrictions
-   ↓
-Email budget
-   ↓
-Endpoint budget
-   ↓
-Global hourly budget
-   ↓
-Global daily budget
-   ↓
-ZeptoMail
-```
-
-An attacker must therefore defeat multiple independent controls rather than a single frontend restriction.
-
----
-
-# 65. Security Review Philosophy
-
-Security review is treated as an ongoing engineering process rather than a one-time certification.
-
-When a new security-sensitive feature is introduced, it should be evaluated across:
-
-1. Authentication.
-2. Authorization.
-3. Input validation.
-4. Database integrity.
-5. Abuse resistance.
-6. Rate limiting.
-7. Resource consumption.
-8. Logging.
-9. Privacy.
-10. Deployment safety.
-11. Failure behavior.
-12. Recovery behavior.
-
-A feature is not considered secure merely because its intended UI behavior works.
-
-The underlying API must remain secure when called directly by an automated client.
-
----
-
-# 66. What the Platform Does Not Claim
-
-Security documentation should not be interpreted as a claim that the application is impossible to compromise.
-
-No internet-facing application can honestly guarantee that.
-
-This document instead describes the security controls currently implemented and the defensive assumptions under which the platform operates.
-
-The platform is continuously subject to:
-
-- New vulnerabilities.
-- Dependency vulnerabilities.
-- Configuration mistakes.
-- Credential compromise.
-- Browser vulnerabilities.
-- Infrastructure failures.
-- Novel abuse techniques.
-- Previously unknown application vulnerabilities.
-
-Security therefore remains an ongoing engineering responsibility.
-
----
-
-# 67. Responsible Security Testing
-
-FireShark Community is a cybersecurity-focused platform and is intended to be reviewed responsibly.
-
-Security researchers should:
-
-- Avoid accessing other users' private information.
-- Avoid destructive testing against production.
-- Avoid denial-of-service activity.
-- Avoid uncontrolled automated email generation.
-- Avoid spam or content flooding.
-- Avoid modifying or deleting production data.
-- Avoid credential theft or account takeover attempts.
-- Preserve evidence necessary to reproduce legitimate vulnerabilities.
-
-Where possible, vulnerabilities should be demonstrated using the minimum-impact proof required to establish the issue.
-
----
-
-# 68. Security Incident Response
-
-Potential security incidents should be investigated using:
-
-- Application logs.
-- Authentication logs.
-- Moderation audit records.
-- Email-budget events.
-- Rate-limit events.
-- Database records.
-- Cloudflare traffic/security information.
-- Relevant server logs.
-
-Investigation should prioritize:
-
-1. Containment.
-2. Preservation of evidence.
-3. Identification of affected accounts/resources.
-4. Credential/session invalidation where required.
-5. Remediation.
-6. Verification.
-7. Post-incident review.
-
----
-
-# 69. Security Development Requirements
-
-Future contributors should not introduce security-sensitive functionality without considering:
-
-- Direct API invocation.
-- Authentication bypass.
-- Authorization bypass.
-- IDOR.
-- SQL injection.
-- XSS.
-- CSRF.
-- SSRF.
-- File upload abuse.
-- Brute force.
-- Enumeration.
-- Rate-limit bypass.
-- Email abuse.
-- Resource exhaustion.
-- Privilege escalation.
-- Race conditions.
-- Auditability.
-
-Any new endpoint that can send email or modify security-sensitive state should receive dedicated abuse controls.
-
----
-
-# 70. Security Deployment Requirements
-
-Production deployments must follow these principles:
-
-### Allowed
-
-```bash
-php artisan migrate --force
-php artisan optimize:clear
-php artisan optimize
-```
-
-### Prohibited as routine production deployment operations
-
-```bash
-php artisan migrate:fresh
-php artisan migrate:refresh
-php artisan migrate:reset
-php artisan db:wipe
-```
-
-A production database must never be reset merely to apply an ordinary application change.
-
-Before significant production changes:
-
-- Create a backup.
-- Verify the backup.
-- Deploy only intended files.
-- Preserve `.env`.
-- Apply migrations safely.
-- Clear/rebuild caches where necessary.
-- Test the application.
-- Verify authentication.
-- Verify critical API functionality.
-
----
-
-# 71. Current Production Security Baseline
-
-At the time of this document update, the production environment has been verified as:
-
-```text
-Application
-    FireShark Community
-
-Framework
-    Laravel 13.30.1
-
-PHP
-    8.4.19
-
-Environment
-    production
-
-Debug
-    OFF
-
-Database
-    MySQL
-
-Session
-    database
-
-Cache
-    database
-
-Queue
-    database
-
-Mail
-    ZeptoMail
-
-Maintenance Mode
-    OFF
-
-Configuration Cache
-    CACHED
-
-Route Cache
-    CACHED
-
-Event Cache
-    CACHED
-
-View Cache
-    CACHED
-```
-
----
-
-# 72. Current Security Status
-
-The currently implemented security architecture includes:
-
-| Security AreaStatus              |             |
-| -------------------------------- | ----------- |
-| Password hashing                 | Active      |
-| Sanctum authentication           | Active      |
-| Secure sessions                  | Active      |
-| CSRF protection                  | Active      |
-| Authentication rate limiting     | Active      |
-| Registration rate limiting       | Active      |
-| OTP verification limiting        | Active      |
-| OTP resend limiting              | Active      |
-| Password-reset protection        | Active      |
-| Email budget system              | Active      |
-| Per-IP email limits              | Active      |
-| Per-identifier email limits      | Active      |
-| Per-endpoint email limits        | Active      |
-| Global hourly email limit        | Active      |
-| Global daily email limit         | Active      |
-| Atomic email counters            | Active      |
-| Role-based authorization         | Active      |
-| Laravel Policies                 | Active      |
-| Mass-assignment protection       | Active      |
-| SQL injection defenses           | Active      |
-| XSS sanitization                 | Active      |
-| Upload validation                | Active      |
-| GD image re-encoding             | Active      |
-| Moderation audit trail           | Active      |
-| Security headers                 | Active      |
-| HTTPS                            | Active      |
-| Production debug disabled        | Active      |
-| Cloudflare proxy awareness       | Active      |
-| Production backup procedure      | Established |
-| Safe migration procedure         | Established |
-| Turnstile backend                | Implemented |
-| Turnstile frontend               | Pending     |
-| Turnstile production enforcement | Pending     |
-
----
-
-# 73. Security Roadmap
-
-Security improvements may continue independently of the existing baseline.
-
-Potential future hardening areas include:
-
-- Complete frontend Cloudflare Turnstile integration.
-- Enable production Turnstile after end-to-end testing.
-- External alerting for email-budget thresholds.
-- Centralized security monitoring.
-- Automated dependency vulnerability scanning.
-- Automated security regression testing.
-- Periodic authorization/IDOR review.
-- Periodic rate-limit bypass testing.
-- Cloudflare WAF/rate-limit tuning.
-- Backup restoration drills.
-- Incident-response exercises.
-- Security-focused CI checks.
-
-These are improvements to the defense-in-depth model and should not be interpreted as evidence that the current security controls are absent.
-
----
-
-# 74. Final Security Statement
-
-FireShark Community is built as a cybersecurity community and therefore treats security as a first-class engineering concern.
-
-The application is designed around the principle that:
-
-> **The browser is not trusted, the client is not trusted, user input is not trusted, and a single security control is never assumed to be sufficient.**
-
-Authentication is protected independently from authorization.
-
-Authorization is enforced independently from the frontend.
-
-User input is validated independently from browser-side validation.
-
-Database integrity is protected independently from application UI behavior.
-
-Email delivery is protected independently from authentication rate limits.
-
-Uploaded files are treated independently from their filenames and extensions.
-
-Production deployment is protected independently from application functionality through explicit backup and migration procedures.
-
-The resulting security model is intentionally layered:
-
-```text
-             SECURITY IN DEPTH
-                    │
-        ┌───────────┴───────────┐
-        │                       │
-     PREVENTION             DETECTION
-        │                       │
-   ┌────┼────┐             ┌────┼────┐
-   │    │    │             │    │    │
- Auth  Rate  Input        Logs Audit Alerts
-       Limits Validation
-   │    │    │
-   └────┼────┘
-        │
-   Authorization
-        │
-   Database Integrity
-        │
-   Email Budgets
-        │
-   Content Sanitization
-        │
-   Secure Deployment
-```
-
-The objective is not to claim that FireShark Community is impossible to attack.
-
-The objective is to ensure that an attacker does not receive a simple path from:
-
-```text
-one request
-```
-
-to:
-
-```text
-account compromise
-data manipulation
-privilege escalation
-uncontrolled email consumption
-persistent XSS
-database compromise
-or unrestricted application abuse.
-```
-
-Security controls are continuously reviewable, testable, and expected to evolve as the platform evolves.
-
----
-
-## Security Contact
-
-For responsible disclosure of a security vulnerability, contact the FireShark Community maintainers through the official project communication channels.
-
-Please provide:
-
-- A clear description of the vulnerability.
-- Affected endpoint/component.
+- A clear description of the issue.
+- The affected endpoint, feature, or component.
 - Reproduction steps.
 - Expected behavior.
 - Actual behavior.
 - Security impact.
-- Minimal proof of concept where appropriate.
-- Any relevant logs or screenshots with credentials/secrets removed.
+- A minimal proof of concept where appropriate.
+- Relevant screenshots or logs with credentials and secrets removed.
 
-Do not publicly disclose sensitive vulnerability details before the issue has been reviewed and an appropriate remediation path has been established.
+Researchers should avoid destructive testing, denial-of-service activity, unauthorized access to other users' information, uncontrolled email generation, and modification or deletion of production data.
 
-```
+The objective of responsible disclosure is to provide enough evidence to reproduce and remediate a vulnerability without unnecessarily increasing risk to the platform or its users.
 
-**One correction I intentionally made:** I did *not* write that Turnstile is “active” in production. We discovered and verified that it currently isn't, and documenting it as active would make `SECURITY.md` factually wrong. The document instead clearly records the backend implementation and the remaining frontend/enforcement work.
+---
+
+# Security Scope
+
+This document describes security controls that are implemented or explicitly identified in the current FireShark Community application.
+
+It is not a statement that the application is immune to compromise. Security is continuously affected by application changes, dependency vulnerabilities, infrastructure configuration, credential security, browser behavior, and newly discovered attack techniques.
+
+Security controls are therefore expected to be reviewed, tested, and strengthened as the platform evolves.
