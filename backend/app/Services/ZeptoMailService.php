@@ -6,6 +6,7 @@ use App\Models\OtpChallenge;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Sends transactional emails through ZeptoMail.
@@ -20,10 +21,13 @@ use Illuminate\Support\Facades\Log;
  * payload to the log so the developer can copy the OTP from the Laravel
  * log. In any other environment a placeholder key fails fast with a clear
  * exception — the API never silently drops a message.
+ *
+ * Global email budget enforcement via EmailBudgetService prevents
+ * ZeptoMail quota exhaustion from distributed attacks.
  */
 class ZeptoMailService
 {
-    public function __construct()
+    public function __construct(protected EmailBudgetService $emailBudget)
     {
     }
 
