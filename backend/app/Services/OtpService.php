@@ -6,6 +6,7 @@ use App\Models\OtpChallenge;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -31,33 +32,43 @@ class OtpService
     {
         $identifier = strtolower(trim($identifier));
 
-        // Invalidate any previous open OTP for this (purpose, identifier).
-        OtpChallenge::query()
-            ->where('purpose', $purpose)
-            ->where('identifier', $identifier)
-            ->whereNull('consumed_at')
-            ->whereNull('locked_until')
-            ->update(['consumed_at' => now()]);
+        // Use database transaction with row locking to prevent race conditions
+        // when multiple concurrent requests try to issue OTPs for the same identifier.
+        return DB::transaction(function () use ($purpose, $identifier, $user, $request) {
+            // Lock any existing open challenge for this (purpose, identifier)
+            // to prevent concurrent creation of multiple OTPs.
+            $existing = OtpChallenge::query()
+                ->where('purpose', $purpose)
+                ->where('identifier', $identifier)
+                ->whereNull('consumed_at')
+                ->whereNull('locked_until')
+                ->lockForUpdate()
+                ->first();
 
-        $code = $this->generateCode();
-        $token = Str::random(48);
+            if ($existing) {
+                $existing->forceFill(['consumed_at' => now()])->save();
+            }
 
-        $challenge = OtpChallenge::create([
-            'token' => $token,
-            'purpose' => $purpose,
-            'identifier' => $identifier,
-            'user_id' => $user?->id,
-            'code_hash' => Hash::make($code),
-            'attempts' => 0,
-            'max_attempts' => self::MAX_ATTEMPTS,
-            'expires_at' => now()->addSeconds(self::TTL_SECONDS),
-            'ip' => $request?->ip(),
-            'user_agent' => substr((string) $request?->userAgent(), 0, 191),
-        ]);
+            $code = $this->generateCode();
+            $token = Str::random(48);
 
-        $this->dispatch($challenge, $code, $user);
+            $challenge = OtpChallenge::create([
+                'token' => $token,
+                'purpose' => $purpose,
+                'identifier' => $identifier,
+                'user_id' => $user?->id,
+                'code_hash' => Hash::make($code),
+                'attempts' => 0,
+                'max_attempts' => self::MAX_ATTEMPTS,
+                'expires_at' => now()->addSeconds(self::TTL_SECONDS),
+                'ip' => $request?->ip(),
+                'user_agent' => substr((string) $request?->userAgent(), 0, 191),
+            ]);
 
-        return $challenge;
+            $this->dispatch($challenge, $code, $user);
+
+            return $challenge;
+        });
     }
 
     public function resend(OtpChallenge $challenge, Request $request): OtpChallenge
