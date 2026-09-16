@@ -3,6 +3,8 @@
 use App\Http\Middleware\EnsureEmailVerifiedForApi;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\TrustCloudflareProxies;
+use App\Http\Middleware\VerifyTurnstile;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,9 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // SPA cookie authentication: API requests from the first-party
-        // frontend share the session so Sanctum's CSRF/session flow works.
+        // Trust Cloudflare proxies FIRST - must run before any IP-based logic
         $middleware->api(prepend: [
+            TrustCloudflareProxies::class,
             EnsureFrontendRequestsAreStateful::class,
             SecurityHeaders::class,
         ]);
@@ -31,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => EnsureRole::class,
             'verified.api' => EnsureEmailVerifiedForApi::class,
+            'turnstile' => VerifyTurnstile::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
