@@ -314,6 +314,13 @@ class AuthController extends Controller
             return $this->error('Account is temporarily locked. Please try again later.', 423);
         }
 
+        // Enforce per-IP login rate limit at verification stage
+        try {
+            $this->security->ensureIpAllowed($request->ip());
+        } catch (\RuntimeException $e) {
+            return $this->error($e->getMessage(), 429);
+        }
+
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
         $this->security->recordSuccessfulLogin($user);
