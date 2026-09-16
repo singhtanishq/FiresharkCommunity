@@ -44,4 +44,10 @@ return [
         'reset_template_key' => env('ZEPTOMAIL_RESET_TEMPLATE_KEY', 'fire-shark-reset-template'),
     ],
 
+    'turnstile' => [
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+        'enforce_in_local' => env('TURNSTILE_ENFORCE_IN_LOCAL', false),
+    ],
+
 ];
