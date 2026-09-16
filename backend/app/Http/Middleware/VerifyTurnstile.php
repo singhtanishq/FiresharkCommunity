@@ -19,8 +19,8 @@ class VerifyTurnstile
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Skip in local development if explicitly configured
-        if (app()->environment('local') && ! config('services.turnstile.enforce_in_local', false)) {
+        // Skip in local development or testing if not explicitly enforced
+        if ((app()->environment('local', 'testing') && ! config('services.turnstile.enforce_in_local', false))) {
             return $next($request);
         }
 
