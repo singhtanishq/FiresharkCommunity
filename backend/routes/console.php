@@ -31,7 +31,7 @@ Schedule::call(function () {
     if ($deleted > 0) {
         \Log::info("Cleaned up {$deleted} expired pending registrations");
     }
-})->hourly()->withoutOverlapping();
+})->hourly()->name('cleanup:pending-registrations')->withoutOverlapping();
 
 // Clean up consumed/expired OTP challenges (older than 24 hours).
 Schedule::call(function () {
@@ -45,4 +45,4 @@ Schedule::call(function () {
     if ($deleted > 0) {
         \Log::info("Cleaned up {$deleted} expired/consumed OTP challenges");
     }
-})->daily()->withoutOverlapping();
+})->daily()->name('cleanup:otp-challenges')->withoutOverlapping();
