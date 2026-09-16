@@ -32,27 +32,31 @@ Route::prefix('v1')->group(function () {
     // Authentication
     // ------------------------------------------------------------------
 
-    Route::middleware('throttle:auth')->group(function () {
-        Route::get('/auth/check-username', [AuthController::class, 'checkUsername']);
-    });
-    Route::middleware('throttle:register')->group(function () {
-        Route::post('/auth/register/start', [AuthController::class, 'startRegistration']);
-    });
-    Route::middleware('throttle:otp.verify')->group(function () {
-        Route::post('/auth/register/verify-otp', [AuthController::class, 'verifySignup']);
-        Route::post('/auth/register/complete', [AuthController::class, 'completeRegistration']);
-    });
-    Route::middleware('throttle:otp.resend')->group(function () {
-        Route::post('/auth/register/otp/resend', [AuthController::class, 'resendSignupOtp']);
-    });
-    Route::middleware('throttle:auth')->group(function () {
+    Route::middleware(['throttle:auth', 'turnstile'])->group(function () {
         Route::post('/auth/login/start', [AuthController::class, 'startLogin']);
         Route::post('/auth/login/verify-otp', [AuthController::class, 'verifyLogin']);
         Route::post('/auth/login/otp/resend', [AuthController::class, 'resendLoginOtp']);
         Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
         Route::post('/auth/forgot-password/resend', [PasswordResetController::class, 'resendOtp']);
-    Route::post('/auth/forgot-password/verify', [PasswordResetController::class, 'verifyOtp']);
+        Route::post('/auth/forgot-password/verify', [PasswordResetController::class, 'verifyOtp']);
         Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
+    });
+
+    Route::middleware(['throttle:register', 'turnstile'])->group(function () {
+        Route::post('/auth/register/start', [AuthController::class, 'startRegistration']);
+    });
+
+    Route::middleware(['throttle:otp.verify', 'turnstile'])->group(function () {
+        Route::post('/auth/register/verify-otp', [AuthController::class, 'verifySignup']);
+        Route::post('/auth/register/complete', [AuthController::class, 'completeRegistration']);
+    });
+
+    Route::middleware(['throttle:otp.resend', 'turnstile'])->group(function () {
+        Route::post('/auth/register/otp/resend', [AuthController::class, 'resendSignupOtp']);
+    });
+
+    Route::middleware('throttle:auth')->group(function () {
+        Route::get('/auth/check-username', [AuthController::class, 'checkUsername']);
     });
 
     Route::post('/auth/logout', [AuthController::class, 'logout'])
@@ -67,7 +71,7 @@ Route::prefix('v1')->group(function () {
         ->name('verification.verify');
 
     Route::post('/auth/email/verification-notification', [VerifyEmailController::class, 'resend'])
-        ->middleware(['auth:sanctum', 'throttle:auth']);
+        ->middleware(['auth:sanctum', 'throttle:auth', 'turnstile']);
 
     // ------------------------------------------------------------------
     // Public content
