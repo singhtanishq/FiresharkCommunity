@@ -65,8 +65,8 @@ class EmailBudgetService
         $ipKey = "email:budget:ip:{$ip}:{$now->format('YmdH')}";
         $emailKey = "email:budget:email:{$identifier}:{$now->format('YmdH')}";
 
-        // Use Redis store for atomic operations
-        $redis = Cache::store('redis');
+        // Use dedicated Redis store for rate limiting to avoid conflicts with other cache data
+        $redis = Cache::store('redis-rate-limiter');
 
         // Atomic increment with automatic expiration
         $hourly = $redis->increment($hourKey);
