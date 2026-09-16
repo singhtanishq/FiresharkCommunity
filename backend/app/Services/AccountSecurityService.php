@@ -26,8 +26,9 @@ class AccountSecurityService
         ])->save();
 
         if ($ip) {
-            Cache::increment("login:ip:{$ip}:".now()->format('YmdH'), 1);
-            Cache::put("login:ip:{$ip}:".now()->format('YmdH'), Cache::get("login:ip:{$ip}:".now()->format('YmdH'), 1), now()->addHour());
+            $key = "login:ip:{$ip}:".now()->format('YmdH');
+            Cache::increment($key);
+            Cache::put($key, Cache::get($key, 1), now()->addHour());
         }
 
         // Lock the account when the rolling window of failed attempts for
@@ -61,6 +62,10 @@ class AccountSecurityService
         return max(1, (int) ceil($user->locked_until->diffInSeconds(now())));
     }
 
+    /**
+     * Check if an IP has exceeded the hourly login attempt limit.
+     * Returns true if allowed, false if rate limited.
+     */
     public function ipAllowed(?string $ip): bool
     {
         if (! $ip) {
@@ -70,5 +75,16 @@ class AccountSecurityService
         $count = (int) Cache::get("login:ip:{$ip}:".now()->format('YmdH'), 0);
 
         return $count < self::PER_IP_TRIES_PER_HOUR;
+    }
+
+    /**
+     * Check if an IP is allowed and throw if not.
+     * Used in login verification to enforce IP-based rate limiting.
+     */
+    public function ensureIpAllowed(?string $ip): void
+    {
+        if (! $this->ipAllowed($ip)) {
+            throw new \RuntimeException('Too many login attempts from this IP. Please try again later.');
+        }
     }
 }
