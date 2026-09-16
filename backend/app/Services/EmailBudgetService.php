@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Cache;
+use App\Models\EmailBudgetCounter;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 /**
- * Global email budget / circuit breaker to prevent ZeptoMail quota exhaustion.
+ * Global email budget / circuit breaker using MySQL.
  *
  * Tracks outbound authentication emails across multiple dimensions:
  * - Global hourly/daily limits (hard stops)
@@ -15,7 +16,11 @@ use RuntimeException;
  * - Per-IP limits
  * - Per-email limits
  *
- * Uses Redis for atomic counters with sliding window expiration.
+ * Uses MySQL table `email_budget_counters` with UNIQUE bucket_key.
+ * Concurrency: INSERT ... ON DUPLICATE KEY UPDATE is atomic in InnoDB.
+ * The UNIQUE constraint on bucket_key prevents duplicate rows even
+ * under 100 concurrent requests.
+ *
  * All limits are enforced BEFORE the email is sent to ZeptoMail.
  */
 class EmailBudgetService
@@ -59,179 +64,168 @@ class EmailBudgetService
     public function reserve(string $endpoint, string $identifier, string $ip): bool
     {
         $now = now();
-        $hourKey = "email:budget:hourly:{$now->format('YmdH')}";
-        $dayKey = "email:budget:daily:{$now->format('Ymd')}";
-        $endpointKey = "email:budget:endpoint:{$endpoint}:{$now->format('YmdH')}";
-        $ipKey = "email:budget:ip:{$ip}:{$now->format('YmdH')}";
-        $emailKey = "email:budget:email:{$identifier}:{$now->format('YmdH')}";
+        $hourWindowStart = $now->copy()->startOfHour();
+        $dayWindowStart = $now->copy()->startOfDay();
+        $hourWindowEnd = $now->copy()->startOfHour()->addHour();
+        $dayWindowEnd = $now->copy()->startOfDay()->addDay();
 
-        // Use dedicated Redis store for rate limiting to avoid conflicts with other cache data
-        $redis = Cache::store('redis-rate-limiter');
+        // Define all buckets to check
+        $buckets = [
+            // Global hourly
+            [
+                'bucket_key' => "email:budget:global:hourly:{$hourWindowStart->format('YmdHis')}",
+                'bucket_type' => 'global',
+                'scope_id' => 'global',
+                'window_start' => $hourWindowStart,
+                'window_end' => $hourWindowEnd,
+                'limit' => self::GLOBAL_HOURLY_LIMIT,
+                'limit_label' => 'global hourly',
+            ],
+            // Global daily
+            [
+                'bucket_key' => "email:budget:global:daily:{$dayWindowStart->format('YmdHis')}",
+                'bucket_type' => 'global',
+                'scope_id' => 'global',
+                'window_start' => $dayWindowStart,
+                'window_end' => $dayWindowEnd,
+                'limit' => self::GLOBAL_DAILY_LIMIT,
+                'limit_label' => 'global daily',
+            ],
+            // Per-endpoint hourly
+            [
+                'bucket_key' => "email:budget:endpoint:{$endpoint}:{$hourWindowStart->format('YmdHis')}",
+                'bucket_type' => 'endpoint',
+                'scope_id' => $endpoint,
+                'window_start' => $hourWindowStart,
+                'window_end' => $hourWindowEnd,
+                'limit' => self::ENDPOINT_LIMITS[$endpoint] ?? self::GLOBAL_HOURLY_LIMIT,
+                'limit_label' => "endpoint:{$endpoint}",
+            ],
+            // Per-IP hourly
+            [
+                'bucket_key' => "email:budget:ip:{$ip}:{$hourWindowStart->format('YmdHis')}",
+                'bucket_type' => 'ip',
+                'scope_id' => $ip,
+                'window_start' => $hourWindowStart,
+                'window_end' => $hourWindowEnd,
+                'limit' => self::PER_IP_HOURLY_LIMIT,
+                'limit_label' => "ip:{$ip}",
+            ],
+            // Per-email hourly
+            [
+                'bucket_key' => "email:budget:email:{$identifier}:{$hourWindowStart->format('YmdHis')}",
+                'bucket_type' => 'email',
+                'scope_id' => $identifier,
+                'window_start' => $hourWindowStart,
+                'window_end' => $hourWindowEnd,
+                'limit' => self::PER_EMAIL_HOURLY_LIMIT,
+                'limit_label' => "email:{$identifier}",
+            ],
+        ];
 
-        // Atomic increment with automatic expiration
-        $hourly = $redis->increment($hourKey);
-        if ($hourly === 1) {
-            $redis->expire($hourKey, 3600); // 1 hour TTL
-        }
+        DB::transaction(function () use ($buckets, $endpoint, $identifier, $ip) {
+            foreach ($buckets as $bucket) {
+                // Atomic increment: INSERT ... ON DUPLICATE KEY UPDATE
+                // This is atomic in InnoDB - concurrent requests will be serialized
+                // on the same bucket_key row due to the UNIQUE constraint.
+                DB::statement("
+                    INSERT INTO email_budget_counters (bucket_key, bucket_type, scope_id, `count`, window_start, window_end, created_at, updated_at)
+                    VALUES (?, ?, ?, 1, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE `count` = `count` + 1, updated_at = ?
+                ", [
+                    $bucket['bucket_key'],
+                    $bucket['bucket_type'],
+                    $bucket['scope_id'],
+                    $bucket['window_start'],
+                    $bucket['window_end'],
+                    now(),
+                    now(),
+                    now(),
+                ]);
 
-        $daily = $redis->increment($dayKey);
-        if ($daily === 1) {
-            $redis->expire($dayKey, 86400); // 24 hour TTL
-        }
+                // Read current count
+                $row = DB::table('email_budget_counters')
+                    ->where('bucket_key', $bucket['bucket_key'])
+                    ->first();
 
-        $endpointCount = $redis->increment($endpointKey);
-        if ($endpointCount === 1) {
-            $redis->expire($endpointKey, 3600);
-        }
+                $currentCount = (int) ($row->count ?? 0);
 
-        $ipCount = $redis->increment($ipKey);
-        if ($ipCount === 1) {
-            $redis->expire($ipKey, 3600);
-        }
+                // Check limits
+                if ($currentCount > $bucket['limit']) {
+                    // Decrement back since we're rejecting
+                    DB::statement("
+                        UPDATE email_budget_counters SET `count` = `count` - 1, updated_at = ?
+                        WHERE bucket_key = ?
+                    ", [now(), $bucket['bucket_key']]);
 
-        $emailCount = $redis->increment($emailKey);
-        if ($emailCount === 1) {
-            $redis->expire($emailKey, 3600);
-        }
+                    $this->alert('BUDGET_EXCEEDED', [
+                        'bucket_key' => $bucket['bucket_key'],
+                        'bucket_type' => $bucket['bucket_type'],
+                        'scope_id' => $bucket['scope_id'],
+                        'current_count' => $currentCount,
+                        'limit' => $bucket['limit'],
+                        'limit_label' => $bucket['limit_label'],
+                        'endpoint' => $endpoint,
+                        'identifier' => $identifier,
+                        'ip' => $ip,
+                    ]);
 
-        // Check limits in order of strictness
-        $this->checkGlobalLimits($hourly, $daily, $endpoint, $identifier, $ip);
-        $this->checkEndpointLimit($endpoint, $endpointCount, $identifier, $ip);
-        $this->checkIpLimit($ip, $ipCount, $endpoint, $identifier);
-        $this->checkEmailLimit($identifier, $emailCount, $endpoint, $ip);
+                    throw new RuntimeException($this->getErrorMessage($bucket['limit_label'], $endpoint));
+                }
+            }
+        });
 
-        // Fire alerts at thresholds (non-blocking)
-        $this->maybeAlertThresholds($hourly, $daily, $endpoint, $ipCount, $emailCount);
+        // Fire alert thresholds (outside transaction - non-blocking)
+        $this->maybeAlertThresholds($now);
 
         return true;
     }
 
     /**
-     * Check global hourly/daily limits.
+     * Get error message for exceeded limit.
      */
-    protected function checkGlobalLimits(int $hourly, int $daily, string $endpoint, string $identifier, string $ip): void
+    protected function getErrorMessage(string $limitLabel, string $endpoint): string
     {
-        if ($hourly > self::GLOBAL_HOURLY_LIMIT) {
-            $this->decrementCounters($hourly, $daily);
-            $this->alert('GLOBAL_HOURLY_EXCEEDED', [
-                'hourly_count' => $hourly,
-                'limit' => self::GLOBAL_HOURLY_LIMIT,
-                'endpoint' => $endpoint,
-                'ip' => $ip,
-                'email' => $identifier,
-            ]);
-            throw new RuntimeException('Global hourly email budget exceeded. Please try again later.');
-        }
-
-        if ($daily > self::GLOBAL_DAILY_LIMIT) {
-            $this->decrementCounters($hourly, $daily);
-            $this->alert('GLOBAL_DAILY_EXCEEDED', [
-                'daily_count' => $daily,
-                'limit' => self::GLOBAL_DAILY_LIMIT,
-                'endpoint' => $endpoint,
-                'ip' => $ip,
-                'email' => $identifier,
-            ]);
-            throw new RuntimeException('Daily email budget exceeded. Please try again tomorrow.');
-        }
-    }
-
-    /**
-     * Check per-endpoint limit.
-     */
-    protected function checkEndpointLimit(string $endpoint, int $count, string $identifier, string $ip): void
-    {
-        $limit = self::ENDPOINT_LIMITS[$endpoint] ?? self::GLOBAL_HOURLY_LIMIT;
-
-        if ($count > $limit) {
-            $this->alert('ENDPOINT_LIMIT_EXCEEDED', [
-                'endpoint' => $endpoint,
-                'count' => $count,
-                'limit' => $limit,
-                'ip' => $ip,
-                'email' => $identifier,
-            ]);
-            throw new RuntimeException("Too many {$endpoint} emails sent. Please slow down.");
-        }
-    }
-
-    /**
-     * Check per-IP limit.
-     */
-    protected function checkIpLimit(string $ip, int $count, string $endpoint, string $identifier): void
-    {
-        if ($count > self::PER_IP_HOURLY_LIMIT) {
-            $this->alert('IP_LIMIT_EXCEEDED', [
-                'ip' => $ip,
-                'count' => $count,
-                'limit' => self::PER_IP_HOURLY_LIMIT,
-                'endpoint' => $endpoint,
-                'email' => $identifier,
-            ]);
-            throw new RuntimeException('Too many requests from this IP. Please try again later.');
-        }
-    }
-
-    /**
-     * Check per-email limit.
-     */
-    protected function checkEmailLimit(string $identifier, int $count, string $endpoint, string $ip): void
-    {
-        if ($count > self::PER_EMAIL_HOURLY_LIMIT) {
-            $this->alert('EMAIL_LIMIT_EXCEEDED', [
-                'email' => $identifier,
-                'count' => $count,
-                'limit' => self::PER_EMAIL_HOURLY_LIMIT,
-                'endpoint' => $endpoint,
-                'ip' => $ip,
-            ]);
-            throw new RuntimeException('Too many emails sent to this address. Please try again later.');
-        }
+        return match ($limitLabel) {
+            'global hourly' => 'Too many authentication emails sent this hour. Please try again later.',
+            'global daily' => 'Daily email budget exceeded. Please try again tomorrow.',
+            default => "Too many {$endpoint} emails sent. Please try again later.",
+        };
     }
 
     /**
      * Fire alerts when thresholds are crossed (non-blocking).
      */
-    protected function maybeAlertThresholds(int $hourly, int $daily, string $endpoint, int $ipCount, int $emailCount): void
+    protected function maybeAlertThresholds(\Carbon\Carbon $now): void
     {
+        $hourStart = $now->copy()->startOfHour()->format('YmdHis');
+        $dayStart = $now->copy()->startOfDay()->format('YmdHis');
+
         // Global hourly threshold
-        if ($hourly === self::ALERT_THRESHOLD_HOURLY) {
+        $hourlyRow = DB::table('email_budget_counters')
+            ->where('bucket_key', "email:budget:global:hourly:{$hourStart}")
+            ->first();
+
+        if ($hourlyRow && (int) $hourlyRow->count === self::ALERT_THRESHOLD_HOURLY) {
             $this->alert('GLOBAL_HOURLY_WARNING', [
-                'count' => $hourly,
+                'count' => (int) $hourlyRow->count,
                 'limit' => self::GLOBAL_HOURLY_LIMIT,
-                'percentage' => round(($hourly / self::GLOBAL_HOURLY_LIMIT) * 100),
+                'percentage' => round((self::ALERT_THRESHOLD_HOURLY / self::GLOBAL_HOURLY_LIMIT) * 100),
             ]);
         }
 
         // Global daily threshold
-        if ($daily === self::ALERT_THRESHOLD_DAILY) {
+        $dailyRow = DB::table('email_budget_counters')
+            ->where('bucket_key', "email:budget:global:daily:{$dayStart}")
+            ->first();
+
+        if ($dailyRow && (int) $dailyRow->count === self::ALERT_THRESHOLD_DAILY) {
             $this->alert('GLOBAL_DAILY_WARNING', [
-                'count' => $daily,
+                'count' => (int) $dailyRow->count,
                 'limit' => self::GLOBAL_DAILY_LIMIT,
-                'percentage' => round(($daily / self::GLOBAL_DAILY_LIMIT) * 100),
+                'percentage' => round((self::ALERT_THRESHOLD_DAILY / self::GLOBAL_DAILY_LIMIT) * 100),
             ]);
         }
-
-        // Endpoint-specific warning at 80%
-        $endpointLimit = self::ENDPOINT_LIMITS[$endpoint] ?? self::GLOBAL_HOURLY_LIMIT;
-        if ($ipCount > 0 && $ipCount === (int)($endpointLimit * 0.8)) {
-            $this->alert('ENDPOINT_WARNING', [
-                'endpoint' => $endpoint,
-                'count' => $ipCount,
-                'limit' => $endpointLimit,
-            ]);
-        }
-    }
-
-    /**
-     * Decrement counters when rejecting a request (compensate for pre-increment).
-     */
-    protected function decrementCounters(int $hourly, int $daily): void
-    {
-        $now = now();
-        $redis = Cache::store('redis-rate-limiter');
-        $redis->decrement("email:budget:hourly:{$now->format('YmdH')}");
-        $redis->decrement("email:budget:daily:{$now->format('Ymd')}");
     }
 
     /**
@@ -242,13 +236,6 @@ class EmailBudgetService
         Log::warning("Email budget alert: {$type}", $context);
 
         // TODO: Integrate with monitoring (Slack, PagerDuty, etc.)
-        // Example:
-        // if (config('services.slack.webhook_url')) {
-        //     Http::post(config('services.slack.webhook_url'), [
-        //         'text' => "🚨 Email Budget Alert: {$type}",
-        //         'blocks' => [...]
-        //     ]);
-        // }
     }
 
     /**
@@ -257,19 +244,26 @@ class EmailBudgetService
     public function getStats(): array
     {
         $now = now();
-        $redis = Cache::store('redis-rate-limiter');
+        $hourStart = $now->copy()->startOfHour()->format('YmdHis');
+        $dayStart = $now->copy()->startOfDay()->format('YmdHis');
+
+        $getCount = function (string $key): int {
+            $row = DB::table('email_budget_counters')->where('bucket_key', $key)->first();
+            return $row ? (int) $row->count : 0;
+        };
 
         return [
             'global' => [
-                'hourly' => (int) $redis->get("email:budget:hourly:{$now->format('YmdH')}", 0),
-                'daily' => (int) $redis->get("email:budget:daily:{$now->format('Ymd')}", 0),
+                'hourly' => $getCount("email:budget:global:hourly:{$hourStart}"),
+                'daily' => $getCount("email:budget:global:daily:{$dayStart}"),
                 'hourly_limit' => self::GLOBAL_HOURLY_LIMIT,
                 'daily_limit' => self::GLOBAL_DAILY_LIMIT,
             ],
-            'endpoints' => array_map(function ($limit, $endpoint) use ($redis, $now) {
+            'endpoints' => array_map(function ($limit, $endpoint) use ($now, $getCount) {
+                $hourStart = $now->copy()->startOfHour()->format('YmdHis');
                 return [
                     'limit' => $limit,
-                    'current' => (int) $redis->get("email:budget:endpoint:{$endpoint}:{$now->format('YmdH')}", 0),
+                    'current' => $getCount("email:budget:endpoint:{$endpoint}:{$hourStart}"),
                 ];
             }, self::ENDPOINT_LIMITS, array_keys(self::ENDPOINT_LIMITS)),
             'per_ip_limit' => self::PER_IP_HOURLY_LIMIT,
