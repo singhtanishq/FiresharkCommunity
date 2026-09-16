@@ -229,7 +229,7 @@ class EmailBudgetService
     protected function decrementCounters(int $hourly, int $daily): void
     {
         $now = now();
-        $redis = Cache::store('redis');
+        $redis = Cache::store('redis-rate-limiter');
         $redis->decrement("email:budget:hourly:{$now->format('YmdH')}");
         $redis->decrement("email:budget:daily:{$now->format('Ymd')}");
     }
@@ -257,7 +257,7 @@ class EmailBudgetService
     public function getStats(): array
     {
         $now = now();
-        $redis = Cache::store('redis');
+        $redis = Cache::store('redis-rate-limiter');
 
         return [
             'global' => [
