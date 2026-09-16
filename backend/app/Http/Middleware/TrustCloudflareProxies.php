@@ -102,6 +102,7 @@ class TrustCloudflareProxies
     /**
      * Check if an IP is within a CIDR range.
      * Supports both IPv4 and IPv6.
+     * Returns false safely if address families don't match.
      */
     protected function ipInRange(string $ip, string $range): bool
     {
@@ -112,24 +113,46 @@ class TrustCloudflareProxies
         [$rangeIp, $cidr] = explode('/', $range);
         $cidr = (int) $cidr;
 
-        // Use PHP's native IP handling for both IPv4 and IPv6
-        $ipBin = inet_pton($ip);
-        $rangeBin = inet_pton($rangeIp);
+        // Use PHP's native IP handling - inet_pton returns binary string
+        // IPv4 = 4 bytes, IPv6 = 16 bytes
+        $ipBin = @inet_pton($ip);
+        $rangeBin = @inet_pton($rangeIp);
 
+        // If either is invalid, or address families don't match, return false
         if ($ipBin === false || $rangeBin === false) {
             return false;
         }
 
-        // Calculate mask
-        $bits = strlen($ipBin) * 8; // 32 for IPv4, 128 for IPv6
-        $mask = $cidr >= $bits ? '' : str_repeat('f', $cidr / 4) . str_repeat('0', ($bits - $cidr) / 4);
-        $maskBin = hex2bin($mask);
-
-        if ($maskBin === false) {
+        // Address families must match (both IPv4 or both IPv6)
+        if (strlen($ipBin) !== strlen($rangeBin)) {
             return false;
         }
 
+        $bits = strlen($ipBin) * 8; // 32 for IPv4, 128 for IPv6
+
+        // Validate CIDR prefix length is valid for this address family
+        if ($cidr < 0 || $cidr > $bits) {
+            return false;
+        }
+
+        // Create mask using bit operations (no hex2bin needed)
+        // For the network portion, we want 1s; for host portion, 0s
+        $bytes = $bits / 8;
+        $fullBytes = $cidr >> 3; // integer division by 8
+        $remainingBits = $cidr & 7; // modulo 8
+
+        $mask = '';
+        for ($i = 0; $i < $bytes; $i++) {
+            if ($i < $fullBytes) {
+                $mask .= "\xFF";
+            } elseif ($i === $fullBytes && $remainingBits > 0) {
+                $mask .= chr(0xFF << (8 - $remainingBits));
+            } else {
+                $mask .= "\x00";
+            }
+        }
+
         // Apply mask and compare
-        return ($ipBin & $maskBin) === ($rangeBin & $maskBin);
+        return ($ipBin & $mask) === ($rangeBin & $mask);
     }
 }
