@@ -135,6 +135,23 @@ class ZeptoMailService
 
     protected function dispatch(array $payload, string $recipientHint, string $secretMarker): bool
     {
+        // Enforce global email budget BEFORE attempting to send
+        // Determine endpoint type from subject/template
+        $endpoint = $this->determineEndpoint($payload['subject'] ?? '', $payload['template_key'] ?? '');
+        $ip = Request::ip() ?? 'unknown';
+
+        try {
+            $this->emailBudget->reserve($endpoint, $recipientHint, $ip);
+        } catch (\RuntimeException $e) {
+            Log::warning('Email budget exceeded, blocking send', [
+                'endpoint' => $endpoint,
+                'recipient' => $recipientHint,
+                'ip' => $ip,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+
         $apiKey = (string) config('services.zeptomail.api_key', '');
         $apiBase = rtrim((string) config('services.zeptomail.api_base', 'https://api.zeptomail.com/v1.1'), '/');
 
@@ -166,10 +183,10 @@ class ZeptoMailService
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
-            
+
                 return false;
             }
-            
+
             Log::info('ZeptoMail email accepted.', [
                 'status' => $response->status(),
                 'response' => $response->json(),
@@ -180,5 +197,36 @@ class ZeptoMailService
             Log::error('ZeptoMail connection failed.', ['error' => $e->getMessage()]);
             return false;
         }
+    }
+
+    /**
+     * Determine endpoint type from email subject or template key.
+     */
+    protected function determineEndpoint(string $subject, string $templateKey): string
+    {
+        $subjectLower = strtolower($subject);
+
+        if (str_contains($subjectLower, 'sign-in') || str_contains($subjectLower, 'login')) {
+            return 'login_otp';
+        }
+
+        if (str_contains($subjectLower, 'confirm') || str_contains($subjectLower, 'verify') || str_contains($subjectLower, 'signup')) {
+            return 'signup_otp';
+        }
+
+        if (str_contains($subjectLower, 'reset') || str_contains($subjectLower, 'password')) {
+            return 'password_reset_otp';
+        }
+
+        // Fallback to template key
+        if (str_contains($templateKey, 'otp')) {
+            return 'login_otp';
+        }
+
+        if (str_contains($templateKey, 'reset')) {
+            return 'password_reset_otp';
+        }
+
+        return 'unknown';
     }
 }
