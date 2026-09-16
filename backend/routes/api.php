@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
     // Authentication
     // ------------------------------------------------------------------
 
-    Route::middleware(['throttle:auth', 'turnstile'])->group(function () {
+    Route::middleware(['throttle:auth'])->group(function () {
         Route::post('/auth/login/start', [AuthController::class, 'startLogin']);
         Route::post('/auth/login/verify-otp', [AuthController::class, 'verifyLogin']);
         Route::post('/auth/login/otp/resend', [AuthController::class, 'resendLoginOtp']);
@@ -42,16 +42,16 @@ Route::prefix('v1')->group(function () {
         Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
     });
 
-    Route::middleware(['throttle:register', 'turnstile'])->group(function () {
+    Route::middleware(['throttle:register'])->group(function () {
         Route::post('/auth/register/start', [AuthController::class, 'startRegistration']);
     });
 
-    Route::middleware(['throttle:otp.verify', 'turnstile'])->group(function () {
+    Route::middleware(['throttle:otp.verify'])->group(function () {
         Route::post('/auth/register/verify-otp', [AuthController::class, 'verifySignup']);
         Route::post('/auth/register/complete', [AuthController::class, 'completeRegistration']);
     });
 
-    Route::middleware(['throttle:otp.resend', 'turnstile'])->group(function () {
+    Route::middleware(['throttle:otp.resend'])->group(function () {
         Route::post('/auth/register/otp/resend', [AuthController::class, 'resendSignupOtp']);
     });
 
@@ -71,7 +71,7 @@ Route::prefix('v1')->group(function () {
         ->name('verification.verify');
 
     Route::post('/auth/email/verification-notification', [VerifyEmailController::class, 'resend'])
-        ->middleware(['auth:sanctum', 'throttle:auth', 'turnstile']);
+        ->middleware(['auth:sanctum', 'throttle:auth']);
 
     // ------------------------------------------------------------------
     // Public content
