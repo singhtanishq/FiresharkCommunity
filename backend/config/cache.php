@@ -84,6 +84,14 @@ return [
             'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
         ],
 
+        // Dedicated store for rate limiting with separate database
+        'redis-rate-limiter' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_RATE_LIMITER_CONNECTION', 'ratelimiter'),
+            'lock_connection' => env('REDIS_RATE_LIMITER_LOCK_CONNECTION', 'default'),
+            'prefix' => env('CACHE_PREFIX', 'laravel-cache-').'ratelimit:',
+        ],
+
         'dynamodb' => [
             'driver' => 'dynamodb',
             'key' => env('AWS_ACCESS_KEY_ID'),
